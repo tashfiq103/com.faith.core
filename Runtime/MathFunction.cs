@@ -1,4 +1,4 @@
-﻿namespace com.faith.Math
+﻿namespace com.faith.math
 {
 	using System;
 	using UnityEngine;
