@@ -3,6 +3,7 @@
 	using System;
 	using UnityEngine;
 
+	//Version 1.0.1
     //using com.faith.GameplayService;
 
     public class MathFunction : MonoBehaviour
