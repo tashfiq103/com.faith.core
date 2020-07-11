@@ -3,7 +3,7 @@
 	using System;
 	using UnityEngine;
 
-    using com.faith.GameplayService;
+    //using com.faith.GameplayService;
 
     public class MathFunction : MonoBehaviour
 	{
@@ -358,132 +358,133 @@
 
 		#endregion
 
-		#region Public Callback	:	Camera Translation
+		// #region Public Callback	:	Camera Translation
 
-		public bool IsHitBoundary(Vector2 t_RequestedPosition, UnitVector2D t_LowerBoundOfView, UnitVector2D t_UpperBoundOfView)
-		{
+		// public bool IsHitBoundary(Vector2 t_RequestedPosition, UnitVector2D t_LowerBoundOfView, UnitVector2D t_UpperBoundOfView)
+		// {
 
-			bool t_Result = false;
+		// 	bool t_Result = false;
 
-			m_CameraPosition = (Vector2)m_CameraReference.transform.position;
-			m_CameraOrthographicSize = m_CameraReference.orthographicSize;
+		// 	m_CameraPosition = (Vector2)m_CameraReference.transform.position;
+		// 	m_CameraOrthographicSize = m_CameraReference.orthographicSize;
 
-			if (DeviceInfoManager.Instance.IsPortraitMode())
-			{
+		// 	if (DeviceInfoManager.Instance.IsPortraitMode())
+		// 	{
 
-				m_ViewBoundary = new Vector2(
-					m_CameraPosition.x + (m_CameraOrthographicSize / DeviceInfoManager.Instance.GetAspectRatioFactor()),
-					m_CameraPosition.y + m_CameraOrthographicSize
-				);
-			}
-			else
-			{
+		// 		m_ViewBoundary = new Vector2(
+		// 			m_CameraPosition.x + (m_CameraOrthographicSize / DeviceInfoManager.Instance.GetAspectRatioFactor()),
+		// 			m_CameraPosition.y + m_CameraOrthographicSize
+		// 		);
+		// 	}
+		// 	else
+		// 	{
 
-				m_ViewBoundary = new Vector2(
-					m_CameraPosition.x + (m_CameraOrthographicSize * DeviceInfoManager.Instance.GetAspectRatioFactor()),
-					m_CameraPosition.y + m_CameraOrthographicSize
-				);
-			}
+		// 		m_ViewBoundary = new Vector2(
+		// 			m_CameraPosition.x + (m_CameraOrthographicSize * DeviceInfoManager.Instance.GetAspectRatioFactor()),
+		// 			m_CameraPosition.y + m_CameraOrthographicSize
+		// 		);
+		// 	}
 
-			float t_BoundaryLimitOnAxis = m_ViewBoundary.x * t_LowerBoundOfView.x;
-			if (t_BoundaryLimitOnAxis > t_RequestedPosition.x)
-			{
-				//Negetive : X-Axis
-				t_Result = true;
-			}
+		// 	float t_BoundaryLimitOnAxis = m_ViewBoundary.x * t_LowerBoundOfView.x;
+		// 	if (t_BoundaryLimitOnAxis > t_RequestedPosition.x)
+		// 	{
+		// 		//Negetive : X-Axis
+		// 		t_Result = true;
+		// 	}
 
-			t_BoundaryLimitOnAxis = m_ViewBoundary.y * t_LowerBoundOfView.y;
-			if (t_BoundaryLimitOnAxis > t_RequestedPosition.y)
-			{
-				//Negetive : Y-Axis
-				t_Result = true;
-			}
+		// 	t_BoundaryLimitOnAxis = m_ViewBoundary.y * t_LowerBoundOfView.y;
+		// 	if (t_BoundaryLimitOnAxis > t_RequestedPosition.y)
+		// 	{
+		// 		//Negetive : Y-Axis
+		// 		t_Result = true;
+		// 	}
 
-			t_BoundaryLimitOnAxis = m_ViewBoundary.x * t_UpperBoundOfView.x;
-			if (t_RequestedPosition.x > t_BoundaryLimitOnAxis)
-			{
-				//Positive : X-Axis
-				t_Result = true;
-			}
+		// 	t_BoundaryLimitOnAxis = m_ViewBoundary.x * t_UpperBoundOfView.x;
+		// 	if (t_RequestedPosition.x > t_BoundaryLimitOnAxis)
+		// 	{
+		// 		//Positive : X-Axis
+		// 		t_Result = true;
+		// 	}
 
-			t_BoundaryLimitOnAxis = m_ViewBoundary.y * t_UpperBoundOfView.y;
-			if (t_RequestedPosition.y > t_BoundaryLimitOnAxis)
-			{
-				//Positive : Y-Axis
-				t_Result = true;
-			}
+		// 	t_BoundaryLimitOnAxis = m_ViewBoundary.y * t_UpperBoundOfView.y;
+		// 	if (t_RequestedPosition.y > t_BoundaryLimitOnAxis)
+		// 	{
+		// 		//Positive : Y-Axis
+		// 		t_Result = true;
+		// 	}
 
-			return t_Result;
-		}
+		// 	return t_Result;
+		// }
 
-		public Vector2 TranslationByBoundedCameara(Vector2 t_RequestedPosition, UnitVector2D t_LowerBoundOfView, UnitVector2D t_UpperBoundOfView)
-		{
+		// public Vector2 TranslationByBoundedCameara(Vector2 t_RequestedPosition, UnitVector2D t_LowerBoundOfView, UnitVector2D t_UpperBoundOfView)
+		// {
 
-			m_CameraPosition = (Vector2)m_CameraReference.transform.position;
-			m_CameraOrthographicSize = m_CameraReference.orthographicSize;
+		// 	m_CameraPosition = (Vector2)m_CameraReference.transform.position;
+		// 	m_CameraOrthographicSize = m_CameraReference.orthographicSize;
 
-			if (DeviceInfoManager.Instance.IsPortraitMode())
-			{
+		// 	if (DeviceInfoManager.Instance.IsPortraitMode())
+		// 	{
 
-				m_ViewBoundary = new Vector2(
-					m_CameraPosition.x + (m_CameraOrthographicSize / DeviceInfoManager.Instance.GetAspectRatioFactor()),
-					m_CameraPosition.y + m_CameraOrthographicSize
-				);
-			}
-			else
-			{
+		// 		m_ViewBoundary = new Vector2(
+		// 			m_CameraPosition.x + (m_CameraOrthographicSize / DeviceInfoManager.Instance.GetAspectRatioFactor()),
+		// 			m_CameraPosition.y + m_CameraOrthographicSize
+		// 		);
+		// 	}
+		// 	else
+		// 	{
 
-				m_ViewBoundary = new Vector2(
-					m_CameraPosition.x + (m_CameraOrthographicSize * DeviceInfoManager.Instance.GetAspectRatioFactor()),
-					m_CameraPosition.y + m_CameraOrthographicSize
-				);
-			}
+		// 		m_ViewBoundary = new Vector2(
+		// 			m_CameraPosition.x + (m_CameraOrthographicSize * DeviceInfoManager.Instance.GetAspectRatioFactor()),
+		// 			m_CameraPosition.y + m_CameraOrthographicSize
+		// 		);
+		// 	}
 
-			float t_BoundaryLimitOnAxis = m_ViewBoundary.x * t_LowerBoundOfView.x;
-			if (t_BoundaryLimitOnAxis > t_RequestedPosition.x)
-			{
-				//Negetive : X-Axis
-				t_RequestedPosition = new Vector2(
-					t_BoundaryLimitOnAxis,
-					t_RequestedPosition.y
-				);
-			}
+		// 	float t_BoundaryLimitOnAxis = m_ViewBoundary.x * t_LowerBoundOfView.x;
+		// 	if (t_BoundaryLimitOnAxis > t_RequestedPosition.x)
+		// 	{
+		// 		//Negetive : X-Axis
+		// 		t_RequestedPosition = new Vector2(
+		// 			t_BoundaryLimitOnAxis,
+		// 			t_RequestedPosition.y
+		// 		);
+		// 	}
 
-			t_BoundaryLimitOnAxis = m_ViewBoundary.y * t_LowerBoundOfView.y;
-			if (t_BoundaryLimitOnAxis > t_RequestedPosition.y)
-			{
-				//Negetive : Y-Axis
-				t_RequestedPosition = new Vector2(
-					t_RequestedPosition.x,
-					t_BoundaryLimitOnAxis
-				);
-			}
+		// 	t_BoundaryLimitOnAxis = m_ViewBoundary.y * t_LowerBoundOfView.y;
+		// 	if (t_BoundaryLimitOnAxis > t_RequestedPosition.y)
+		// 	{
+		// 		//Negetive : Y-Axis
+		// 		t_RequestedPosition = new Vector2(
+		// 			t_RequestedPosition.x,
+		// 			t_BoundaryLimitOnAxis
+		// 		);
+		// 	}
 
-			t_BoundaryLimitOnAxis = m_ViewBoundary.x * t_UpperBoundOfView.x;
-			if (t_RequestedPosition.x > t_BoundaryLimitOnAxis)
-			{
-				//Positive : X-Axis
-				t_RequestedPosition = new Vector2(
-					t_BoundaryLimitOnAxis,
-					t_RequestedPosition.y
-				);
-			}
+		// 	t_BoundaryLimitOnAxis = m_ViewBoundary.x * t_UpperBoundOfView.x;
+		// 	if (t_RequestedPosition.x > t_BoundaryLimitOnAxis)
+		// 	{
+		// 		//Positive : X-Axis
+		// 		t_RequestedPosition = new Vector2(
+		// 			t_BoundaryLimitOnAxis,
+		// 			t_RequestedPosition.y
+		// 		);
+		// 	}
 
-			t_BoundaryLimitOnAxis = m_ViewBoundary.y * t_UpperBoundOfView.y;
-			if (t_RequestedPosition.y > t_BoundaryLimitOnAxis)
-			{
-				//Positive : Y-Axis
-				t_RequestedPosition = new Vector2(
-					t_RequestedPosition.x,
-					t_BoundaryLimitOnAxis
-				);
-			}
+		// 	t_BoundaryLimitOnAxis = m_ViewBoundary.y * t_UpperBoundOfView.y;
+		// 	if (t_RequestedPosition.y > t_BoundaryLimitOnAxis)
+		// 	{
+		// 		//Positive : Y-Axis
+		// 		t_RequestedPosition = new Vector2(
+		// 			t_RequestedPosition.x,
+		// 			t_BoundaryLimitOnAxis
+		// 		);
+		// 	}
 
-			return t_RequestedPosition;
-		}
+		// 	return t_RequestedPosition;
+		// }
 
 
-		#endregion
+		// #endregion
+
 
 		#region Public Callback	:	Currency Formation
 
