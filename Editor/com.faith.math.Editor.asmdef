@@ -1,0 +1,17 @@
+{
+    "name": "com.faith.math.Editor",
+    "references": [
+        "GUID:f20f4210caa6c124a87f1517de5f3288"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
