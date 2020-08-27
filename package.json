@@ -1,16 +1,16 @@
 {
-    "name" : "com.faith.math",
-    "displayName": "FAITH MathLibrary",
+    "name" : "com.faith.data",
+    "displayName": "FAITH DataLibrary",
     "version" : "0.1.1",
     "unity": "2019.4",
     "author": "Muhammad Tashfiqul Bari",
-    "description": "Math Libraray for other tools of faith unity package",
+    "description": "Data Libraray for other tools of faith unity package",
     "dependencies":{
 
     },
     "repository":{
         "type":"git",
-        "url": "https://github.com/tashfiq103/com.faith.math.git"
+        "url": "https://github.com/tashfiq103/com.faith.data.git"
     }
     
 }

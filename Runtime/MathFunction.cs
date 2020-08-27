@@ -3,33 +3,10 @@
 	using System;
 	using UnityEngine;
 
-	//Version 1.0.1
-    //using com.faith.GameplayService;
 
-    public class MathFunction : MonoBehaviour
+    public static class MathFunction
 	{
-
-		public static MathFunction Instance;
-
-		void Awake()
-		{
-
-			if (Instance == null)
-			{
-
-				Instance = this;
-				DontDestroyOnLoad(gameObject);
-			}
-			else if (Instance != this)
-			{
-
-				Destroy(gameObject);
-			}
-
-			PreprocessForTranslationByCamera();
-		}
-
-		public Vector2 ConvertUnitVectorToVector(UnitVector2D t_UnitVector)
+		public static Vector2 ConvertUnitVectorToVector(UnitVector2D t_UnitVector)
 		{
 
 			Vector2 t_Result = new Vector2(
@@ -40,7 +17,7 @@
 			return t_Result;
 		}
 
-		public Vector3 ConvertUnitVectorToVector(UnitVector t_UnitVector)
+		public static Vector3 ConvertUnitVectorToVector(UnitVector t_UnitVector)
 		{
 
 			Vector3 t_Result = new Vector3(
@@ -52,7 +29,7 @@
 			return t_Result;
 		}
 
-		public Vector3 GetUnitVector(Vector3 startingPosition, Vector3 targetPosition)
+		public static Vector3 GetUnitVector(Vector3 startingPosition, Vector3 targetPosition)
 		{
 
 			Vector3 m_UnitVector = Vector3.zero;
@@ -83,7 +60,7 @@
 			return m_UnitVector;
 		}
 
-		public float GetRotationInDegree(Vector2 t_DirectionVector)
+		public static float GetRotationInDegree(Vector2 t_DirectionVector)
 		{
 
 			float t_Result = 0.0f;
@@ -120,23 +97,23 @@
 			return t_Result;
 		}
 
-		public float GetRotationInRadian(Vector2 t_DirectionVector)
+		public static float GetRotationInRadian(Vector2 t_DirectionVector)
 		{
 
 			return ((GetRotationInDegree(t_DirectionVector) * Mathf.PI) / 180.0f);
 		}
 
-		public float SmoothTransitionCurve(float t_Value)
+		public static float SmoothTransitionCurve(float t_Value)
 		{
 			return SmoothTransitionCurve(t_Value, 0.66f, 0.33f, 0f);
 		}
 
-		public float SmoothTransitionCurve(float t_Value, float t_ValueBoost)
+		public static float SmoothTransitionCurve(float t_Value, float t_ValueBoost)
 		{
 			return SmoothTransitionCurve(t_Value, 0.66f, 0.33f, t_ValueBoost);
 		}
 
-		public float SmoothTransitionCurve(float t_Value, float t_SaturationPoint, float t_ValueTillSaturationPoint, float t_ValueBoost)
+		public static float SmoothTransitionCurve(float t_Value, float t_SaturationPoint, float t_ValueTillSaturationPoint, float t_ValueBoost)
 		{
 
 			float t_Result = 0f;
@@ -166,7 +143,7 @@
 		}
 
 
-		public PriorityBound[] GetPriorityBound(float[] priorityList)
+		public static PriorityBound[] GetPriorityBound(float[] priorityList)
 		{
 
 			PriorityBound[] t_Result = new PriorityBound[priorityList.Length];
@@ -212,7 +189,7 @@
 			return t_Result;
 		}
 
-		public float GetTangent(
+		public static float GetTangent(
 				Vector2 t_Point1,
 				Vector2 t_Point2)
 		{
@@ -220,7 +197,7 @@
 			return (t_Point2.y - t_Point1.y) / (t_Point2.x - t_Point1.x);
 		}
 
-		public Vector2 GetLineEquationOfTwoPoint(
+		public static Vector2 GetLineEquationOfTwoPoint(
 			Vector2 t_Point1, 
 			Vector2 t_Point2, 
 			bool t_UsePoint1ForSlopeCalculation = true) {
@@ -236,7 +213,7 @@
 
 		}
 
-		public Vector2 GetPerpendiculerLineEquationAtCertainPoint(
+		public static Vector2 GetPerpendiculerLineEquationAtCertainPoint(
 			Vector2 t_Point1,
 			Vector2 t_Point2,
 			Vector2 t_IntersectedPoint) {
@@ -260,7 +237,7 @@
 		/// <param name="t_Point1"></param>
 		/// <param name="t_Point2"></param>
 		/// <returns></returns>
-		public int IsTwoPointOnTheSameSide(
+		public static int IsTwoPointOnTheSameSide(
 				Vector2 t_Point1ForLine,
 				Vector2 t_Point2ForLine,
 				Vector2 t_Point1,
@@ -282,7 +259,7 @@
 			return -1;
 		}
 
-		public bool IsTwoLineIntersected(
+		public static bool IsTwoLineIntersected(
 				Vector2 p1,
 				Vector2 p2,
 				Vector2 p3,
@@ -310,7 +287,7 @@
 			return false;
 		}
 
-		public float GetAreaOfTriangle(
+		public static float GetAreaOfTriangle(
 			Vector2 t_Vertex1, 
 			Vector2 t_Vertex2, 
 			Vector2 t_Vertex3) {
@@ -318,7 +295,7 @@
 			return Math.Abs( (t_Vertex1.x * (t_Vertex2.y - t_Vertex3.y)) + (t_Vertex2.x * (t_Vertex3.y - t_Vertex1.y)) + (t_Vertex3.x * (t_Vertex1.y - t_Vertex2.y)) ) / 2.0f;
 		}
 
-		public bool IsPointInsideTriangle(
+		public static bool IsPointInsideTriangle(
 			Vector2 t_Vertex1,
 			Vector2 t_Vertex2,
 			Vector2 t_Vertex3,
@@ -337,27 +314,133 @@
 			if (t_AreaOfTriangle >= (t_SummationOfPredictionTriangle - t_AbsoluteErrorRate) && t_AreaOfTriangle <= (t_SummationOfPredictionTriangle + t_AbsoluteErrorRate))
 				return true;
 
-			//if (t_AreaOfTriangle == (t_AreaOfTrinagleOn1To2 + t_AreaOfTrinagleOn2To3 + t_AreaOfTrinagleOn3To1))
-			//	return true;
 
 			return false;
 		}
 
-		#region Configuretion	:	CameraTranslation
+		#region Public Callback	:	Currency Formation
 
-		private Camera m_CameraReference;
-		private Vector2 m_CameraPosition;
-		private float m_CameraOrthographicSize;
-
-		private Vector2 m_ViewBoundary;
-
-		private void PreprocessForTranslationByCamera()
+		public static string GetCurrencyInFormatInNonDecimal(double t_AmountOfCurrency)
 		{
 
-			m_CameraReference = Camera.main;
+			string t_Result = "";
+			if (t_AmountOfCurrency >= 1000000000000000000)
+			{
+				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000000000000)).ToString("D0") + "Qt";
+			}
+			else if (t_AmountOfCurrency >= 1000000000000000)
+			{
+				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000000000)).ToString("D0") + "Qd";
+			}
+			else if (t_AmountOfCurrency >= 1000000000000)
+			{
+				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000000)).ToString("D0") + "T";
+			}
+			else if (t_AmountOfCurrency >= 1000000000)
+			{
+				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000)).ToString("D0") + "B";
+			}
+			else if (t_AmountOfCurrency >= 1000000)
+			{
+				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000)).ToString("D0") + "M";
+			}
+			else if (t_AmountOfCurrency >= 1000)
+			{
+				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000)).ToString("D0") + "K";
+			}
+			else if (t_AmountOfCurrency == 0)
+			{
+				t_Result = "0";
+			}
+			else
+			{
+				t_Result = t_AmountOfCurrency.ToString("F0");
+			}
+
+			return t_Result;
+		}
+
+		public static string GetCurrencyInFormat(double t_AmountOfCurrency)
+		{
+
+			string t_Result = "";
+			if (t_AmountOfCurrency >= 1000000000000000000)
+			{
+				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000000000000)).ToString("#.00") + "Qt";
+			}
+			else if (t_AmountOfCurrency >= 1000000000000000)
+			{
+				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000000000)).ToString("#.00") + "Qd";
+			}
+			else if (t_AmountOfCurrency >= 1000000000000)
+			{
+				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000000)).ToString("#.00") + "T";
+			}
+			else if (t_AmountOfCurrency >= 1000000000)
+			{
+				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000)).ToString("#.00") + "B";
+			}
+			else if (t_AmountOfCurrency >= 1000000)
+			{
+				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000)).ToString("#.00") + "M";
+			}
+			else if (t_AmountOfCurrency >= 1000)
+			{
+				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000)).ToString("#.00") + "K";
+			}
+			else if (t_AmountOfCurrency == 0)
+			{
+				t_Result = "0";
+			}
+			else
+			{
+				t_Result = t_AmountOfCurrency.ToString("#.00");
+			}
+
+			return t_Result;
 		}
 
 		#endregion
+
+		#region Public Callback	:	Color Correction
+
+		public static float GetColorIntensityBasedOnContrast(
+				Color t_ColorValue,
+				float t_MaxIntensity,
+				float t_Variation = 0.5f
+			) {
+
+			float t_ContrastLevel = ((t_ColorValue.r * 299) + (t_ColorValue.g * 587) + (t_ColorValue.b * 114)) / 1000f;
+			float t_LowerBoundOfIntensity = (1 - t_Variation) * t_MaxIntensity;
+			float t_FixedIntensity = Mathf.Lerp(
+					t_LowerBoundOfIntensity,
+					t_MaxIntensity,
+					SmoothTransitionCurve((1f - t_ContrastLevel), 0.33f, 0.66f,0f)
+				);
+			//Debug.Log("Color : " + t_ColorValue + ", Contrast : " + t_ContrastLevel + ", FixedIntensity : " + t_FixedIntensity);
+
+			return t_FixedIntensity;
+		}
+
+		#endregion
+
+		#region Obsolute
+
+		//#region Configuretion	:	CameraTranslation
+
+		//private Camera m_CameraReference;
+		//private Vector2 m_CameraPosition;
+		//private float m_CameraOrthographicSize;
+
+		//private Vector2 m_ViewBoundary;
+
+		//private void PreprocessForTranslationByCamera()
+		//{
+
+		//	m_CameraReference = Camera.main;
+		//}
+
+		//#endregion
 
 		// #region Public Callback	:	Camera Translation
 
@@ -486,112 +569,7 @@
 
 		// #endregion
 
-
-		#region Public Callback	:	Currency Formation
-
-		public string GetCurrencyInFormatInNonDecimal(double t_AmountOfCurrency)
-		{
-
-			string t_Result = "";
-			if (t_AmountOfCurrency >= 1000000000000000000)
-			{
-				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000000000000)).ToString("D0") + "Qt";
-			}
-			else if (t_AmountOfCurrency >= 1000000000000000)
-			{
-				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000000000)).ToString("D0") + "Qd";
-			}
-			else if (t_AmountOfCurrency >= 1000000000000)
-			{
-				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000000)).ToString("D0") + "T";
-			}
-			else if (t_AmountOfCurrency >= 1000000000)
-			{
-				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000)).ToString("D0") + "B";
-			}
-			else if (t_AmountOfCurrency >= 1000000)
-			{
-				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000)).ToString("D0") + "M";
-			}
-			else if (t_AmountOfCurrency >= 1000)
-			{
-				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000)).ToString("D0") + "K";
-			}
-			else if (t_AmountOfCurrency == 0)
-			{
-				t_Result = "0";
-			}
-			else
-			{
-				t_Result = t_AmountOfCurrency.ToString("F0");
-			}
-
-			return t_Result;
-		}
-
-		public string GetCurrencyInFormat(double t_AmountOfCurrency)
-		{
-
-			string t_Result = "";
-			if (t_AmountOfCurrency >= 1000000000000000000)
-			{
-				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000000000000)).ToString("#.00") + "Qt";
-			}
-			else if (t_AmountOfCurrency >= 1000000000000000)
-			{
-				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000000000)).ToString("#.00") + "Qd";
-			}
-			else if (t_AmountOfCurrency >= 1000000000000)
-			{
-				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000000)).ToString("#.00") + "T";
-			}
-			else if (t_AmountOfCurrency >= 1000000000)
-			{
-				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000000)).ToString("#.00") + "B";
-			}
-			else if (t_AmountOfCurrency >= 1000000)
-			{
-				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000000)).ToString("#.00") + "M";
-			}
-			else if (t_AmountOfCurrency >= 1000)
-			{
-				t_Result = Convert.ToDouble((t_AmountOfCurrency / 1000)).ToString("#.00") + "K";
-			}
-			else if (t_AmountOfCurrency == 0)
-			{
-				t_Result = "0";
-			}
-			else
-			{
-				t_Result = t_AmountOfCurrency.ToString("#.00");
-			}
-
-			return t_Result;
-		}
-
 		#endregion
-
-		#region Public Callback	:	Color Correction
-
-		public float GetColorIntensityBasedOnContrast(
-				Color t_ColorValue,
-				float t_MaxIntensity,
-				float t_Variation = 0.5f
-			) {
-
-			float t_ContrastLevel = ((t_ColorValue.r * 299) + (t_ColorValue.g * 587) + (t_ColorValue.b * 114)) / 1000f;
-			float t_LowerBoundOfIntensity = (1 - t_Variation) * t_MaxIntensity;
-			float t_FixedIntensity = Mathf.Lerp(
-					t_LowerBoundOfIntensity,
-					t_MaxIntensity,
-					SmoothTransitionCurve((1f - t_ContrastLevel), 0.33f, 0.66f,0f)
-				);
-			//Debug.Log("Color : " + t_ColorValue + ", Contrast : " + t_ContrastLevel + ", FixedIntensity : " + t_FixedIntensity);
-
-			return t_FixedIntensity;
-		}
-
-        #endregion
-    }
+	}
 }
 
