@@ -1,4 +1,4 @@
-﻿namespace com.faith.math
+﻿namespace com.faith.core
 {
     using UnityEditor;
 

@@ -1,7 +1,11 @@
 {
-    "name": "com.faith.data",
-    "references": [],
-    "includePlatforms": [],
+    "name": "com.faith.core.Editor",
+    "references": [
+        "GUID:040ab2f6270c94377b661782c4ab4dfb"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
