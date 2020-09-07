@@ -6,9 +6,18 @@
 
     public static class PlayerPrefDataSettings
     {
-
-
         #region Custom DataType
+
+#if UNITY_EDITOR
+
+        [Serializable]
+        public class PlayerPrefEditorData
+        {
+            public string key;
+            public Type type;
+            public string value;
+        }
+#endif
 
         public enum DataTypeForPlayerPref
         {
@@ -20,15 +29,58 @@
             UNDEFINED
         }
 
+
         #endregion
 
         #region Private Variables
+
+#if UNITY_EDITOR
+        public static List<PlayerPrefEditorData> listOfUsedPlayerPrefEditorData    = new List<PlayerPrefEditorData>();
+#endif
 
         public static List<string> listOfUsedPlayerPrefKey = new List<string>();
 
         #endregion
 
         #region Public Callback
+
+#if UNITY_EDITOR
+
+        public static int IsPlayerPrefEditorDataAlreadyInContainer(string t_Key) {
+
+            int t_NumberOfEnlistedPlayerPrefEditorData = listOfUsedPlayerPrefEditorData.Count;
+            for (int i = 0; i < t_NumberOfEnlistedPlayerPrefEditorData; i++) {
+
+                if (string.Equals(t_Key, listOfUsedPlayerPrefEditorData[i].key))
+                    return i;
+            }
+
+            return -1;
+        }
+
+        public static void EnlistPlayerPrefEditorDataInContainer(string t_Key, Type t_Type, string t_Value) {
+
+            int t_Result = IsPlayerPrefEditorDataAlreadyInContainer(t_Key);
+            if (t_Result == -1)
+            {
+
+                listOfUsedPlayerPrefEditorData.Add(new PlayerPrefEditorData()
+                {
+                    key = t_Key,
+                    type = t_Type,
+                    value = t_Value
+                });
+            }
+            else {
+
+                listOfUsedPlayerPrefEditorData[t_Result].type   = t_Type;
+                listOfUsedPlayerPrefEditorData[t_Result].value  = t_Value;
+            }
+
+            
+        }
+
+#endif
 
         public static bool IsPlayerPrefKeyAlreadyInUsed(string t_Key)
         {
@@ -43,8 +95,10 @@
 
         public static void EnlistUniqueKeyAsUsedPlayerPrefs(string t_Key)
         {
-            if(!listOfUsedPlayerPrefKey.Contains(t_Key))
+            if (!IsPlayerPrefKeyAlreadyInUsed(t_Key))
+            {
                 listOfUsedPlayerPrefKey.Add(t_Key);
+            }
         }
 
         public static void ResetPlayerPrefData(string t_Key)
@@ -162,11 +216,19 @@
                         bool t_ParsedBoolValue = (bool)Convert.ChangeType(t_Value, typeof(bool));
                         PlayerPrefs.SetInt(m_Key, t_ParsedBoolValue ? 1 : 0);
 
+#if UNITY_EDITOR
+                        PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(bool), t_ParsedBoolValue.ToString());
+#endif
+
                         break;
                     case PlayerPrefDataSettings.DataTypeForPlayerPref.DATA_TYPE_INT:
 
                         int t_ParsedIntValue = (int)Convert.ChangeType(t_Value, typeof(int));
                         PlayerPrefs.SetInt(m_Key, t_ParsedIntValue);
+
+#if UNITY_EDITOR
+                        PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(int), t_ParsedIntValue.ToString());
+#endif
 
                         break;
                     case PlayerPrefDataSettings.DataTypeForPlayerPref.DATA_TYPE_FLOAT:
@@ -174,17 +236,29 @@
                         float t_ParsedFloatValue = (float)Convert.ChangeType(t_Value, typeof(float));
                         PlayerPrefs.SetFloat(m_Key, t_ParsedFloatValue);
 
+#if UNITY_EDITOR
+                        PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(float), t_ParsedFloatValue.ToString());
+#endif
+
                         break;
                     case PlayerPrefDataSettings.DataTypeForPlayerPref.DATA_TYPE_DOUBLE:
 
                         double t_ParsedDoubleValue = (double)Convert.ChangeType(t_Value, typeof(double));
                         PlayerPrefs.SetString(m_Key, t_ParsedDoubleValue.ToString());
 
+#if UNITY_EDITOR
+                        PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(double), t_ParsedDoubleValue.ToString());
+#endif
+
                         break;
                     case PlayerPrefDataSettings.DataTypeForPlayerPref.DATA_TYPE_STRING:
 
                         string t_ParsedStringValue = (string)Convert.ChangeType(t_Value, typeof(string));
                         PlayerPrefs.SetString(m_Key, t_ParsedStringValue);
+
+#if UNITY_EDITOR
+                        PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(string), t_ParsedStringValue.ToString());
+#endif
 
                         break;
                 }
