@@ -35,6 +35,7 @@
         #region Private Variables
 
 #if UNITY_EDITOR
+        [SerializeField]
         public static List<PlayerPrefEditorData> listOfUsedPlayerPrefEditorData    = new List<PlayerPrefEditorData>();
 #endif
 
@@ -80,6 +81,38 @@
             
         }
 
+        public static void SetData(string t_Key, Type t_Type, string t_Value)
+        {
+            int t_Index = IsPlayerPrefEditorDataAlreadyInContainer(t_Key);
+            if (t_Index != -1) {
+
+                if (t_Type == typeof(bool))
+                {
+                    PlayerPrefs.SetInt(t_Key, string.Compare(t_Value, "False") == 0 ? 0 : 1);
+                }
+                else if (t_Type == typeof(int))
+                {
+                    PlayerPrefs.SetInt(t_Key, (int)Convert.ChangeType(t_Value, typeof(int)));
+                }
+                else if (t_Type == typeof(float))
+                {
+                    PlayerPrefs.SetFloat(t_Key, (float)Convert.ChangeType(t_Value, typeof(float)));
+                }
+                else if (t_Type == typeof(double))
+                {
+                    PlayerPrefs.SetString(t_Key, ((double)Convert.ChangeType(t_Value, typeof(double))).ToString());
+                }
+                else if (t_Type == typeof(string))
+                {
+                    PlayerPrefs.SetString(t_Key, t_Value);
+                }
+
+                listOfUsedPlayerPrefEditorData[t_Index].value = t_Value;
+            }
+
+            
+        }
+
 #endif
 
         public static bool IsPlayerPrefKeyAlreadyInUsed(string t_Key)
@@ -100,6 +133,8 @@
                 listOfUsedPlayerPrefKey.Add(t_Key);
             }
         }
+
+        
 
         public static void ResetPlayerPrefData(string t_Key)
         {

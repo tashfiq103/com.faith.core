@@ -11,6 +11,7 @@
 
         private static Vector2 m_ScrollPosition;
 
+
         #region EditorWindow
 
         [MenuItem("FAITH/PlayerPrefData/DataViwer")]
@@ -39,36 +40,124 @@
             m_ScrollPosition = EditorGUILayout.BeginScrollView(m_ScrollPosition, false, false);
             {
                 int t_Index = 1;
+
+                //SettingMenu
+                EditorGUILayout.BeginHorizontal();
+                {
+                    EditorGUILayout.LabelField("PrefKeys");
+
+                }
+                EditorGUILayout.EndHorizontal();
+
+                //Traversing List
                 foreach (PlayerPrefDataSettings.PlayerPrefEditorData t_PlayerPrefDataKey in PlayerPrefDataSettings.listOfUsedPlayerPrefEditorData) {
 
                     EditorGUILayout.BeginHorizontal();
                     {
-                        EditorGUILayout.LabelField(t_Index + " : " + t_PlayerPrefDataKey.key, EditorStyles.boldLabel);
+                        EditorGUILayout.LabelField(t_Index + " : " + t_PlayerPrefDataKey.key);
 
-                        string t_Type = "UNKNOWN";
                         if (t_PlayerPrefDataKey.type == typeof(bool)) {
 
-                            t_Type = "BOOLEAN";
-                        }else if (t_PlayerPrefDataKey.type == typeof(int)){
+                            EditorGUILayout.LabelField("BOOLEAN", GUILayout.Width(100));
+                            EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(100));
 
-                            t_Type = "INTEGER";
-                        }else if (t_PlayerPrefDataKey.type == typeof(float))
-                        {
-
-                            t_Type = "FLOAT";
-                        }else if (t_PlayerPrefDataKey.type == typeof(double))
-                        {
-
-                            t_Type = "DOUBLE";
-                        }else if (t_PlayerPrefDataKey.type == typeof(string))
-                        {
-
-                            t_Type = "STRING";
+                            bool t_BoolValue = (bool)System.Convert.ChangeType(t_PlayerPrefDataKey.value, typeof(bool));
+                            EditorGUI.BeginChangeCheck();
+                            {
+                                t_BoolValue = EditorGUILayout.Toggle(
+                                    "",
+                                    t_BoolValue,
+                                    GUILayout.Width(100)
+                                );
+                            }
+                            if (EditorGUI.EndChangeCheck())
+                            {
+                                PlayerPrefDataSettings.SetData(t_PlayerPrefDataKey.key, t_PlayerPrefDataKey.type, t_BoolValue.ToString());
+                            }
                         }
+                        else if (t_PlayerPrefDataKey.type == typeof(int)){
 
+                            EditorGUILayout.LabelField("INTEGER", GUILayout.Width(100));
+                            EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(100));
 
-                        EditorGUILayout.LabelField(t_Type, GUILayout.Width(100));
-                        EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(125));
+                            int t_IntValue = (int)System.Convert.ChangeType(t_PlayerPrefDataKey.value, typeof(int));
+
+                            EditorGUI.BeginChangeCheck();
+                            {
+                                t_IntValue = EditorGUILayout.IntField(
+                                    "",
+                                    t_IntValue,
+                                    GUILayout.Width(100)
+                                );
+                            }
+                            if (EditorGUI.EndChangeCheck())
+                            {
+                                PlayerPrefDataSettings.SetData(t_PlayerPrefDataKey.key, t_PlayerPrefDataKey.type, t_IntValue.ToString());
+                            }
+                        }
+                        else if (t_PlayerPrefDataKey.type == typeof(float))
+                        {
+                            EditorGUILayout.LabelField("FLOAT", GUILayout.Width(100));
+                            EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(100));
+
+                            float t_FloatValue = (float)System.Convert.ChangeType(t_PlayerPrefDataKey.value, typeof(float));
+
+                            EditorGUI.BeginChangeCheck();
+                            {
+                                t_FloatValue = EditorGUILayout.FloatField(
+                                    "",
+                                    t_FloatValue,
+                                    GUILayout.Width(100)
+                                );
+                            }
+                            if (EditorGUI.EndChangeCheck())
+                            {
+                                PlayerPrefDataSettings.SetData(t_PlayerPrefDataKey.key, t_PlayerPrefDataKey.type, t_FloatValue.ToString());
+                            }
+
+                        }
+                        else if (t_PlayerPrefDataKey.type == typeof(double))
+                        {
+                            EditorGUILayout.LabelField("DOUBLE", GUILayout.Width(100));
+                            EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(100));
+
+                            double t_DoubleValue = (double)System.Convert.ChangeType(t_PlayerPrefDataKey.value, typeof(double));
+
+                            EditorGUI.BeginChangeCheck();
+                            {
+                                t_DoubleValue = EditorGUILayout.DoubleField(
+                                    "",
+                                    t_DoubleValue,
+                                    GUILayout.Width(100)
+                                );
+                            }
+                            if (EditorGUI.EndChangeCheck())
+                            {
+                                PlayerPrefDataSettings.SetData(t_PlayerPrefDataKey.key, t_PlayerPrefDataKey.type, t_DoubleValue.ToString());
+                            }
+
+                        }
+                        else if (t_PlayerPrefDataKey.type == typeof(string))
+                        {
+
+                            EditorGUILayout.LabelField("STRING", GUILayout.Width(100));
+                            EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(100));
+
+                            string t_StringValue = (string)System.Convert.ChangeType(t_PlayerPrefDataKey.value, typeof(string));
+
+                            EditorGUI.BeginChangeCheck();
+                            {
+                                t_StringValue = EditorGUILayout.TextField(
+                                    "",
+                                    t_StringValue,
+                                    GUILayout.Width(100)
+                                );
+                            }
+                            if (EditorGUI.EndChangeCheck())
+                            {
+                                PlayerPrefDataSettings.SetData(t_PlayerPrefDataKey.key, t_PlayerPrefDataKey.type, t_StringValue.ToString());
+                            }
+                        }
                     }
                     EditorGUILayout.EndHorizontal();
                     t_Index++;
