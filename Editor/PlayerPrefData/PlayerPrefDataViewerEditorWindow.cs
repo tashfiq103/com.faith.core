@@ -42,12 +42,16 @@
                 int t_Index = 1;
 
                 //SettingMenu
+                DrawHorizontalLine();
                 EditorGUILayout.BeginHorizontal();
                 {
-                    EditorGUILayout.LabelField("PrefKeys");
-
+                    EditorGUILayout.LabelField("PrefKeys", EditorStyles.boldLabel);
+                    EditorGUILayout.LabelField("DataType", EditorStyles.boldLabel, GUILayout.Width(100));
+                    EditorGUILayout.LabelField("Value", EditorStyles.boldLabel, GUILayout.Width(100));
+                    EditorGUILayout.LabelField("SetValue", EditorStyles.boldLabel, GUILayout.Width(100));
                 }
                 EditorGUILayout.EndHorizontal();
+                DrawHorizontalLine();
 
                 //Traversing List
                 foreach (PlayerPrefDataSettings.PlayerPrefEditorData t_PlayerPrefDataKey in PlayerPrefDataSettings.listOfUsedPlayerPrefEditorData) {
