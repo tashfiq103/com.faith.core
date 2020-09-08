@@ -226,6 +226,8 @@
             m_Key = t_Key;
 
             PlayerPrefDataSettings.EnlistUniqueKeyAsUsedPlayerPrefs(t_Key);
+            if (OnValueChanged != null)
+                OnValueChangedEvent += OnValueChanged;
 
             //if : The following key is not used, we initialized the data type and their respective value
             if (!PlayerPrefs.HasKey(t_Key))
@@ -233,8 +235,7 @@
                 //if : Valid DataType
                 if (AssigningDataType(t_Value))
                 {
-                    if (OnValueChanged != null)
-                        OnValueChangedEvent += OnValueChanged;
+                    
 
                     SetData(t_Value);
                 }
@@ -259,7 +260,7 @@
 
                         bool t_ParsedBoolValue = (bool)Convert.ChangeType(t_Value, typeof(bool));
                         PlayerPrefs.SetInt(m_Key, t_ParsedBoolValue ? 1 : 0);
-
+                        OnValueChangedEvent.Invoke((T)Convert.ChangeType(t_Value, typeof(bool)));
 #if UNITY_EDITOR
                         PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(bool), t_ParsedBoolValue.ToString());
 #endif
@@ -269,7 +270,7 @@
 
                         int t_ParsedIntValue = (int)Convert.ChangeType(t_Value, typeof(int));
                         PlayerPrefs.SetInt(m_Key, t_ParsedIntValue);
-
+                        OnValueChangedEvent.Invoke((T)Convert.ChangeType(t_Value, typeof(int)));
 #if UNITY_EDITOR
                         PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(int), t_ParsedIntValue.ToString());
 #endif
@@ -279,7 +280,7 @@
 
                         float t_ParsedFloatValue = (float)Convert.ChangeType(t_Value, typeof(float));
                         PlayerPrefs.SetFloat(m_Key, t_ParsedFloatValue);
-
+                        OnValueChangedEvent.Invoke((T)Convert.ChangeType(t_Value, typeof(float)));
 #if UNITY_EDITOR
                         PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(float), t_ParsedFloatValue.ToString());
 #endif
@@ -289,6 +290,7 @@
 
                         double t_ParsedDoubleValue = (double)Convert.ChangeType(t_Value, typeof(double));
                         PlayerPrefs.SetString(m_Key, t_ParsedDoubleValue.ToString());
+                        OnValueChangedEvent.Invoke((T)Convert.ChangeType(t_Value, typeof(double)));
 
 #if UNITY_EDITOR
                         PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(double), t_ParsedDoubleValue.ToString());
@@ -299,7 +301,7 @@
 
                         string t_ParsedStringValue = (string)Convert.ChangeType(t_Value, typeof(string));
                         PlayerPrefs.SetString(m_Key, t_ParsedStringValue);
-                        
+                        OnValueChangedEvent.Invoke((T)Convert.ChangeType(t_Value, typeof(string)));
 #if UNITY_EDITOR
                         PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(string), t_ParsedStringValue.ToString());
 #endif
