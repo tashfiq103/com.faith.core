@@ -166,6 +166,12 @@
     public class PlayerPrefData<T>
     {
 
+        #region Public Variables
+
+        public event Action<T> OnValueChangedEvent;
+
+        #endregion
+
         #region Private Variables
 
         private PlayerPrefDataSettings.DataTypeForPlayerPref m_DataType;
@@ -215,7 +221,7 @@
 
         #region Public Callback
 
-        public PlayerPrefData(string t_Key, T t_Value)
+        public PlayerPrefData(string t_Key, T t_Value, Action<T> OnValueChanged = null)
         {
             m_Key = t_Key;
 
@@ -227,6 +233,9 @@
                 //if : Valid DataType
                 if (AssigningDataType(t_Value))
                 {
+                    if (OnValueChanged != null)
+                        OnValueChangedEvent += OnValueChanged;
+
                     SetData(t_Value);
                 }
             }
@@ -290,13 +299,15 @@
 
                         string t_ParsedStringValue = (string)Convert.ChangeType(t_Value, typeof(string));
                         PlayerPrefs.SetString(m_Key, t_ParsedStringValue);
-
+                        
 #if UNITY_EDITOR
                         PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(string), t_ParsedStringValue.ToString());
 #endif
 
                         break;
                 }
+
+                
             }
         }
 
