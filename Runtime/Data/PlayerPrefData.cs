@@ -32,7 +32,6 @@
         #region Private Variables
 
         public static List<PlayerPrefEditorData> listOfUsedPlayerPrefEditorData    = new List<PlayerPrefEditorData>();
-        public static List<string> listOfUsedPlayerPrefKey = new List<string>();
 
         #endregion
 
@@ -104,49 +103,39 @@
 
             
         }
-
-
         public static bool IsPlayerPrefKeyAlreadyInUsed(string t_Key)
         {
 
-            if (!listOfUsedPlayerPrefKey.Contains(t_Key))
-                return false;
+            foreach (PlayerPrefEditorData t_PlayerPrefEditorData in listOfUsedPlayerPrefEditorData) {
 
-            //Debug.LogError("The Following Key : " + t_Key + ", is already used as PlayerPrefs");
-
-            return true;
-        }
-
-        public static void EnlistUniqueKeyAsUsedPlayerPrefs(string t_Key)
-        {
-            if (!IsPlayerPrefKeyAlreadyInUsed(t_Key))
-            {
-                listOfUsedPlayerPrefKey.Add(t_Key);
+                if (t_Key.CompareTo(t_PlayerPrefEditorData.key) == 0)
+                    return true;
             }
-        }
 
-        
+            return false;
+
+        }
 
         public static void ResetPlayerPrefData(string t_Key)
         {
 
-            if (IsPlayerPrefKeyAlreadyInUsed(t_Key))
+            int index = IsPlayerPrefEditorDataAlreadyInContainer(t_Key);
+            if (index != -1)
             {
-
+                listOfUsedPlayerPrefEditorData.RemoveAt(index);
                 PlayerPrefs.DeleteKey(t_Key);
-                listOfUsedPlayerPrefKey.Remove(t_Key);
             }
 
         }
 
         public static void ResetAllPlayerPrefData()
         {
-            foreach (string t_Key in listOfUsedPlayerPrefKey)
+            foreach (PlayerPrefEditorData playerPrefEditorData in listOfUsedPlayerPrefEditorData)
             {
-                PlayerPrefs.DeleteKey(t_Key);
+                PlayerPrefs.DeleteKey(playerPrefEditorData.key);
             }
 
-            listOfUsedPlayerPrefKey.Clear();
+            listOfUsedPlayerPrefEditorData.Clear();
         }
 
         #endregion
@@ -216,7 +205,7 @@
         {
             m_Key = t_Key;
 
-            PlayerPrefDataSettings.EnlistUniqueKeyAsUsedPlayerPrefs(t_Key);
+            PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(t_Key, typeof(T), Convert.ChangeType(t_Value, typeof(T)).ToString());
             if (OnValueChanged != null)
                 OnValueChangedEvent += OnValueChanged;
 

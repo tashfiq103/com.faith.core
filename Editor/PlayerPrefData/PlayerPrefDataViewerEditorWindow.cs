@@ -54,7 +54,7 @@
                 DrawHorizontalLine();
                 EditorGUILayout.BeginHorizontal();
                 {
-                    EditorGUILayout.LabelField("PrefKeys (" + PlayerPrefDataSettings.listOfUsedPlayerPrefKey.Count.ToString() + ")", EditorStyles.boldLabel);
+                    EditorGUILayout.LabelField("PrefKeys (" + PlayerPrefDataSettings.listOfUsedPlayerPrefEditorData.Count.ToString() + ")", EditorStyles.boldLabel);
                     EditorGUILayout.LabelField("DataType", EditorStyles.boldLabel, GUILayout.Width(100));
                     EditorGUILayout.LabelField("Value", EditorStyles.boldLabel, GUILayout.Width(100));
                     EditorGUILayout.LabelField("SetValue", EditorStyles.boldLabel, GUILayout.Width(100));
