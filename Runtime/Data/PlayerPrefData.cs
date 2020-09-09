@@ -205,7 +205,7 @@
         {
             m_Key = t_Key;
 
-            PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(t_Key, typeof(T), Convert.ChangeType(t_Value, typeof(T)).ToString());
+            
             if (OnValueChanged != null)
                 OnValueChangedEvent += OnValueChanged;
 
@@ -213,12 +213,21 @@
             if (!PlayerPrefs.HasKey(t_Key))
             {
                 //if : Valid DataType
-                if (AssigningDataType(t_Value))
+                SetData(t_Value);
+                if (PlayerPrefDataSettings.IsPlayerPrefEditorDataAlreadyInContainer(t_Key) != -1)
                 {
-                    
-
-                    SetData(t_Value);
+                    PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(t_Key, typeof(T), Convert.ChangeType(t_Value, typeof(T)).ToString());
                 }
+                else {
+
+                    PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(t_Key, typeof(T), GetData().ToString());
+                }
+                
+            }
+            else {
+
+                AssigningDataType(t_Value);
+                PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(t_Key, typeof(T), GetData().ToString());
             }
         }
 
@@ -313,7 +322,7 @@
 
                 case PlayerPrefDataSettings.DataTypeForPlayerPref.DATA_TYPE_DOUBLE:
 
-                    return (T)Convert.ChangeType(PlayerPrefs.GetFloat(m_Key, 0), typeof(T));
+                    return (T)Convert.ChangeType(PlayerPrefs.GetString(m_Key, "0"), typeof(T));
 
                 case PlayerPrefDataSettings.DataTypeForPlayerPref.DATA_TYPE_STRING:
 
