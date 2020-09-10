@@ -2,7 +2,7 @@
 {
     using UnityEngine;
     using System.Collections.Generic;
-    public static class CSVReader
+    public static class CSVOperation
     {
         public static int GetNumberOfLineInCSV(TextAsset csvFile)
         {
