@@ -1,6 +1,6 @@
 ﻿namespace com.faith.core
 {
-
+    using System;
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEditor;
@@ -26,17 +26,19 @@
             return listOfItemName;
         }
 
-        public static List<Object> GetFile<T>(string fileName, string[] dataPathForSubFolders, T fileType, bool breakOperationByFirstFind = false) {
-
-            List<Object> result = new List<Object>();
-            string[] GUIDs = AssetDatabase.FindAssets(fileName + " t:" + fileType.ToString(), dataPathForSubFolders);
+        public static List<T> GetFile<T>(string fileName, string[] dataPathForSubFolders, bool breakOperationByFirstFind = false) {
+            
+            List<T> result = new List<T>();
+            string[] GUIDs = AssetDatabase.FindAssets(fileName + " t:" + typeof(T).ToString(), dataPathForSubFolders);
             foreach (string GUID in GUIDs) {
 
                 string path = AssetDatabase.GUIDToAssetPath(GUID);
-                Object unityObject = AssetDatabase.LoadAssetAtPath(path, typeof(T));
-                if (unityObject != null) {
+                T fetchedObject =  (T) Convert.ChangeType(
+                    AssetDatabase.LoadAssetAtPath(path, typeof(T)),
+                    typeof(T));
+                if (fetchedObject != null) {
 
-                    result.Add(unityObject);
+                    result.Add(fetchedObject);
                     if (breakOperationByFirstFind) break;
                 }
             }
