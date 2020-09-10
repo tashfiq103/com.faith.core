@@ -2,6 +2,7 @@
 {
 
     using System.Collections.Generic;
+    using UnityEngine;
     using UnityEditor;
 
     public static class FolderOperation
@@ -25,6 +26,22 @@
             return listOfItemName;
         }
 
+        public static List<Object> GetFile<T>(string fileName, string[] dataPathForSubFolders, T fileType, bool breakOperationByFirstFind = false) {
+
+            List<Object> result = new List<Object>();
+            string[] GUIDs = AssetDatabase.FindAssets(fileName + " t:" + fileType.ToString(), dataPathForSubFolders);
+            foreach (string GUID in GUIDs) {
+
+                string path = AssetDatabase.GUIDToAssetPath(GUID);
+                Object unityObject = AssetDatabase.LoadAssetAtPath(path, typeof(T));
+                if (unityObject != null) {
+
+                    result.Add(unityObject);
+                    if (breakOperationByFirstFind) break;
+                }
+            }
+            return result;
+        }
     }
 }
 
