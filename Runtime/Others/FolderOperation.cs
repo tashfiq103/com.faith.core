@@ -26,17 +26,23 @@
             return listOfItemName;
         }
 
-        public static List<T> GetFile<T>(string fileName, string[] dataPathForSubFolders, bool breakOperationByFirstFind = false) {
-            
+        public static List<T> GetFile<T>(string fileName, string[] dataPathForSubFolders, bool breakOperationByFirstFind = false)
+        {
+
             List<T> result = new List<T>();
-            string[] GUIDs = AssetDatabase.FindAssets(fileName + " t:" + typeof(T).ToString(), dataPathForSubFolders);
-            foreach (string GUID in GUIDs) {
+            string[] dataTypeSplitedByComa = typeof(T).ToString().Split('.');
+            string dataType = dataTypeSplitedByComa[dataTypeSplitedByComa.Length - 1];
+
+            string[] GUIDs = AssetDatabase.FindAssets(fileName + " t:" + dataType, dataPathForSubFolders);
+            foreach (string GUID in GUIDs)
+            {
 
                 string path = AssetDatabase.GUIDToAssetPath(GUID);
-                T fetchedObject =  (T) Convert.ChangeType(
+                T fetchedObject = (T)Convert.ChangeType(
                     AssetDatabase.LoadAssetAtPath(path, typeof(T)),
                     typeof(T));
-                if (fetchedObject != null) {
+                if (fetchedObject != null)
+                {
 
                     result.Add(fetchedObject);
                     if (breakOperationByFirstFind) break;
