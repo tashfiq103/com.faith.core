@@ -20,7 +20,7 @@
 
             List<List<string>> resultData = new List<List<string>>();
             for (int i = 0; i < numberOfColumn; i++)
-                resultData[i] = new List<string>();
+                resultData.Add(new List<string>());
 
             for (int i = 0; i < numberOfLineInCSV; i++)
             {
