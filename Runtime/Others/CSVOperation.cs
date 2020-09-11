@@ -7,7 +7,7 @@
         public static int GetNumberOfLineInCSV(TextAsset csvFile)
         {
 
-            return csvFile.text.Split('\n').Length - 1;
+            return csvFile.text.Split('\n').Length;
         }
 
         public static List<List<string>> GetCSVData(TextAsset csvFile, List<int> colums)
@@ -15,7 +15,7 @@
 
             string rawCSVText = csvFile.text;
             string[] csvDataSplitedByNewLine = rawCSVText.Split('\n');
-            int numberOfLineInCSV = csvDataSplitedByNewLine.Length - 1;
+            int numberOfLineInCSV = csvDataSplitedByNewLine.Length;
             int numberOfColumn = colums.Count;
 
             List<List<string>> resultData = new List<List<string>>();
