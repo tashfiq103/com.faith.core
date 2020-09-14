@@ -62,6 +62,21 @@
             }
             EditorGUILayout.EndHorizontal();
 
+            if (_listOfCurrencyToBeAdded.Count > 0) {
+
+                DrawHorizontalLine();
+                EditorGUILayout.LabelField("Currency to be Added :", EditorStyles.boldLabel);
+                EditorGUI.indentLevel += 1;
+                foreach (AccountManagerSettings.CurrecnyInfo currencyInfo in _listOfCurrencyToBeAdded) {
+
+                    EditorGUILayout.LabelField(currencyInfo.currencyName);
+                }
+                EditorGUI.indentLevel -= 1;
+            }
+
+            DrawHorizontalLine();
+            EditorGUILayout.PropertyField(_listOfCurrencyInfos);
+
             serializedObject.ApplyModifiedProperties();
         }
 
@@ -71,12 +86,21 @@
 
         private void AddNewCurrency() {
 
-            _listOfCurrencyToBeAdded.Add(new AccountManagerSettings.CurrecnyInfo());
+            int counter = _reference.listOfCurrencyInfos.Count + _listOfCurrencyToBeAdded.Count;
+            AccountManagerSettings.CurrecnyInfo newCurrency = new AccountManagerSettings.CurrecnyInfo() {
+                currencyName = "CURRENCY_" + counter
+            };
+
+            _listOfCurrencyToBeAdded.Add(newCurrency);
             _flagedForGeneratingEnum = true;
         }
 
         private async void GenerateEnum() {
 
+            int numberOfCurrencyAlreadyInList   = _reference.listOfCurrencyInfos.Count;
+            int numberOfCurrencyToBeAdded       = _listOfCurrencyToBeAdded.Count;
+
+           
             string path = Application.dataPath + "/AccountManagerEnums";
 
             if (!Directory.Exists(path))
@@ -92,11 +116,33 @@
                 scriptData += "\n\t{";
                 //Starting
 
-                foreach (AccountManagerSettings.CurrecnyInfo currencyInfo in _reference.listOfCurrencyInfos)
-                    scriptData += "\n\t\t" + currencyInfo.currencyName.ToUpper();
+                for (int i = 0; i < numberOfCurrencyAlreadyInList; i++) {
 
-                foreach (AccountManagerSettings.CurrecnyInfo currencyInfo in _listOfCurrencyToBeAdded)
-                    scriptData += "\n\t\t" + currencyInfo.currencyName.ToUpper();
+                    scriptData += "\n\t\t" + _reference.listOfCurrencyInfos[i].currencyName.ToUpper();
+
+                    if (i == (numberOfCurrencyAlreadyInList - 1))
+                    {
+                        if(numberOfCurrencyToBeAdded > 0)
+                            scriptData += ",";
+                    }
+                    else {
+
+                        scriptData += ",";
+                    }
+                }
+
+                for (int i = 0; i < numberOfCurrencyToBeAdded; i++) {
+
+                    scriptData += "\n\t\t" + _listOfCurrencyToBeAdded[i].currencyName.ToUpper();
+                    if (i == 0 && numberOfCurrencyAlreadyInList > 0) {
+
+                        scriptData += ",";
+                    } else if (i < (numberOfCurrencyAlreadyInList - 1)) {
+
+                        scriptData += ",";
+                    }
+                }
+
 
                 //Ending
                 scriptData += "\n\t}";
@@ -110,14 +156,15 @@
             while (EditorApplication.isCompiling)
                 await Task.Delay(100);
 
-            int numberOfCurrencyToBeAdded = _listOfCurrencyToBeAdded.Count;
             for (int i = 0; i < numberOfCurrencyToBeAdded; i++) {
 
-                _reference.listOfCurrencyInfos.Add(_listOfCurrencyToBeAdded[0]);
+                AccountManagerSettings.CurrecnyInfo currencyInfo = _listOfCurrencyToBeAdded[0];
+                _reference.listOfCurrencyInfos.Add(currencyInfo);
                 _listOfCurrencyToBeAdded.RemoveAt(0);
+                _listOfCurrencyInfos.serializedObject.ApplyModifiedProperties();
             }
 
-            _listOfCurrencyInfos.serializedObject.ApplyModifiedProperties();
+           
         }
 
         #endregion
