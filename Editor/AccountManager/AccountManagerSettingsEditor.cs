@@ -18,6 +18,7 @@
         private SerializedProperty      _listOfCurrencyInfos;
 
         private static bool _flagedForGeneratingEnum = false;
+        private static bool _flagedForRegeneratingEnum = false;
         private static List<AccountManagerSettings.CurrecnyInfo> _listOfCurrencyToBeAdded;
 
         #endregion
@@ -62,6 +63,7 @@
             }
             EditorGUILayout.EndHorizontal();
 
+            //Section   :   Currency To Be Added
             if (_listOfCurrencyToBeAdded.Count > 0) {
 
                 DrawHorizontalLine();
@@ -75,7 +77,66 @@
             }
 
             DrawHorizontalLine();
-            EditorGUILayout.PropertyField(_listOfCurrencyInfos);
+            //Section   :   Added Currency
+
+            EditorGUILayout.BeginHorizontal();
+            {
+                EditorGUILayout.LabelField("ListOfCurrencyInfo", EditorStyles.boldLabel);
+                if (_flagedForRegeneratingEnum) {
+
+                    if (GUILayout.Button("RegenerateEnum", GUILayout.Width(125f))) {
+
+                        GenerateEnum();
+                    }
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+            
+            EditorGUI.indentLevel += 1;
+            int numberOfCurrencyInfo = _reference.listOfCurrencyInfos.Count;
+            for (int  i = 0; i < numberOfCurrencyInfo; i++) {
+
+                EditorGUILayout.BeginHorizontal();
+                {
+                    _reference.listOfCurrencyInfos[i].showOnEditor = EditorGUILayout.Foldout(
+                        _reference.listOfCurrencyInfos[i].showOnEditor,
+                        _reference.listOfCurrencyInfos[i].currencyName,
+                        true
+                    );
+
+                    if (!_reference.listOfCurrencyInfos[i].showOnEditor) {
+
+                        if (GUILayout.Button("Remove", GUILayout.Width(100f))) {
+                            _reference.listOfCurrencyInfos.RemoveAt(i);
+                            GenerateEnum();
+                            return;
+                        }
+                    }
+                }
+                EditorGUILayout.EndHorizontal();
+
+                if (_reference.listOfCurrencyInfos[i].showOnEditor) {
+
+                    EditorGUI.indentLevel += 1;
+
+                    EditorGUI.BeginChangeCheck();
+                    EditorGUILayout.PropertyField(_listOfCurrencyInfos.GetArrayElementAtIndex(i).FindPropertyRelative("currencyName"));
+                    if (EditorGUI.EndChangeCheck()) {
+
+                        _flagedForRegeneratingEnum = true;
+                    }
+                    
+                    EditorGUILayout.PropertyField(_listOfCurrencyInfos.GetArrayElementAtIndex(i).FindPropertyRelative("currencyIcon"));
+                    EditorGUILayout.PropertyField(_listOfCurrencyInfos.GetArrayElementAtIndex(i).FindPropertyRelative("currencydefaultAmount"));
+                    EditorGUILayout.PropertyField(_listOfCurrencyInfos.GetArrayElementAtIndex(i).FindPropertyRelative("currencyAnimationDuration"));
+                    EditorGUILayout.PropertyField(_listOfCurrencyInfos.GetArrayElementAtIndex(i).FindPropertyRelative("animationCurve"));
+
+                    EditorGUI.indentLevel -= 1;
+
+                    EditorGUILayout.Space();
+                }
+            }
+            EditorGUI.indentLevel -= 1;
 
             serializedObject.ApplyModifiedProperties();
         }

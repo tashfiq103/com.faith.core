@@ -12,6 +12,10 @@
         [Serializable]
         public class CurrecnyInfo
         {
+#if UNITY_EDITOR
+            public bool showOnEditor;
+#endif
+
             public string currencyName = "DEFAULT";
             public Sprite currencyIcon;
             public double currencydefaultAmount = 0;
