@@ -6,19 +6,19 @@
     using UnityEditor;
 
 
-    [CustomEditor(typeof(AccountManagerSettings))]
-    public class AccountManagerSettingsEditor : BaseEditorClass
+    [CustomEditor(typeof(AccountsManagerSettings))]
+    public class AccountsManagerSettingsEditor : BaseEditorClass
     {
 
         #region Private Variables
-        private AccountManagerSettings  _reference;
+        private AccountsManagerSettings  _reference;
 
         private SerializedProperty      _listOfCurrencyInfos;
 
         private static bool _flagedForGeneratingEnum    = false;
         private static bool _flagedForRegeneratingEnum  = false;
         private static string _currencyName = "DEFAULT";
-        private static List<AccountManagerSettings.CurrecnyInfo> _listOfCurrencyToBeAdded;
+        private static List<AccountsManagerSettings.CurrecnyInfo> _listOfCurrencyToBeAdded;
 
         #endregion
 
@@ -28,24 +28,24 @@
         {
             base.OnEnable();
 
-            _reference = (AccountManagerSettings)target;
+            _reference = (AccountsManagerSettings)target;
 
             if (_reference == null)
                 return;
 
             if (_reference.listOfCurrencyInfos == null)
             {
-                _reference.listOfCurrencyInfos = new List<AccountManagerSettings.CurrecnyInfo>();
-                _reference.listOfCurrencyInfos.Add(new AccountManagerSettings.CurrecnyInfo() { enumName = "DEFAULT" });
+                _reference.listOfCurrencyInfos = new List<AccountsManagerSettings.CurrecnyInfo>();
+                _reference.listOfCurrencyInfos.Add(new AccountsManagerSettings.CurrecnyInfo() { enumName = "DEFAULT" });
             }
 
             if (_listOfCurrencyToBeAdded == null)
-                _listOfCurrencyToBeAdded = new List<AccountManagerSettings.CurrecnyInfo>();
+                _listOfCurrencyToBeAdded = new List<AccountsManagerSettings.CurrecnyInfo>();
 
             _listOfCurrencyInfos = serializedObject.FindProperty("listOfCurrencyInfos");
             if (_reference.listOfCurrencyInfos == null) {
 
-                _reference.listOfCurrencyInfos = new List<AccountManagerSettings.CurrecnyInfo>();
+                _reference.listOfCurrencyInfos = new List<AccountsManagerSettings.CurrecnyInfo>();
                 _listOfCurrencyInfos.serializedObject.ApplyModifiedProperties();
             }
         }
@@ -83,7 +83,7 @@
                 DrawHorizontalLine();
                 EditorGUILayout.LabelField("Currency to be Added :", EditorStyles.boldLabel);
                 EditorGUI.indentLevel += 1;
-                foreach (AccountManagerSettings.CurrecnyInfo currencyInfo in _listOfCurrencyToBeAdded) {
+                foreach (AccountsManagerSettings.CurrecnyInfo currencyInfo in _listOfCurrencyToBeAdded) {
 
                     EditorGUILayout.LabelField(currencyInfo.enumName);
                 }
@@ -158,7 +158,7 @@
 
             bool isUniqueCurrencyName = true;
 
-            foreach (AccountManagerSettings.CurrecnyInfo currencyInfo in _reference.listOfCurrencyInfos)
+            foreach (AccountsManagerSettings.CurrecnyInfo currencyInfo in _reference.listOfCurrencyInfos)
             {
                 if (StringOperation.IsSameString(currencyInfo.enumName, newCurrencyName))
                 {
@@ -167,7 +167,7 @@
                 }
             }
 
-            foreach (AccountManagerSettings.CurrecnyInfo currencyInfo in _listOfCurrencyToBeAdded)
+            foreach (AccountsManagerSettings.CurrecnyInfo currencyInfo in _listOfCurrencyToBeAdded)
             {
                 if (StringOperation.IsSameString(currencyInfo.enumName, newCurrencyName))
                 {
@@ -178,7 +178,7 @@
 
             if (isUniqueCurrencyName) {
 
-                AccountManagerSettings.CurrecnyInfo newCurrency = new AccountManagerSettings.CurrecnyInfo()
+                AccountsManagerSettings.CurrecnyInfo newCurrency = new AccountsManagerSettings.CurrecnyInfo()
                 {
                     enumName = newCurrencyName
                 };
@@ -258,7 +258,7 @@
 
             for (int i = 0; i < numberOfCurrencyToBeAdded; i++) {
 
-                AccountManagerSettings.CurrecnyInfo currencyInfo = _listOfCurrencyToBeAdded[0];
+                AccountsManagerSettings.CurrecnyInfo currencyInfo = _listOfCurrencyToBeAdded[0];
                 _reference.listOfCurrencyInfos.Add(currencyInfo);
                 _listOfCurrencyToBeAdded.RemoveAt(0);
                

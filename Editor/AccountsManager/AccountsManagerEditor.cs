@@ -3,10 +3,10 @@
     using UnityEngine;
     using UnityEditor;
 
-    [CustomEditor(typeof(AccountManager))]
-    public class AccountManagerEditor : BaseEditorClass
+    [CustomEditor(typeof(AccountsManager))]
+    public class AccountsManagerEditor : BaseEditorClass
     {
-        private AccountManager _reference;
+        private AccountsManager _reference;
 
         private SerializedProperty _sp_instanceBehaviour;
         private SerializedProperty _sp_accountManagerSettings;
@@ -17,7 +17,7 @@
         {
             base.OnEnable();
 
-            _reference = (AccountManager)target;
+            _reference = (AccountsManager)target;
 
             if (_reference == null)
                 return;
@@ -45,7 +45,7 @@
                     for (int i = 0; i < numberOfCurrency; i++)
                     {
 
-                        AccountManagerCurrencyEnum currency = (AccountManagerCurrencyEnum)i;
+                        AccountsManagerCurrencyEnum currency = (AccountsManagerCurrencyEnum)i;
 
                         EditorGUILayout.BeginHorizontal();
                         {

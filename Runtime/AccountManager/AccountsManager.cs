@@ -4,7 +4,7 @@
     using UnityEngine;
     using UnityEngine.Events;
 
-    public class AccountManager : MonoBehaviour
+    public class AccountsManager : MonoBehaviour
     {
 
         #region Custom Variables
@@ -105,7 +105,7 @@
 
         #region Public Variables
 
-        public static AccountManager Instance;
+        public static AccountsManager Instance;
 
 #if UNITY_EDITOR
 
@@ -114,7 +114,7 @@
 #endif
 
         public CoreEnums.InstanceBehaviour  instanceBehaviour;
-        public AccountManagerSettings       accountManagerSettings;
+        public AccountsManagerSettings       accountManagerSettings;
 
         #endregion
 
@@ -178,7 +178,7 @@
 
         #region Public Callback
 
-        public void AddBalance(double amount, AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT)
+        public void AddBalance(double amount, AccountsManagerCurrencyEnum currency = AccountsManagerCurrencyEnum.DEFAULT)
         {
 
             int currencyIndex = (int)currency;
@@ -193,7 +193,7 @@
             }
         }
 
-        public bool DeductBalance(double amount, AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT)
+        public bool DeductBalance(double amount, AccountsManagerCurrencyEnum currency = AccountsManagerCurrencyEnum.DEFAULT)
         {
 
             int currencyIndex = (int)currency;
@@ -209,20 +209,20 @@
 
         }
 
-        public void OnBalanceChangedEvent (UnityAction<double, CoreEnums.AccountBalanceUpdateState> OnBalanceChange, AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT)
+        public void OnBalanceChangedEvent (UnityAction<double, CoreEnums.AccountBalanceUpdateState> OnBalanceChange, AccountsManagerCurrencyEnum currency = AccountsManagerCurrencyEnum.DEFAULT)
         {
             int currencyIndex = (int)currency;
             currencyTypes[currencyIndex].OnBalanceChangedEvent.AddListener(OnBalanceChange);
             currencyTypes[currencyIndex].OnBalanceChangedEvent.Invoke(currencyTypes[currencyIndex].GetCurrentBalance(), CoreEnums.AccountBalanceUpdateState.NONE);
         }
 
-        public string GetNameOfCurrency(AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT)
+        public string GetNameOfCurrency(AccountsManagerCurrencyEnum currency = AccountsManagerCurrencyEnum.DEFAULT)
         {
 
             return accountManagerSettings.listOfCurrencyInfos[(int)currency].currencyName;
         }
 
-        public double GetCurrentBalance(AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT)
+        public double GetCurrentBalance(AccountsManagerCurrencyEnum currency = AccountsManagerCurrencyEnum.DEFAULT)
         {
 
             return currencyTypes[(int)currency].GetCurrentBalance();

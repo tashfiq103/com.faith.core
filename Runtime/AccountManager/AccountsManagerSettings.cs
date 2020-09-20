@@ -5,7 +5,7 @@
     using UnityEngine;
 
     [CreateAssetMenu(fileName = "AccountManagerSettings", menuName = "FAITH/AccountManager/AccountManagerSettings", order = 1)]
-    public class AccountManagerSettings : ScriptableObject
+    public class AccountsManagerSettings : ScriptableObject
     {
         #region Custom Variables
 
