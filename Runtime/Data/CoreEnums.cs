@@ -2,17 +2,32 @@
 {
     public class CoreEnums
     {
-        public enum InstanceBehaviour
+
+        public enum GameMode
         {
-            UseAsReference,
-            CashedAsInstance,
-            Singleton
+            DEBUG,
+            PRODUCTION
+        }
+
+        public enum LogType
+        {
+            Verbose,
+            Info,
+            Error,
+            None
         }
 
         public enum DataSavingMode
         {
             BinaryFormater,
             PlayerPrefsData
+        }
+
+        public enum InstanceBehaviour
+        {
+            UseAsReference,
+            CashedAsInstance,
+            Singleton
         }
     }
 }
