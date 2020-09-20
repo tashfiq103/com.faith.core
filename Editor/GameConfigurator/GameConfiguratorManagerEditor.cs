@@ -11,7 +11,6 @@ namespace com.faith.core
         private GameConfiguratorManager _reference;
 
         private Editor  _gameConfiguratorAssetEditor;
-        private bool    _isGameConfiguratorAssetVisible;
 
         private SerializedProperty _sp_instanceBehaviour;
         private SerializedProperty _sp_gameConfiguratorAsset;
@@ -44,7 +43,7 @@ namespace com.faith.core
             if (_reference.gameConfiguratorAsset != null)
             {
                 EditorGUI.indentLevel += 1;
-                DrawSettingsEditor(_sp_gameConfiguratorAsset.objectReferenceValue, null, ref _isGameConfiguratorAssetVisible, ref _gameConfiguratorAssetEditor);
+                DrawSettingsEditor(_sp_gameConfiguratorAsset.objectReferenceValue, null, ref _reference.isGameConfiguratorAssetVisible, ref _gameConfiguratorAssetEditor);
                 EditorGUI.indentLevel -= 1;
             }
             serializedObject.ApplyModifiedProperties();

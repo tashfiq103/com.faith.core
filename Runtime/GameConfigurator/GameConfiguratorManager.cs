@@ -7,6 +7,13 @@
 
         #region Public Varaibles
 
+#if UNITY_EDITOR
+
+        public bool isGameConfiguratorAssetVisible;
+
+
+#endif
+
         public static GameConfiguratorManager Instance;
 
         public CoreEnums.InstanceBehaviour  instanceBehaviour;
@@ -53,6 +60,14 @@
 
                     break;
             }
+
+            if (gameConfiguratorAsset == null)
+            {
+                CoreDebugger.Debug.LogError("'gameConfiguretorAsset' has not been assigned!");
+                return;
+            }
+
+            CoreDebugger.logType = gameConfiguratorAsset.logType;
         }
 
         #endregion
