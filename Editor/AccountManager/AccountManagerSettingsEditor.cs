@@ -15,8 +15,9 @@
 
         private SerializedProperty      _listOfCurrencyInfos;
 
-        private static bool _flagedForGeneratingEnum = false;
-        private static bool _flagedForRegeneratingEnum = false;
+        private static bool _flagedForGeneratingEnum    = false;
+        private static bool _flagedForRegeneratingEnum  = false;
+        private static string _currencyName = "DEFAULT";
         private static List<AccountManagerSettings.CurrecnyInfo> _listOfCurrencyToBeAdded;
 
         #endregion
@@ -31,6 +32,12 @@
 
             if (_reference == null)
                 return;
+
+            if (_reference.listOfCurrencyInfos == null)
+            {
+                _reference.listOfCurrencyInfos = new List<AccountManagerSettings.CurrecnyInfo>();
+                _reference.listOfCurrencyInfos.Add(new AccountManagerSettings.CurrecnyInfo() { enumName = "DEFAULT" });
+            }
 
             if (_listOfCurrencyToBeAdded == null)
                 _listOfCurrencyToBeAdded = new List<AccountManagerSettings.CurrecnyInfo>();
@@ -49,15 +56,24 @@
 
             EditorGUILayout.BeginHorizontal();
             {
-                if (!EditorApplication.isCompiling && !_flagedForRegeneratingEnum && GUILayout.Button("+Add")){
 
-                    AddNewCurrency();
-                }
-                if (!EditorApplication.isCompiling && _flagedForGeneratingEnum && GUILayout.Button("GenerateEnum", GUILayout.Width(125))) {
+                if (!EditorApplication.isCompiling) {
 
-                    _flagedForGeneratingEnum = false;
-                    GenerateEnum();
+                    _currencyName = EditorGUILayout.TextField(_currencyName);
+                    if (!_flagedForRegeneratingEnum && GUILayout.Button("+Add"))
+                    {
+
+                        AddNewCurrency(_currencyName);
+                    }
+                    if (_flagedForGeneratingEnum && GUILayout.Button("GenerateEnum", GUILayout.Width(125)))
+                    {
+
+                        _flagedForGeneratingEnum = false;
+                        GenerateEnum();
+                    }
                 }
+
+                
             }
             EditorGUILayout.EndHorizontal();
 
@@ -69,7 +85,7 @@
                 EditorGUI.indentLevel += 1;
                 foreach (AccountManagerSettings.CurrecnyInfo currencyInfo in _listOfCurrencyToBeAdded) {
 
-                    EditorGUILayout.LabelField(currencyInfo.currencyName);
+                    EditorGUILayout.LabelField(currencyInfo.enumName);
                 }
                 EditorGUI.indentLevel -= 1;
             }
@@ -98,7 +114,7 @@
                 {
                     _reference.listOfCurrencyInfos[i].showOnEditor = EditorGUILayout.Foldout(
                         _reference.listOfCurrencyInfos[i].showOnEditor,
-                        _reference.listOfCurrencyInfos[i].currencyName,
+                        _reference.listOfCurrencyInfos[i].enumName,
                         true
                     );
 
@@ -117,13 +133,7 @@
 
                     EditorGUI.indentLevel += 1;
 
-                    EditorGUI.BeginChangeCheck();
                     EditorGUILayout.PropertyField(_listOfCurrencyInfos.GetArrayElementAtIndex(i).FindPropertyRelative("currencyName"));
-                    if (EditorGUI.EndChangeCheck()) {
-
-                        _flagedForRegeneratingEnum = true;
-                    }
-                    
                     EditorGUILayout.PropertyField(_listOfCurrencyInfos.GetArrayElementAtIndex(i).FindPropertyRelative("currencyIcon"));
                     EditorGUILayout.PropertyField(_listOfCurrencyInfos.GetArrayElementAtIndex(i).FindPropertyRelative("currencydefaultAmount"));
                     EditorGUILayout.PropertyField(_listOfCurrencyInfos.GetArrayElementAtIndex(i).FindPropertyRelative("currencyAnimationDuration"));
@@ -143,34 +153,43 @@
 
         #region Configuretion
 
-        private void AddNewCurrency() {
+        private void AddNewCurrency(string newCurrencyName) {
 
-            string newCurrencyName = "CURRENCY";
 
-            while (true) {
+            bool isUniqueCurrencyName = true;
 
-                bool hasFoundUniqueName = true;
-
-                newCurrencyName = "CURRENCY_ID" + Random.Range(0, 100000);
-                foreach (AccountManagerSettings.CurrecnyInfo currencyInfo in _reference.listOfCurrencyInfos) {
-                    if (StringOperation.IsSameString(currencyInfo.currencyName, newCurrencyName))
-                        hasFoundUniqueName = false;
-                }
-
-                foreach (AccountManagerSettings.CurrecnyInfo currencyInfo in _listOfCurrencyToBeAdded)
+            foreach (AccountManagerSettings.CurrecnyInfo currencyInfo in _reference.listOfCurrencyInfos)
+            {
+                if (StringOperation.IsSameString(currencyInfo.enumName, newCurrencyName))
                 {
-                    if (StringOperation.IsSameString(currencyInfo.currencyName, newCurrencyName))
-                        hasFoundUniqueName = false;
+                    isUniqueCurrencyName = false;
+                    break;
                 }
-
-                if (hasFoundUniqueName) break;
             }
-            AccountManagerSettings.CurrecnyInfo newCurrency = new AccountManagerSettings.CurrecnyInfo() {
-                currencyName = newCurrencyName
-            };
 
-            _listOfCurrencyToBeAdded.Add(newCurrency);
-            _flagedForGeneratingEnum = true;
+            foreach (AccountManagerSettings.CurrecnyInfo currencyInfo in _listOfCurrencyToBeAdded)
+            {
+                if (StringOperation.IsSameString(currencyInfo.enumName, newCurrencyName))
+                {
+                    isUniqueCurrencyName = false;
+                    break;
+                }
+            }
+
+            if (isUniqueCurrencyName) {
+
+                AccountManagerSettings.CurrecnyInfo newCurrency = new AccountManagerSettings.CurrecnyInfo()
+                {
+                    enumName = newCurrencyName
+                };
+
+                _listOfCurrencyToBeAdded.Add(newCurrency);
+                _flagedForGeneratingEnum = true;
+
+                return;
+            }
+
+            CoreDebugger.Debug.LogError("The following currency name is already in used : " + newCurrencyName);
         }
 
         private void GenerateEnum() {
@@ -200,7 +219,7 @@
 
                 for (int i = 0; i < numberOfCurrencyAlreadyInList; i++) {
 
-                    scriptData += "\n\t\t" + _reference.listOfCurrencyInfos[i].currencyName.ToUpper();
+                    scriptData += "\n\t\t" + _reference.listOfCurrencyInfos[i].enumName.ToUpper();
 
                     if (i == (numberOfCurrencyAlreadyInList - 1))
                     {
@@ -215,7 +234,7 @@
 
                 for (int i = 0; i < numberOfCurrencyToBeAdded; i++) {
 
-                    scriptData += "\n\t\t" + _listOfCurrencyToBeAdded[i].currencyName.ToUpper();
+                    scriptData += "\n\t\t" + _listOfCurrencyToBeAdded[i].enumName.ToUpper();
                     if (i == 0 && numberOfCurrencyAlreadyInList > 0) {
 
                         scriptData += ",";

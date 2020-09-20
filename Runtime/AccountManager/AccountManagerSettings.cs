@@ -16,7 +16,8 @@
             public bool showOnEditor;
 #endif
 
-            public string currencyName = "DEFAULT";
+            public string enumName = "DEFAULT";
+            public string currencyName = "Cash";
             public Sprite currencyIcon;
             public double currencydefaultAmount = 0;
 
@@ -29,9 +30,10 @@
 
         #region Public Variables
 
-        public List<CurrecnyInfo> listOfCurrencyInfos;
+        public List<CurrecnyInfo> listOfCurrencyInfos = null;
 
         #endregion
+
 
     }
 }
