@@ -1,6 +1,6 @@
 namespace com.faith.core
 {
-	public enum CurrencyTypeEnum
+	public enum AccountManagerCurrencyEnum
 	{
 		DEFAULT
 	}

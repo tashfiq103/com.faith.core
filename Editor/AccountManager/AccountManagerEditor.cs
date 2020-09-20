@@ -3,10 +3,10 @@
     using UnityEngine;
     using UnityEditor;
 
-    [CustomEditor(typeof(CurrencyManager))]
-    public class CurrencyManagerEditor : BaseEditorClass
+    [CustomEditor(typeof(AccountManager))]
+    public class AccountManagerEditor : BaseEditorClass
     {
-        private CurrencyManager _reference;
+        private AccountManager _reference;
 
         private SerializedProperty _sp_instanceBehaviour;
         private SerializedProperty _sp_accountManagerSettings;
@@ -17,13 +17,13 @@
         {
             base.OnEnable();
 
-            _reference = (CurrencyManager)target;
+            _reference = (AccountManager)target;
 
             if (_reference == null)
                 return;
 
             _sp_instanceBehaviour = serializedObject.FindProperty("instanceBehaviour");
-            _sp_accountManagerSettings = serializedObject.FindProperty("currencyManagerSettings");
+            _sp_accountManagerSettings = serializedObject.FindProperty("accountManagerSettings");
         }
 
         public override void OnInspectorGUI()
@@ -33,19 +33,19 @@
             EditorGUILayout.PropertyField(_sp_instanceBehaviour);
             EditorGUILayout.PropertyField(_sp_accountManagerSettings);
 
-            if (_reference.currencyManagerSettings != null)
+            if (_reference.accountManagerSettings != null)
             {
-                DrawSettingsEditor(_reference.currencyManagerSettings, null, ref _reference.showAccountManagerSettings, ref _editorForAccountManagerSettings);
+                DrawSettingsEditor(_reference.accountManagerSettings, null, ref _reference.showAccountManagerSettings, ref _editorForAccountManagerSettings);
 
                 if (EditorApplication.isPlaying)
                 {
                     DrawHorizontalLine();
-                    int numberOfCurrency = _reference.currencyManagerSettings.GetNumberOfAvailableCurrency();
+                    int numberOfCurrency = _reference.accountManagerSettings.GetNumberOfAvailableCurrency();
 
                     for (int i = 0; i < numberOfCurrency; i++)
                     {
 
-                        CurrencyTypeEnum currency = (CurrencyTypeEnum)i;
+                        AccountManagerCurrencyEnum currency = (AccountManagerCurrencyEnum)i;
 
                         EditorGUILayout.BeginHorizontal();
                         {

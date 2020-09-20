@@ -4,8 +4,8 @@
     using System.Collections.Generic;
     using UnityEngine;
 
-    [CreateAssetMenu(fileName = "CurrencyManagerSettings", menuName = "FAITH/CurrencyManager/CurrencyManagerSettings", order = 1)]
-    public class CurrencyManagerSettings : ScriptableObject
+    [CreateAssetMenu(fileName = "AccountManagerSettings", menuName = "FAITH/AccountManager/AccountManagerSettings", order = 1)]
+    public class AccountManagerSettings : ScriptableObject
     {
         #region Custom Variables
 
