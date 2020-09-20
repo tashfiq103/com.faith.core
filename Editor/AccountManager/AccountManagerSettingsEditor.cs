@@ -2,7 +2,6 @@
 {
     using System.IO;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using UnityEngine;
     using UnityEditor;
 
@@ -51,11 +50,11 @@
             EditorGUILayout.BeginHorizontal();
             {
                 EditorGUILayout.PropertyField(_dataSavingMode);
-                if (GUILayout.Button("+Add", GUILayout.Width(50f))){
+                if (!EditorApplication.isCompiling && GUILayout.Button("+Add", GUILayout.Width(50f))){
 
                     AddNewCurrency();
                 }
-                if (_flagedForGeneratingEnum && GUILayout.Button("GenerateEnum", GUILayout.Width(125))) {
+                if (!EditorApplication.isCompiling && _flagedForGeneratingEnum && GUILayout.Button("GenerateEnum", GUILayout.Width(125))) {
 
                     _flagedForGeneratingEnum = false;
                     GenerateEnum();
@@ -84,7 +83,7 @@
                 EditorGUILayout.LabelField("ListOfCurrencyInfo", EditorStyles.boldLabel);
                 if (_flagedForRegeneratingEnum) {
 
-                    if (GUILayout.Button("RegenerateEnum", GUILayout.Width(125f))) {
+                    if (!EditorApplication.isCompiling && GUILayout.Button("RegenerateEnum", GUILayout.Width(125f))) {
 
                         GenerateEnum();
                     }
@@ -106,7 +105,7 @@
 
                     if (!_reference.listOfCurrencyInfos[i].showOnEditor) {
 
-                        if (GUILayout.Button("Remove", GUILayout.Width(100f))) {
+                        if (!EditorApplication.isCompiling && GUILayout.Button("Remove", GUILayout.Width(100f))) {
                             _reference.listOfCurrencyInfos.RemoveAt(i);
                             GenerateEnum();
                             return;
@@ -175,7 +174,7 @@
             _flagedForGeneratingEnum = true;
         }
 
-        private async void GenerateEnum() {
+        private void GenerateEnum() {
 
             int numberOfCurrencyAlreadyInList   = _reference.listOfCurrencyInfos.Count;
             int numberOfCurrencyToBeAdded       = _listOfCurrencyToBeAdded.Count;
@@ -217,9 +216,10 @@
                     if (i == 0 && numberOfCurrencyAlreadyInList > 0) {
 
                         scriptData += ",";
-                    } else if (i < (numberOfCurrencyAlreadyInList - 1)) {
-
-                        scriptData += ",";
+                    }
+                    else if (i < (numberOfCurrencyToBeAdded - 1)){
+                        
+                            scriptData += ",";
                     }
                 }
 
@@ -228,23 +228,21 @@
                 scriptData += "\n\t}";
                 scriptData += "\n}";
 
-                await streamWriter.WriteAsync(scriptData);
+                streamWriter.Write(scriptData);
+
             }
 
             AssetDatabase.Refresh();
-            await Task.Delay(500);
-            while (EditorApplication.isCompiling)
-                await Task.Delay(100);
 
             for (int i = 0; i < numberOfCurrencyToBeAdded; i++) {
 
                 AccountManagerSettings.CurrecnyInfo currencyInfo = _listOfCurrencyToBeAdded[0];
                 _reference.listOfCurrencyInfos.Add(currencyInfo);
                 _listOfCurrencyToBeAdded.RemoveAt(0);
-                _listOfCurrencyInfos.serializedObject.ApplyModifiedProperties();
+               
             }
+            _listOfCurrencyInfos.serializedObject.ApplyModifiedProperties();
 
-           
         }
 
         #endregion
