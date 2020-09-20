@@ -4,7 +4,7 @@
     using UnityEngine;
     using UnityEngine.Events;
 
-    public class AccountsManager : MonoBehaviour
+    public class CurrencyManager : MonoBehaviour
     {
 
         #region Custom Variables
@@ -105,7 +105,7 @@
 
         #region Public Variables
 
-        public static AccountsManager Instance;
+        public static CurrencyManager Instance;
 
 #if UNITY_EDITOR
 
@@ -113,8 +113,8 @@
 
 #endif
 
-        public CoreEnums.InstanceBehaviour  instanceBehaviour;
-        public AccountsManagerSettings       accountManagerSettings;
+        public CoreEnums.InstanceBehaviour      instanceBehaviour;
+        public CurrencyManagerSettings          currencyManagerSettings;
 
         #endregion
 
@@ -165,12 +165,12 @@
                     break;
             }
 
-            int numberOfCurrency = accountManagerSettings.GetNumberOfAvailableCurrency();
+            int numberOfCurrency = currencyManagerSettings.GetNumberOfAvailableCurrency();
             currencyTypes = new CurrencyType[numberOfCurrency];
 
             for (int i = 0; i < numberOfCurrency; i++)
             {
-                currencyTypes[i] = new CurrencyType(accountManagerSettings.listOfCurrencyInfos[i].enumName);
+                currencyTypes[i] = new CurrencyType(currencyManagerSettings.listOfCurrencyInfos[i].enumName);
             }
         }
 
@@ -178,7 +178,7 @@
 
         #region Public Callback
 
-        public void AddBalance(double amount, AccountsManagerCurrencyEnum currency = AccountsManagerCurrencyEnum.DEFAULT)
+        public void AddBalance(double amount, CurrencyTypeEnum currency = CurrencyTypeEnum.DEFAULT)
         {
 
             int currencyIndex = (int)currency;
@@ -188,12 +188,12 @@
             {
 
                 StartCoroutine(currencyTypes[currencyIndex].AnimationForChangingAccountBalance(
-                    accountManagerSettings.listOfCurrencyInfos[currencyIndex].currencyAnimationDuration,
-                    accountManagerSettings.listOfCurrencyInfos[currencyIndex].animationCurve));
+                    currencyManagerSettings.listOfCurrencyInfos[currencyIndex].currencyAnimationDuration,
+                    currencyManagerSettings.listOfCurrencyInfos[currencyIndex].animationCurve));
             }
         }
 
-        public bool DeductBalance(double amount, AccountsManagerCurrencyEnum currency = AccountsManagerCurrencyEnum.DEFAULT)
+        public bool DeductBalance(double amount, CurrencyTypeEnum currency = CurrencyTypeEnum.DEFAULT)
         {
 
             int currencyIndex = (int)currency;
@@ -209,20 +209,20 @@
 
         }
 
-        public void OnBalanceChangedEvent (UnityAction<double, CoreEnums.AccountBalanceUpdateState> OnBalanceChange, AccountsManagerCurrencyEnum currency = AccountsManagerCurrencyEnum.DEFAULT)
+        public void OnBalanceChangedEvent (UnityAction<double, CoreEnums.AccountBalanceUpdateState> OnBalanceChange, CurrencyTypeEnum currency = CurrencyTypeEnum.DEFAULT)
         {
             int currencyIndex = (int)currency;
             currencyTypes[currencyIndex].OnBalanceChangedEvent.AddListener(OnBalanceChange);
             currencyTypes[currencyIndex].OnBalanceChangedEvent.Invoke(currencyTypes[currencyIndex].GetCurrentBalance(), CoreEnums.AccountBalanceUpdateState.NONE);
         }
 
-        public string GetNameOfCurrency(AccountsManagerCurrencyEnum currency = AccountsManagerCurrencyEnum.DEFAULT)
+        public string GetNameOfCurrency(CurrencyTypeEnum currency = CurrencyTypeEnum.DEFAULT)
         {
 
-            return accountManagerSettings.listOfCurrencyInfos[(int)currency].currencyName;
+            return currencyManagerSettings.listOfCurrencyInfos[(int)currency].currencyName;
         }
 
-        public double GetCurrentBalance(AccountsManagerCurrencyEnum currency = AccountsManagerCurrencyEnum.DEFAULT)
+        public double GetCurrentBalance(CurrencyTypeEnum currency = CurrencyTypeEnum.DEFAULT)
         {
 
             return currencyTypes[(int)currency].GetCurrentBalance();
