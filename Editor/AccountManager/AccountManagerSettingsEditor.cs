@@ -147,9 +147,28 @@
 
         private void AddNewCurrency() {
 
-            int counter = _reference.listOfCurrencyInfos.Count + _listOfCurrencyToBeAdded.Count;
+            string newCurrencyName = "CURRENCY";
+
+            while (true) {
+
+                bool hasFoundUniqueName = true;
+
+                newCurrencyName = "CURRENCY_ID" + Random.Range(0, 100000);
+                foreach (AccountManagerSettings.CurrecnyInfo currencyInfo in _reference.listOfCurrencyInfos) {
+                    if (StringOperation.IsSameString(currencyInfo.currencyName, newCurrencyName))
+                        hasFoundUniqueName = false;
+                }
+
+                foreach (AccountManagerSettings.CurrecnyInfo currencyInfo in _listOfCurrencyToBeAdded)
+                {
+                    if (StringOperation.IsSameString(currencyInfo.currencyName, newCurrencyName))
+                        hasFoundUniqueName = false;
+                }
+
+                if (hasFoundUniqueName) break;
+            }
             AccountManagerSettings.CurrecnyInfo newCurrency = new AccountManagerSettings.CurrecnyInfo() {
-                currencyName = "CURRENCY_" + counter
+                currencyName = newCurrencyName
             };
 
             _listOfCurrencyToBeAdded.Add(newCurrency);

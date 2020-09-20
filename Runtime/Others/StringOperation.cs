@@ -31,7 +31,7 @@ namespace com.faith.core
 			return String.Equals(t_String1, t_String2);
 		}
 
-		public static bool IsSameStringCI(string t_String1, string t_String2, bool t_TruncateWhiteSpace = false)
+		public static bool IsSameStringCaseInsensitive(string t_String1, string t_String2, bool t_TruncateWhiteSpace = false)
 		{
 
 			if (t_TruncateWhiteSpace)
