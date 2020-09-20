@@ -20,8 +20,11 @@ namespace com.faith.core
 
         #region OnEditor
 
-        private void OnEnable()
+        public override void OnEnable()
         {
+
+            base.OnEnable();
+
             _reference = (GameConfiguratorManager)target;
 
             if (_reference == null)

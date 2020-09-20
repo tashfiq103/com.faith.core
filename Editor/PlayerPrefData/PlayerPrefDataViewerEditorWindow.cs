@@ -24,9 +24,9 @@
             EditorWindow.Show();
         }
 
-        private void OnEnable()
+        public override void OnEnable()
         {
-            
+            base.OnEnable();
         }
 
         private void OnGUI()

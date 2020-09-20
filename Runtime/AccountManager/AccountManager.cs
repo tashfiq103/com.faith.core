@@ -9,7 +9,6 @@
 
         #region Custom Variables
 
-        
 
         internal class CurrencyType
         {
@@ -145,8 +144,6 @@
                 currencyTypes[i] = new CurrencyType(currency.ToString());
             }
         }
-
-
 
         #endregion
 

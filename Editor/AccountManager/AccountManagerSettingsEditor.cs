@@ -24,8 +24,10 @@
 
         #region OnEditor
 
-        private void OnEnable()
+        public override void OnEnable()
         {
+            base.OnEnable();
+
             _reference = (AccountManagerSettings)target;
 
             if (_reference == null)

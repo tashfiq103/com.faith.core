@@ -2,8 +2,14 @@
 {
     using UnityEditor;
 
-    public class PlayerPrefDataEditor : EditorWindow
+    public class PlayerPrefDataEditor : BaseEditorWindowClass
     {
+
+        public override void OnEnable() {
+
+            base.OnEnable();
+        }
+
         [MenuItem("FAITH/PlayerPrefData/Reset", false)]
         public static void ResetPlayerPrefData() {
 

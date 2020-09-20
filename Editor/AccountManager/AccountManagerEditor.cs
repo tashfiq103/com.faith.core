@@ -11,8 +11,10 @@
         private SerializedProperty _spDurationForAnimation;
         private SerializedProperty _spAnimationCurve;
 
-        private void OnEnable()
+        public override void OnEnable()
         {
+            base.OnEnable();
+
             _reference = (AccountManager)target;
 
             if (_reference == null)

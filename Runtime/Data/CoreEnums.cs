@@ -3,6 +3,12 @@
     public class CoreEnums
     {
 
+        public enum CorePackageStatus
+        {
+            InDevelopment,
+            Production
+        }
+
         public enum GameMode
         {
             DEBUG,
