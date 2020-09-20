@@ -16,13 +16,13 @@
             public UnityEvent<double, CoreEnums.AccountBalanceUpdateState> OnBalanceChangedEvent;
 
             private string _nameOfCurrency;
-            public CoreEnums.AccountBalanceUpdateState _balanceState;
+            private CoreEnums.AccountBalanceUpdateState _balanceState;
             private PlayerPrefData<double> _accountBalance;
 
 
             private bool isAnimationRunning;
             
-            private double targetedAccountBalance;
+            private double _targetedAccountBalance;
 
             #region Configuretion
 
@@ -41,12 +41,11 @@
                 _nameOfCurrency         = nameOfCurrency;
                 _accountBalance         = new PlayerPrefData<double>("AM_Currency_" + nameOfCurrency, 0);
                 _balanceState           = CoreEnums.AccountBalanceUpdateState.NONE;
-                targetedAccountBalance  = _accountBalance.GetData();
+                _targetedAccountBalance  = _accountBalance.GetData();
             }
 
             public string GetCurrencyName()
             {
-
                 return _nameOfCurrency;
             }
 
@@ -58,7 +57,10 @@
 
             public void SetNewTargetForAccountBalance(double amount)
             {
-                targetedAccountBalance += amount;
+                if (amount == 0) _balanceState = CoreEnums.AccountBalanceUpdateState.NONE;
+                else if (amount > 0) _balanceState = CoreEnums.AccountBalanceUpdateState.ADDED;
+                else _balanceState = CoreEnums.AccountBalanceUpdateState.DEDUCTED;
+                _targetedAccountBalance += amount;
             }
 
             public bool IsAnimationRunning()
@@ -85,14 +87,14 @@
                     if (animationCurve != null) progression = animationCurve.Evaluate(progression);
 
                     double currentBalance = GetCurrentBalance();
-                    double newBalance = currentBalance + ((targetedAccountBalance - currentBalance) * progression);
+                    double newBalance = currentBalance + ((_targetedAccountBalance - currentBalance) * progression);
                     SetNewBalance(newBalance);
 
                     yield return cycleDelay;
                     remainingTime -= cycleLength;
                 }
 
-                SetNewBalance(targetedAccountBalance);
+                SetNewBalance(_targetedAccountBalance);
                 isAnimationRunning = false;
             }
 
@@ -209,17 +211,10 @@
 
         public void OnBalanceChangedEvent (UnityAction<double, CoreEnums.AccountBalanceUpdateState> OnBalanceChange, AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT)
         {
-            currencyTypes[(int)currency].OnBalanceChangedEvent.AddListener(OnBalanceChange);
+            int currencyIndex = (int)currency;
+            currencyTypes[currencyIndex].OnBalanceChangedEvent.AddListener(OnBalanceChange);
+            currencyTypes[currencyIndex].OnBalanceChangedEvent.Invoke(currencyTypes[currencyIndex].GetCurrentBalance(), CoreEnums.AccountBalanceUpdateState.NONE);
         }
-
-        public void NotifyCurrentBalanceToAllRegisteredEvent() {
-
-            foreach (CurrencyType currencyType in currencyTypes) {
-
-                currencyType.OnBalanceChangedEvent.Invoke(currencyType.GetCurrentBalance(), currencyType._balanceState);
-            }
-        }
-
 
         public string GetNameOfCurrency(AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT)
         {
