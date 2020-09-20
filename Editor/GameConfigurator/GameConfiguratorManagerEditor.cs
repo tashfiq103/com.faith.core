@@ -38,6 +38,12 @@ namespace com.faith.core
         {
             serializedObject.Update();
 
+            if (_packageStatus == CoreEnums.CorePackageStatus.InDevelopment) {
+
+                EditorGUILayout.LabelField("PackageMode :   InDevelopment");
+                DrawHorizontalLine();
+            }
+
             EditorGUILayout.PropertyField(_sp_instanceBehaviour);
 
             DrawHorizontalLine();

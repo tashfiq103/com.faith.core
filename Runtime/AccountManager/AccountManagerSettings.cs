@@ -29,7 +29,6 @@
 
         #region Public Variables
 
-        public CoreEnums.DataSavingMode dataSavingMode;
         public List<CurrecnyInfo> listOfCurrencyInfos;
 
         #endregion

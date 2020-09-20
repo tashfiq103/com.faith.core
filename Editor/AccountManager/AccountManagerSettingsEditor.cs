@@ -13,7 +13,6 @@
         #region Private Variables
         private AccountManagerSettings  _reference;
 
-        private SerializedProperty      _dataSavingMode;
         private SerializedProperty      _listOfCurrencyInfos;
 
         private static bool _flagedForGeneratingEnum = false;
@@ -36,7 +35,6 @@
             if (_listOfCurrencyToBeAdded == null)
                 _listOfCurrencyToBeAdded = new List<AccountManagerSettings.CurrecnyInfo>();
 
-            _dataSavingMode = serializedObject.FindProperty("dataSavingMode");
             _listOfCurrencyInfos = serializedObject.FindProperty("listOfCurrencyInfos");
             if (_reference.listOfCurrencyInfos == null) {
 
@@ -51,8 +49,7 @@
 
             EditorGUILayout.BeginHorizontal();
             {
-                EditorGUILayout.PropertyField(_dataSavingMode);
-                if (!EditorApplication.isCompiling && GUILayout.Button("+Add", GUILayout.Width(50f))){
+                if (!EditorApplication.isCompiling && !_flagedForRegeneratingEnum && GUILayout.Button("+Add")){
 
                     AddNewCurrency();
                 }
@@ -181,11 +178,15 @@
             int numberOfCurrencyAlreadyInList   = _reference.listOfCurrencyInfos.Count;
             int numberOfCurrencyToBeAdded       = _listOfCurrencyToBeAdded.Count;
 
-           
-            string path = Application.dataPath + "/AccountManagerEnums";
+            string path = "";
+            if (_packageStatus == CoreEnums.CorePackageStatus.InDevelopment)
+            {
+                path += "Assets/com.faith.core/Runtime/AccountManager";
+            }
+            else {
 
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
+                path += "Packages/com.faith.core/Runtime/AccountManager";
+            }
 
             path += "/AccountManagerCurrencyEnum.cs";
 

@@ -8,8 +8,10 @@
     {
         private AccountManager _reference;
 
-        private SerializedProperty _spDurationForAnimation;
-        private SerializedProperty _spAnimationCurve;
+        private SerializedProperty _sp_instanceBehaviour;
+        private SerializedProperty _sp_accountManagerSettings;
+
+        private Editor _editorForAccountManagerSettings;
 
         public override void OnEnable()
         {
@@ -20,16 +22,20 @@
             if (_reference == null)
                 return;
 
-            _spDurationForAnimation = serializedObject.FindProperty("durationForAnimation");
-            _spAnimationCurve = serializedObject.FindProperty("animationCurve");
+            _sp_instanceBehaviour = serializedObject.FindProperty("instanceBehaviour");
+            _sp_accountManagerSettings = serializedObject.FindProperty("accountManagerSettings");
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
-            EditorGUILayout.PropertyField(_spDurationForAnimation);
-            EditorGUILayout.PropertyField(_spAnimationCurve);
+            EditorGUILayout.PropertyField(_sp_instanceBehaviour);
+            EditorGUILayout.PropertyField(_sp_accountManagerSettings);
+
+            if (_reference.accountManagerSettings != null)
+                DrawSettingsEditor(_reference.accountManagerSettings, null, ref _reference.showAccountManagerSettings, ref _editorForAccountManagerSettings);
+
 
             if (EditorApplication.isPlaying)
             {

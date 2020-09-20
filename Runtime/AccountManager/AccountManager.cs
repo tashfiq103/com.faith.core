@@ -105,7 +105,14 @@
 
         public static AccountManager Instance;
 
-        public AccountManagerSettings accountManagerSettings;
+#if UNITY_EDITOR
+
+        public bool showAccountManagerSettings;
+
+#endif
+
+        public CoreEnums.InstanceBehaviour  instanceBehaviour;
+        public AccountManagerSettings       accountManagerSettings;
         [Range(0.1f, 2f)]
         public float durationForAnimation = 0.1f;
         public AnimationCurve animationCurve = new AnimationCurve(new Keyframe[] { new Keyframe(0, 0), new Keyframe(1, 1) });
@@ -132,7 +139,32 @@
         private void Initialization()
         {
 
-            Instance = this;
+            switch (instanceBehaviour)
+            {
+
+                case CoreEnums.InstanceBehaviour.UseAsReference:
+
+                    break;
+                case CoreEnums.InstanceBehaviour.CashedAsInstance:
+
+                    Instance = this;
+
+                    break;
+                case CoreEnums.InstanceBehaviour.Singleton:
+
+                    if (Instance == null)
+                    {
+                        Instance = this;
+                        DontDestroyOnLoad(gameObject);
+                    }
+                    else
+                    {
+
+                        Destroy(gameObject);
+                    }
+
+                    break;
+            }
 
             int numberOfCurrency = (int)CURRENCY.NUMBER_OF_CURRENCY;
             currencyTypes = new CurrencyType[numberOfCurrency];
