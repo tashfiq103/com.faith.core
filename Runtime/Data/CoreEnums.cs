@@ -35,6 +35,13 @@
             CashedAsInstance,
             Singleton
         }
+
+        public enum AccountBalanceUpdateState
+        {
+            ADDED,
+            DEDUCTED,
+            NONE
+        }
     }
 }
 

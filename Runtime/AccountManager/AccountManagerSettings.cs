@@ -34,7 +34,14 @@
 
         #endregion
 
+        #region Public Callback
 
+        public int GetNumberOfAvailableCurrency() {
+
+            return listOfCurrencyInfos.Count;
+        }
+
+        #endregion
     }
 }
 
