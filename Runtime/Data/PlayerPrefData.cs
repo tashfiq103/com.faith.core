@@ -303,7 +303,10 @@
             }
             else {
 
-                AssigningDataType(t_Value);
+                if (AssigningDataType(t_Value)) {
+
+                    OnValueChangedEvent?.Invoke(GetData());
+                }
 #if UNITY_EDITOR
                 PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(t_Key, GetData().ToString(), ref OnValueChanged);
 #endif
