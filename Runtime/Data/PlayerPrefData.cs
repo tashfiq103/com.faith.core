@@ -26,7 +26,6 @@
             UNDEFINED
         }
 
-
         #endregion
 
         #region Private Variables
@@ -36,7 +35,6 @@
         #endregion
 
         #region Public Callback
-
 
         public static int IsPlayerPrefEditorDataAlreadyInContainer(string t_Key) {
 
@@ -103,6 +101,7 @@
 
             
         }
+
         public static bool IsPlayerPrefKeyAlreadyInUsed(string t_Key)
         {
 
@@ -251,8 +250,9 @@
                         PlayerPrefs.SetInt(m_Key, t_ParsedBoolValue ? 1 : 0);
                         OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(bool)));
 
+#if UNITY_EDITOR
                         PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(bool), t_ParsedBoolValue.ToString());
-
+#endif
 
                         break;
                     case PlayerPrefDataSettings.DataTypeForPlayerPref.DATA_TYPE_INT:
@@ -261,8 +261,9 @@
                         PlayerPrefs.SetInt(m_Key, t_ParsedIntValue);
                         OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(int)));
 
+#if UNITY_EDITOR
                         PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(int), t_ParsedIntValue.ToString());
-
+#endif
 
                         break;
                     case PlayerPrefDataSettings.DataTypeForPlayerPref.DATA_TYPE_FLOAT:
@@ -271,8 +272,9 @@
                         PlayerPrefs.SetFloat(m_Key, t_ParsedFloatValue);
                         OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(float)));
 
+#if UNITY_EDITOR
                         PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(float), t_ParsedFloatValue.ToString());
-
+#endif
 
                         break;
                     case PlayerPrefDataSettings.DataTypeForPlayerPref.DATA_TYPE_DOUBLE:
@@ -281,9 +283,9 @@
                         PlayerPrefs.SetString(m_Key, t_ParsedDoubleValue.ToString());
                         OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(double)));
 
-
+#if UNITY_EDITOR
                         PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(double), t_ParsedDoubleValue.ToString());
-
+#endif
 
                         break;
                     case PlayerPrefDataSettings.DataTypeForPlayerPref.DATA_TYPE_STRING:
@@ -292,8 +294,9 @@
                         PlayerPrefs.SetString(m_Key, t_ParsedStringValue);
                         OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(string)));
 
+#if UNITY_EDITOR
                         PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(m_Key, typeof(string), t_ParsedStringValue.ToString());
-
+#endif
 
                         break;
                 }
@@ -330,7 +333,6 @@
 
             }
 
-            Debug.Log("GetValueFromHere");
             return (T)Convert.ChangeType(PlayerPrefs.GetInt(m_Key, 0), typeof(T));
         }
 
