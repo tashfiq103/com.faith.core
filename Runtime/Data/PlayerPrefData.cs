@@ -56,23 +56,23 @@
 
                 if (type == typeof(bool)) {
 
-                    OnValueChangedForBool.Invoke((bool)Convert.ChangeType(value, typeof(bool)));
+                    OnValueChangedForBool?.Invoke((bool)Convert.ChangeType(value, typeof(bool)));
                 }
                 else if (type == typeof(int)){
 
-                    OnValueChangedForInt.Invoke((int)Convert.ChangeType(value, typeof(int)));
+                    OnValueChangedForInt?.Invoke((int)Convert.ChangeType(value, typeof(int)));
                 }
                 else if (type == typeof(float))
                 {
-                    OnValueChangedForFloat.Invoke((float)Convert.ChangeType(value, typeof(float)));
+                    OnValueChangedForFloat?.Invoke((float)Convert.ChangeType(value, typeof(float)));
                 }
                 else if (type == typeof(double))
                 {
-                    OnValueChangedForDouble.Invoke((double)Convert.ChangeType(value, typeof(double)));
+                    OnValueChangedForDouble?.Invoke((double)Convert.ChangeType(value, typeof(double)));
                 }
                 else if (type == typeof(string))
                 {
-                    OnValueChangedForString.Invoke((string)Convert.ChangeType(value, typeof(string)));
+                    OnValueChangedForString?.Invoke((string)Convert.ChangeType(value, typeof(string)));
                 }
             }
         }
