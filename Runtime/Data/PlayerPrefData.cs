@@ -268,7 +268,7 @@
                 return true;
             }
 
-            Debug.LogError("Invalid Type for Value : " + t_Value);
+            CoreDebugger.Debug.LogError("Invalid Type for Value : " + t_Value);
             m_DataType = PlayerPrefDataSettings.DataTypeForPlayerPref.UNDEFINED;
             return false;
         }

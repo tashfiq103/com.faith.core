@@ -204,7 +204,7 @@
                 return true;
             }
 
-            Debug.LogError("Insufficient Balance!!");
+            CoreDebugger.Debug.LogError("Insufficient Balance!!");
             return false;
 
         }
