@@ -24,7 +24,7 @@
             else
                 path = Application.persistentDataPath + "/" + fileName + "." + extension;
 
-            Debug.Log("SavedFile : " + path);
+            CoreDebugger.Debug.Log("SavedFile : " + path);
 
             FileStream fileStream = new FileStream(path, FileMode.Create);
 

@@ -155,8 +155,6 @@
 			for (int index = 0; index < t_SortedPriorityList.Length; index++)
 				t_TotalPriority += t_SortedPriorityList[index];
 
-			//Debug.Log("Total Priority : " + t_TotalPriority);
-
 			System.Array.Sort(t_SortedPriorityList);
 
 			bool[] t_IsFoundMatch = new bool[priorityList.Length];
@@ -278,8 +276,6 @@
 				return false;
 
 			float t2 = ((p3.x - p1.x) * dy12 + (p1.y - p3.y) * dx12) / (-denominator);
-
-			//Debug.Log("(x,y) : (" + t1 + "," + t2 + ")");
 
 			if ((t1 >= 0 && t1 <= 1) && (t2 >= 0 && t2 <= 1))
 				return true;
@@ -417,7 +413,6 @@
 					t_MaxIntensity,
 					SmoothTransitionCurve((1f - t_ContrastLevel), 0.33f, 0.66f,0f)
 				);
-			//Debug.Log("Color : " + t_ColorValue + ", Contrast : " + t_ContrastLevel + ", FixedIntensity : " + t_FixedIntensity);
 
 			return t_FixedIntensity;
 		}
