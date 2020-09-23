@@ -212,8 +212,8 @@
 
         #region Private Variables
 
-        private CoreEnums.DataTypeForSavingData m_DataType;
-        private string m_Key;
+        private CoreEnums.DataTypeForSavingData _dataType;
+        private string _key;
 
         #endregion
 
@@ -225,33 +225,33 @@
             //Assigning :   DataType
             if (typeof(T) == typeof(bool))
             {
-                m_DataType = CoreEnums.DataTypeForSavingData.DATA_TYPE_BOOL;
+                _dataType = CoreEnums.DataTypeForSavingData.DATA_TYPE_BOOL;
                 return true;
             }
             else if (typeof(T) == typeof(int))
             {
-                m_DataType = CoreEnums.DataTypeForSavingData.DATA_TYPE_INT;
+                _dataType = CoreEnums.DataTypeForSavingData.DATA_TYPE_INT;
                 return true;
             }
             else if (typeof(T) == typeof(float))
             {
-                m_DataType = CoreEnums.DataTypeForSavingData.DATA_TYPE_FLOAT;
+                _dataType = CoreEnums.DataTypeForSavingData.DATA_TYPE_FLOAT;
                 return true;
             }
             else if (typeof(T) == typeof(double))
             {
-                m_DataType = CoreEnums.DataTypeForSavingData.DATA_TYPE_DOUBLE;
+                _dataType = CoreEnums.DataTypeForSavingData.DATA_TYPE_DOUBLE;
                 return true;
             }
             else if (typeof(T) == typeof(string))
             {
 
-                m_DataType = CoreEnums.DataTypeForSavingData.DATA_TYPE_STRING;
+                _dataType = CoreEnums.DataTypeForSavingData.DATA_TYPE_STRING;
                 return true;
             }
 
-            CoreDebugger.Debug.LogError("Invalid Type for Value : " + t_Value);
-            m_DataType = CoreEnums.DataTypeForSavingData.UNDEFINED;
+            CoreDebugger.Debug.LogError("Invalid DataType for Value : " + t_Value);
+            _dataType = CoreEnums.DataTypeForSavingData.UNDEFINED;
             return false;
         }
 
@@ -261,7 +261,7 @@
 
         public PlayerPrefData(string t_Key, T t_Value, Action<T> OnValueChanged = null)
         {
-            m_Key = t_Key;
+            _key = t_Key;
 
             
             if (OnValueChanged != null)
@@ -297,7 +297,7 @@
 
         public string GetKey() {
 
-            return m_Key;
+            return _key;
         }
 
         public void SetData(T t_Value)
@@ -306,41 +306,41 @@
             if (AssigningDataType(t_Value))
             {
 
-                switch (m_DataType)
+                switch (_dataType)
                 {
 
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_BOOL:
 
                         bool t_ParsedBoolValue = (bool)Convert.ChangeType(t_Value, typeof(bool));
-                        PlayerPrefs.SetInt(m_Key, t_ParsedBoolValue ? 1 : 0);
+                        PlayerPrefs.SetInt(_key, t_ParsedBoolValue ? 1 : 0);
                         OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(bool)));
 
                         break;
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_INT:
 
                         int t_ParsedIntValue = (int)Convert.ChangeType(t_Value, typeof(int));
-                        PlayerPrefs.SetInt(m_Key, t_ParsedIntValue);
+                        PlayerPrefs.SetInt(_key, t_ParsedIntValue);
                         OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(int)));
 
                         break;
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_FLOAT:
 
                         float t_ParsedFloatValue = (float)Convert.ChangeType(t_Value, typeof(float));
-                        PlayerPrefs.SetFloat(m_Key, t_ParsedFloatValue);
+                        PlayerPrefs.SetFloat(_key, t_ParsedFloatValue);
                         OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(float)));
 
                         break;
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_DOUBLE:
 
                         double t_ParsedDoubleValue = (double)Convert.ChangeType(t_Value, typeof(double));
-                        PlayerPrefs.SetString(m_Key, t_ParsedDoubleValue.ToString());
+                        PlayerPrefs.SetString(_key, t_ParsedDoubleValue.ToString());
                         OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(double)));
 
                         break;
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_STRING:
 
                         string t_ParsedStringValue = (string)Convert.ChangeType(t_Value, typeof(string));
-                        PlayerPrefs.SetString(m_Key, t_ParsedStringValue);
+                        PlayerPrefs.SetString(_key, t_ParsedStringValue);
                         OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(string)));
 
                         break;
@@ -353,32 +353,32 @@
         public T GetData()
         {
 
-            switch (m_DataType)
+            switch (_dataType)
             {
 
                 case CoreEnums.DataTypeForSavingData.DATA_TYPE_BOOL:
 
-                    return (T)Convert.ChangeType(PlayerPrefs.GetInt(m_Key, 0) == 1 ? true : false, typeof(T));
+                    return (T)Convert.ChangeType(PlayerPrefs.GetInt(_key, 0) == 1 ? true : false, typeof(T));
 
                 case CoreEnums.DataTypeForSavingData.DATA_TYPE_INT:
 
-                    return (T)Convert.ChangeType(PlayerPrefs.GetInt(m_Key, 0), typeof(T));
+                    return (T)Convert.ChangeType(PlayerPrefs.GetInt(_key, 0), typeof(T));
 
                 case CoreEnums.DataTypeForSavingData.DATA_TYPE_FLOAT:
 
-                    return (T)Convert.ChangeType(PlayerPrefs.GetFloat(m_Key, 0), typeof(T));
+                    return (T)Convert.ChangeType(PlayerPrefs.GetFloat(_key, 0), typeof(T));
 
                 case CoreEnums.DataTypeForSavingData.DATA_TYPE_DOUBLE:
 
-                    return (T)Convert.ChangeType(PlayerPrefs.GetString(m_Key, "0"), typeof(T));
+                    return (T)Convert.ChangeType(PlayerPrefs.GetString(_key, "0"), typeof(T));
 
                 case CoreEnums.DataTypeForSavingData.DATA_TYPE_STRING:
 
-                    return (T)Convert.ChangeType(PlayerPrefs.GetString(m_Key, ""), typeof(T));
+                    return (T)Convert.ChangeType(PlayerPrefs.GetString(_key, ""), typeof(T));
 
             }
 
-            return (T)Convert.ChangeType(PlayerPrefs.GetInt(m_Key, 0), typeof(T));
+            return (T)Convert.ChangeType(PlayerPrefs.GetInt(_key, 0), typeof(T));
         }
 
         #endregion
