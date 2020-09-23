@@ -23,6 +23,16 @@
             None
         }
 
+        public enum DataTypeForSavingData
+        {
+            DATA_TYPE_BOOL,
+            DATA_TYPE_INT,
+            DATA_TYPE_FLOAT,
+            DATA_TYPE_DOUBLE,
+            DATA_TYPE_STRING,
+            UNDEFINED
+        }
+
         public enum DataSavingMode
         {
             BinaryFormater,
