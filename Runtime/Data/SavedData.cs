@@ -24,12 +24,13 @@
 
         //Section   :   BinaryFormat
         private CoreEnums.DataTypeForSavingData _dataType;
+        private T _value;
 
         #endregion
 
         #region Configuretion
 
-        private bool AssigningDataType(T t_Value)
+        private bool AssigningDataType(T value)
         {
 
             //Assigning :   DataType
@@ -60,7 +61,7 @@
                 return true;
             }
 
-            CoreDebugger.Debug.LogError("Invalid DataType for Value : " + t_Value);
+            CoreDebugger.Debug.LogError("Invalid DataType for Value : " + value);
             _dataType = CoreEnums.DataTypeForSavingData.UNDEFINED;
             return false;
         }
@@ -71,14 +72,23 @@
 
         public SavedData(string key, T value, Action<T> OnValueChanged) {
 
-            if (_listOfKeys.Contains(key)) {
-                CoreDebugger.Debug.LogError("Key : " + key + ", is already in used!. Please generate unique key for this data");
+            _key = key;
+            _value = value;
+            AssigningDataType(_value);
+
+            if (_listOfKeys.Contains(_key))
+            {
+                CoreDebugger.Debug.LogError("Key : " + _key + ", is already in used!. Please generate unique key for this data");
+            }
+            else
+            {
+                _listOfKeys.Add(_key);
             }
 
             switch (GameConfiguratorManager.dataSavingMode) {
 
                 case CoreEnums.DataSavingMode.PlayerPrefsData:
-                    _playerPrefData = new PlayerPrefData<T>(key, value, OnValueChanged);
+                    _playerPrefData = new PlayerPrefData<T>(key, _value, OnValueChanged);
                     break;
                 case CoreEnums.DataSavingMode.BinaryFormater:
 
@@ -86,7 +96,49 @@
             }
         }
 
-        
+        public string GetKey() {
+
+            return _key;
+        }
+
+        public void SetData(T value) {
+
+            _value = value;
+
+            switch (GameConfiguratorManager.dataSavingMode)
+            {
+
+                case CoreEnums.DataSavingMode.PlayerPrefsData:
+
+                    _playerPrefData.SetData(_value);
+
+                    break;
+                case CoreEnums.DataSavingMode.BinaryFormater:
+
+
+
+                    break;
+            }
+        }
+
+        public T GetData() {
+
+            switch (GameConfiguratorManager.dataSavingMode)
+            {
+
+                case CoreEnums.DataSavingMode.PlayerPrefsData:
+
+                    return _playerPrefData.GetData();
+
+                case CoreEnums.DataSavingMode.BinaryFormater:
+
+                    return _value;
+
+                default:
+
+                    return _value;
+            }
+        }
 
         #endregion
     }

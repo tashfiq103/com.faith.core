@@ -90,7 +90,7 @@
                                 }
                                 if (EditorGUI.EndChangeCheck())
                                 {
-                                    PlayerPrefDataSettings.SetData(t_PlayerPrefDataKey.key, t_PlayerPrefDataKey.type, t_BoolValue.ToString());
+                                    PlayerPrefDataSettings.SetData<bool>(t_PlayerPrefDataKey.key, t_BoolValue.ToString());
                                 }
                             }
                             else if (t_PlayerPrefDataKey.type == typeof(int))
@@ -111,7 +111,7 @@
                                 }
                                 if (EditorGUI.EndChangeCheck())
                                 {
-                                    PlayerPrefDataSettings.SetData(t_PlayerPrefDataKey.key, t_PlayerPrefDataKey.type, t_IntValue.ToString());
+                                    PlayerPrefDataSettings.SetData<int>(t_PlayerPrefDataKey.key, t_IntValue.ToString());
                                 }
                             }
                             else if (t_PlayerPrefDataKey.type == typeof(float))
@@ -131,7 +131,7 @@
                                 }
                                 if (EditorGUI.EndChangeCheck())
                                 {
-                                    PlayerPrefDataSettings.SetData(t_PlayerPrefDataKey.key, t_PlayerPrefDataKey.type, t_FloatValue.ToString());
+                                    PlayerPrefDataSettings.SetData<float>(t_PlayerPrefDataKey.key, t_FloatValue.ToString());
                                 }
 
                             }
@@ -152,7 +152,7 @@
                                 }
                                 if (EditorGUI.EndChangeCheck())
                                 {
-                                    PlayerPrefDataSettings.SetData(t_PlayerPrefDataKey.key, t_PlayerPrefDataKey.type, t_DoubleValue.ToString());
+                                    PlayerPrefDataSettings.SetData<double>(t_PlayerPrefDataKey.key, t_DoubleValue.ToString());
                                 }
 
                             }
@@ -174,7 +174,7 @@
                                 }
                                 if (EditorGUI.EndChangeCheck())
                                 {
-                                    PlayerPrefDataSettings.SetData(t_PlayerPrefDataKey.key, t_PlayerPrefDataKey.type, t_StringValue.ToString());
+                                    PlayerPrefDataSettings.SetData<string>(t_PlayerPrefDataKey.key, t_StringValue.ToString());
                                 }
                             }
                         }

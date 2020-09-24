@@ -24,28 +24,37 @@
             private event Action<double>    OnValueChangedForDouble;
             private event Action<string>    OnValueChangedForString;
 
-            public void AssignValueChangedEvent<T>(ref Action<T> OnValueChanged) {
+            public void AssignValueChangedEvent<T>(string value, ref Action<T> OnValueChanged) {
+
+                this.value = value;
 
                 if (typeof(T) == typeof(bool))
                 {
-                    OnValueChangedForBool = (Action<bool>)Convert.ChangeType(OnValueChanged, typeof(Action<bool>));
+                    OnValueChangedForBool += (Action<bool>)Convert.ChangeType(OnValueChanged, typeof(Action<bool>));
                 }
                 else if (typeof(T) == typeof(int)){
 
-                    OnValueChangedForInt = (Action<int>)Convert.ChangeType(OnValueChanged, typeof(Action<int>));
+                    OnValueChangedForInt += (Action<int>)Convert.ChangeType(OnValueChanged, typeof(Action<int>));
                 }
                 else if (typeof(T) == typeof(float)){
 
-                    OnValueChangedForFloat = (Action<float>)Convert.ChangeType(OnValueChanged, typeof(Action<float>));
+                    OnValueChangedForFloat += (Action<float>)Convert.ChangeType(OnValueChanged, typeof(Action<float>));
                 }
                 else if (typeof(T) == typeof(double)){
 
-                    OnValueChangedForDouble = (Action<double>)Convert.ChangeType(OnValueChanged, typeof(Action<double>));
+                    OnValueChangedForDouble += (Action<double>)Convert.ChangeType(OnValueChanged, typeof(Action<double>));
                 }
                 else if (typeof(T) == typeof(string)){
 
-                    OnValueChangedForString = (Action<string>)Convert.ChangeType(OnValueChanged, typeof(Action<string>));
+                    OnValueChangedForString += (Action<string>)Convert.ChangeType(OnValueChanged, typeof(Action<string>));
                 }
+
+                InvokeEvent(this.value); ;
+            }
+
+            public T GetData<T>()
+            {
+                return (T)Convert.ChangeType(value, typeof(T));
             }
 
             public void InvokeEvent(string value) {
@@ -54,23 +63,23 @@
 
                 if (type == typeof(bool)) {
 
-                    OnValueChangedForBool?.Invoke((bool)Convert.ChangeType(value, typeof(bool)));
+                    OnValueChangedForBool?.Invoke(GetData<bool>());
                 }
                 else if (type == typeof(int)){
 
-                    OnValueChangedForInt?.Invoke((int)Convert.ChangeType(value, typeof(int)));
+                    OnValueChangedForInt?.Invoke(GetData<int>());
                 }
                 else if (type == typeof(float))
                 {
-                    OnValueChangedForFloat?.Invoke((float)Convert.ChangeType(value, typeof(float)));
+                    OnValueChangedForFloat?.Invoke(GetData<float>());
                 }
                 else if (type == typeof(double))
                 {
-                    OnValueChangedForDouble?.Invoke((double)Convert.ChangeType(value, typeof(double)));
+                    OnValueChangedForDouble?.Invoke(GetData<double>());
                 }
                 else if (type == typeof(string))
                 {
-                    OnValueChangedForString?.Invoke((string)Convert.ChangeType(value, typeof(string)));
+                    OnValueChangedForString?.Invoke(GetData<string>());
                 }
             }
         }
@@ -99,19 +108,19 @@
             return -1;
         }
 
-        public static void EnlistPlayerPrefEditorDataInContainer<T>(string t_Key, string t_Value, ref Action<T> OnValueChanged)
+        public static void EnlistPlayerPrefEditorDataInContainer<T>(string key, string value, ref Action<T> OnValueChanged)
         {
 
-            int t_Result = IsPlayerPrefEditorDataAlreadyInContainer(t_Key);
+            int t_Result = IsPlayerPrefEditorDataAlreadyInContainer(key);
             if (t_Result == -1)
             {
                 PlayerPrefEditorData playerPrefEditorData = new PlayerPrefEditorData()
                 {
-                    key = t_Key,
+                    key = key,
                     type = typeof(T),
-                    value = t_Value
+                    value = value
                 };
-                playerPrefEditorData.AssignValueChangedEvent(ref OnValueChanged);
+                playerPrefEditorData.AssignValueChangedEvent(value, ref OnValueChanged);
 
                 listOfUsedPlayerPrefEditorData.Add(playerPrefEditorData);
             }
@@ -119,43 +128,84 @@
             {
 
                 listOfUsedPlayerPrefEditorData[t_Result].type = typeof(T);
-                listOfUsedPlayerPrefEditorData[t_Result].value = t_Value;
+                listOfUsedPlayerPrefEditorData[t_Result].value = value;
             }
 
 
         }
 
-        public static void SetData(string t_Key, Type t_Type, string t_Value)
+        public static void RegisterOnValueChangedEvent<T>(string key, ref Action<T> OnValueChanged) {
+
+            int index = IsPlayerPrefEditorDataAlreadyInContainer(key);
+            if (index != -1) {
+
+                listOfUsedPlayerPrefEditorData[index].AssignValueChangedEvent(GetData<T>(key).ToString(), ref OnValueChanged);
+            }
+        }
+
+        public static void SetData<T>(string t_Key, string t_Value)
         {
             int t_Index = IsPlayerPrefEditorDataAlreadyInContainer(t_Key);
             if (t_Index != -1)
             {
 
-                if (t_Type == typeof(bool))
+                if (typeof(T) == typeof(bool))
                 {
                     PlayerPrefs.SetInt(t_Key, string.Compare(t_Value, "False") == 0 ? 0 : 1);
                 }
-                else if (t_Type == typeof(int))
+                else if (typeof(T) == typeof(int))
                 {
                     PlayerPrefs.SetInt(t_Key, (int)Convert.ChangeType(t_Value, typeof(int)));
                 }
-                else if (t_Type == typeof(float))
+                else if (typeof(T) == typeof(float))
                 {
                     PlayerPrefs.SetFloat(t_Key, (float)Convert.ChangeType(t_Value, typeof(float)));
                 }
-                else if (t_Type == typeof(double))
+                else if (typeof(T) == typeof(double))
                 {
                     PlayerPrefs.SetString(t_Key, ((double)Convert.ChangeType(t_Value, typeof(double))).ToString());
                 }
-                else if (t_Type == typeof(string))
+                else if (typeof(T) == typeof(string))
                 {
                     PlayerPrefs.SetString(t_Key, t_Value);
                 }
 
                 listOfUsedPlayerPrefEditorData[t_Index].InvokeEvent(t_Value);
             }
+        }
 
+        public static T GetData<T>(string key) {
 
+            int index = IsPlayerPrefEditorDataAlreadyInContainer(key);
+            if (index != -1) {
+
+                if (typeof(T) == typeof(bool)) {
+
+                    return (T)Convert.ChangeType(PlayerPrefs.GetInt(key, 0) == 1 ? true : false, typeof(T));
+                }
+                else if (typeof(T) == typeof(int))
+                {
+
+                    return (T)Convert.ChangeType(PlayerPrefs.GetInt(key, 0), typeof(T));
+                }
+                else if (typeof(T) == typeof(float))
+                {
+
+                    return (T)Convert.ChangeType(PlayerPrefs.GetFloat(key, 0), typeof(T));
+                }
+                else if (typeof(T) == typeof(double))
+                {
+
+                    return (T)Convert.ChangeType(PlayerPrefs.GetString(key, "0"), typeof(T));
+                }
+                else if (typeof(T) == typeof(bool))
+                {
+
+                    return (T)Convert.ChangeType(PlayerPrefs.GetString(key, ""), typeof(T));
+                }
+            }
+
+            return (T)Convert.ChangeType(PlayerPrefs.GetInt(key, 0), typeof(T));
         }
 
         public static bool IsPlayerPrefKeyAlreadyInUsed(string t_Key)
@@ -206,7 +256,7 @@
 
         #region Public Variables
 
-        public event Action<T> OnValueChangedEvent;
+        private event Action<T> OnValueChangedEvent;
 
         #endregion
 
@@ -263,9 +313,8 @@
         {
             _key = t_Key;
 
-            
-            if (OnValueChanged != null)
-                OnValueChangedEvent += OnValueChanged;
+
+            RegisterOnValueChangedEvent(OnValueChanged);
 
             //if : The following key is not used, we initialized the data type and their respective value
             if (!PlayerPrefs.HasKey(t_Key))
@@ -295,58 +344,90 @@
             }
         }
 
+        public void RegisterOnValueChangedEvent(Action<T> OnValueChanged) {
+
+            if (OnValueChanged != null) {
+
+                OnValueChangedEvent += OnValueChanged;
+                OnValueChangedEvent.Invoke(GetData());
+#if UNITY_EDITOR
+                PlayerPrefDataSettings.RegisterOnValueChangedEvent(_key ,ref OnValueChanged);
+#endif
+            }
+        }
+
         public string GetKey() {
 
             return _key;
         }
 
-        public void SetData(T t_Value)
+        public void SetData(T value)
         {
 
-            if (AssigningDataType(t_Value))
+            if (AssigningDataType(value))
             {
+
+                int index = PlayerPrefDataSettings.IsPlayerPrefEditorDataAlreadyInContainer(_key);
 
                 switch (_dataType)
                 {
 
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_BOOL:
 
-                        bool t_ParsedBoolValue = (bool)Convert.ChangeType(t_Value, typeof(bool));
+                        bool t_ParsedBoolValue = (bool)Convert.ChangeType(value, typeof(bool));
                         PlayerPrefs.SetInt(_key, t_ParsedBoolValue ? 1 : 0);
-                        OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(bool)));
+                        OnValueChangedEvent?.Invoke((T)Convert.ChangeType(value, typeof(bool)));
+
+#if UNITY_EDITOR
+                        if (index != -1) PlayerPrefDataSettings.listOfUsedPlayerPrefEditorData[index].InvokeEvent(t_ParsedBoolValue.ToString());
+#endif
 
                         break;
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_INT:
 
-                        int t_ParsedIntValue = (int)Convert.ChangeType(t_Value, typeof(int));
+                        int t_ParsedIntValue = (int)Convert.ChangeType(value, typeof(int));
                         PlayerPrefs.SetInt(_key, t_ParsedIntValue);
-                        OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(int)));
+                        OnValueChangedEvent?.Invoke((T)Convert.ChangeType(value, typeof(int)));
+
+#if UNITY_EDITOR
+                        if (index != -1) PlayerPrefDataSettings.listOfUsedPlayerPrefEditorData[index].InvokeEvent(t_ParsedIntValue.ToString());
+#endif
 
                         break;
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_FLOAT:
 
-                        float t_ParsedFloatValue = (float)Convert.ChangeType(t_Value, typeof(float));
+                        float t_ParsedFloatValue = (float)Convert.ChangeType(value, typeof(float));
                         PlayerPrefs.SetFloat(_key, t_ParsedFloatValue);
-                        OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(float)));
+                        OnValueChangedEvent?.Invoke((T)Convert.ChangeType(value, typeof(float)));
+
+#if UNITY_EDITOR
+                        if (index != -1) PlayerPrefDataSettings.listOfUsedPlayerPrefEditorData[index].InvokeEvent(t_ParsedFloatValue.ToString());
+#endif
 
                         break;
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_DOUBLE:
 
-                        double t_ParsedDoubleValue = (double)Convert.ChangeType(t_Value, typeof(double));
+                        double t_ParsedDoubleValue = (double)Convert.ChangeType(value, typeof(double));
                         PlayerPrefs.SetString(_key, t_ParsedDoubleValue.ToString());
-                        OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(double)));
+                        OnValueChangedEvent?.Invoke((T)Convert.ChangeType(value, typeof(double)));
+
+#if UNITY_EDITOR
+                        if (index != -1) PlayerPrefDataSettings.listOfUsedPlayerPrefEditorData[index].InvokeEvent(t_ParsedDoubleValue.ToString());
+#endif
 
                         break;
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_STRING:
 
-                        string t_ParsedStringValue = (string)Convert.ChangeType(t_Value, typeof(string));
+                        string t_ParsedStringValue = (string)Convert.ChangeType(value, typeof(string));
                         PlayerPrefs.SetString(_key, t_ParsedStringValue);
-                        OnValueChangedEvent?.Invoke((T)Convert.ChangeType(t_Value, typeof(string)));
+                        OnValueChangedEvent?.Invoke((T)Convert.ChangeType(value, typeof(string)));
+
+#if UNITY_EDITOR
+                        if (index != -1) PlayerPrefDataSettings.listOfUsedPlayerPrefEditorData[index].InvokeEvent(t_ParsedStringValue.ToString());
+#endif
 
                         break;
                 }
-
-                
             }
         }
 
@@ -381,7 +462,7 @@
             return (T)Convert.ChangeType(PlayerPrefs.GetInt(_key, 0), typeof(T));
         }
 
-        #endregion
+#endregion
 
 
     }
