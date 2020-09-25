@@ -11,8 +11,6 @@
 
         private static List<string> _listOfKeys = new List<string>();
 
-        private string _key;
-
         private PlayerPrefData<T> _playerPrefData;
 
         #endregion
@@ -22,15 +20,13 @@
 
         public SavedData(string key, T value, Action<T> OnValueChanged) {
 
-            _key = key;
-
-            if (_listOfKeys.Contains(_key))
+            if (_listOfKeys.Contains(key))
             {
-                CoreDebugger.Debug.LogError("Key : " + _key + ", is already in used!. Please generate unique key for this data");
+                CoreDebugger.Debug.LogError("Key : " + key + ", is already in used!. Please generate unique key for this data");
             }
             else
             {
-                _listOfKeys.Add(_key);
+                _listOfKeys.Add(key);
             }
 
             switch (GameConfiguratorManager.dataSavingMode) {
@@ -42,11 +38,6 @@
 
                     break;
             }
-        }
-
-        public string GetKey() {
-
-            return _key;
         }
 
         public void SetData(T value) {
