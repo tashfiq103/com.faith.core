@@ -302,11 +302,6 @@
             }
         }
 
-        public string GetKey() {
-
-            return _key;
-        }
-
         public void SetData(T value)
         {
 
@@ -409,8 +404,6 @@
         }
 
 #endregion
-
-
     }
 
 }

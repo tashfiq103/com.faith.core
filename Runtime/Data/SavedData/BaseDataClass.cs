@@ -54,6 +54,12 @@
 
         #region Public Callback
 
+        public string GetKey()
+        {
+            return _key;
+        }
+
+
         public void InvokeOnValueChangedEvent(T value) {
 
             OnValueChangedEvent.Invoke(value);
