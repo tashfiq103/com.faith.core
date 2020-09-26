@@ -1,7 +1,7 @@
 ﻿namespace com.faith.core
 {
     using System;
-    using System.Collections;
+    using System.Collections.Specialized;
     using System.Collections.Generic;
     using UnityEngine;
 
@@ -27,6 +27,12 @@
 
     public static class BinaryFormatedData
     {
+        #region Public Variables
+
+        public static BinaryDataWrapper rawBinaryData;
+
+        #endregion
+
         #region Private Variables
 
         private static string _fileName = "binaryDataWrapper";
@@ -34,8 +40,6 @@
 
         private static bool _isInitialDataLoaded = false;
         private static bool _isDataLoadingProcessOnGoing = false;
-
-        private static BinaryDataWrapper _binaryDataWrapper;
 
         private static Queue<BinaryData<bool>> _listOfBooleanBinaryDataToBeRetrived;
         private static Queue<BinaryData<int>> _listOfIntegerBinaryDataToBeRetrived;
@@ -54,7 +58,7 @@
 
         private static void OnDataLoadSucceed(BinaryDataWrapper binaryDataWrapper) {
 
-            _binaryDataWrapper = binaryDataWrapper;
+            rawBinaryData = binaryDataWrapper;
 
             _isInitialDataLoaded = true;
 
@@ -62,10 +66,19 @@
             {
                 BinaryData<bool> binaryData = _listOfBooleanBinaryDataToBeRetrived.Dequeue();
 
-                bool _value = false;
-                _binaryDataWrapper.boolValues.TryGetValue(binaryData.GetKey(), out _value);
-                binaryData.SetData(_value);
+                int index   = rawBinaryData.boolValues.Count;
+                bool value  = false;
 
+                if (rawBinaryData.boolValues.TryGetValue(binaryData.GetKey(), out value)) {
+
+                    int numberOfElementInDictionary = rawBinaryData.boolValues.Count;
+                    for (int i = 0; i < numberOfElementInDictionary; i++) {
+
+                        
+                    }
+                }
+                binaryData.SetData(value);
+                binaryData.SetIndexOfBinaryDataWrapper(index);
             }
 
             while (_listOfIntegerBinaryDataToBeRetrived.Count > 0)
@@ -73,7 +86,7 @@
                 BinaryData<int> binaryData = _listOfIntegerBinaryDataToBeRetrived.Dequeue();
 
                 int _value = 0;
-                _binaryDataWrapper.intValues.TryGetValue(binaryData.GetKey(), out _value);
+                rawBinaryData.intValues.TryGetValue(binaryData.GetKey(), out _value);
                 binaryData.SetData(_value);
 
             }
@@ -83,7 +96,7 @@
                 BinaryData<float> binaryData = _listOfFloatBinaryDataToBeRetrived.Dequeue();
 
                 float _value = 0;
-                _binaryDataWrapper.floatValues.TryGetValue(binaryData.GetKey(), out _value);
+                rawBinaryData.floatValues.TryGetValue(binaryData.GetKey(), out _value);
                 binaryData.SetData(_value);
 
             }
@@ -93,7 +106,7 @@
                 BinaryData<double> binaryData = _listOfDoubleBinaryDataToBeRetrived.Dequeue();
 
                 double _value = 0;
-                _binaryDataWrapper.doubleValues.TryGetValue(binaryData.GetKey(), out _value);
+                rawBinaryData.doubleValues.TryGetValue(binaryData.GetKey(), out _value);
                 binaryData.SetData(_value);
 
             }
@@ -103,7 +116,7 @@
                 BinaryData<string> binaryData = _listOfStringBinaryDataToBeRetrived.Dequeue();
 
                 string _value = "";
-                _binaryDataWrapper.stringValues.TryGetValue(binaryData.GetKey(), out _value);
+                rawBinaryData.stringValues.TryGetValue(binaryData.GetKey(), out _value);
                 binaryData.SetData(_value);
 
             }
@@ -145,8 +158,8 @@
             {
                 bool value = false;
 
-                if (!_binaryDataWrapper.boolValues.TryGetValue(binaryData.GetKey(), out value))
-                    _binaryDataWrapper.boolValues.Add(binaryData.GetKey(), value);
+                if (!rawBinaryData.boolValues.TryGetValue(binaryData.GetKey(), out value))
+                    rawBinaryData.boolValues.Add(binaryData.GetKey(), value);
                 
                 binaryData.SetData((T)Convert.ChangeType(value, typeof(T)));
             }
@@ -154,8 +167,8 @@
             {
                 int value = 0;
 
-                if(!_binaryDataWrapper.intValues.TryGetValue(binaryData.GetKey(), out value))
-                    _binaryDataWrapper.intValues.Add(binaryData.GetKey(), value);
+                if(!rawBinaryData.intValues.TryGetValue(binaryData.GetKey(), out value))
+                    rawBinaryData.intValues.Add(binaryData.GetKey(), value);
 
                 binaryData.SetData((T)Convert.ChangeType(value, typeof(T)));
             }
@@ -163,8 +176,8 @@
             {
                 float value = 0;
 
-                if(!_binaryDataWrapper.floatValues.TryGetValue(binaryData.GetKey(), out value))
-                    _binaryDataWrapper.floatValues.Add(binaryData.GetKey(), value);
+                if(!rawBinaryData.floatValues.TryGetValue(binaryData.GetKey(), out value))
+                    rawBinaryData.floatValues.Add(binaryData.GetKey(), value);
 
                 binaryData.SetData((T)Convert.ChangeType(value, typeof(T)));
             }
@@ -172,8 +185,8 @@
             {
                 double value = 0;
 
-                if(!_binaryDataWrapper.doubleValues.TryGetValue(binaryData.GetKey(), out value))
-                    _binaryDataWrapper.doubleValues.Add(binaryData.GetKey(), value);
+                if(!rawBinaryData.doubleValues.TryGetValue(binaryData.GetKey(), out value))
+                    rawBinaryData.doubleValues.Add(binaryData.GetKey(), value);
 
                 binaryData.SetData((T)Convert.ChangeType(value, typeof(T)));
             }
@@ -181,8 +194,8 @@
             {
                 string value = "";
 
-                if(!_binaryDataWrapper.stringValues.TryGetValue(binaryData.GetKey(), out value))
-                    _binaryDataWrapper.stringValues.Add(binaryData.GetKey(), value);
+                if(!rawBinaryData.stringValues.TryGetValue(binaryData.GetKey(), out value))
+                    rawBinaryData.stringValues.Add(binaryData.GetKey(), value);
 
                 binaryData.SetData((T)Convert.ChangeType(value, typeof(T)));
             }
@@ -217,14 +230,14 @@
             PassRetrivedData(binaryData);
         }
 
-        public static void SetData<T>(BinaryData<T> binaryData) {
+        public static void SetData<T>(int index, BinaryData<T> binaryData) {
 
 
         }
 
         public static void TakeDataSnapshot() {
 
-            SaveLoadOperation.SaveData(_binaryDataWrapper, OnDataSavedSucced, _fileName, _fileExtension);
+            SaveLoadOperation.SaveData(rawBinaryData, OnDataSavedSucced, _fileName, _fileExtension);
         }
 
         #endregion

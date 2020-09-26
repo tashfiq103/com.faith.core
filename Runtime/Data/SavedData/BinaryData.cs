@@ -10,6 +10,8 @@
 
         private static List<string> _listOfKeys = new List<string>();
 
+        private int _indexOnBinaryDataWrapper = -1;
+
         #endregion
 
         #region Public Callback
@@ -42,6 +44,11 @@
                 OnValueChangedEvent += OnValueChanged;
                 InvokeOnValueChangedEvent(GetData());
             }
+        }
+
+        public void SetIndexOfBinaryDataWrapper(int index) {
+
+            _indexOnBinaryDataWrapper = index;
         }
 
         public void SetData(T value) {
