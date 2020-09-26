@@ -6,7 +6,7 @@
     {
         #region Private Variables
 
-        protected string _key;
+        protected string key;
         protected CoreEnums.DataTypeForSavingData _dataType;
         protected event Action<T> OnValueChangedEvent;
 
@@ -56,7 +56,7 @@
 
         public string GetKey()
         {
-            return _key;
+            return key;
         }
 
 
