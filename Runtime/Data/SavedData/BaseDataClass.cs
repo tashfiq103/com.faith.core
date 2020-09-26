@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class BaseDataClass<T>
+    public abstract class BaseDataClass<T>
     {
         #region Private Variables
 
