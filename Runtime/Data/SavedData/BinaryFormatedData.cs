@@ -364,23 +364,28 @@
 
             if (typeof(T) == typeof(bool))
             {
-                boolValues[index] = (bool) Convert.ChangeType(value, typeof(bool));
+                boolValues[index]               = (bool) Convert.ChangeType(value, typeof(bool));
+                rawBinaryData.boolValues[index] = boolValues[index];
             }
             else if (typeof(T) == typeof(int))
             {
                 intValues[index] = (int)Convert.ChangeType(value, typeof(int));
+                rawBinaryData.intValues[index] = intValues[index];
             }
             else if (typeof(T) == typeof(float))
             {
                 floatValues[index] = (float)Convert.ChangeType(value, typeof(float));
+                rawBinaryData.floatValues[index] = floatValues[index];
             }
             else if (typeof(T) == typeof(double))
             {
                 doubleValues[index] = (double)Convert.ChangeType(value, typeof(double));
+                rawBinaryData.doubleValues[index] = doubleValues[index];
             }
             else if (typeof(T) == typeof(string))
             {
                 stringValues[index] = (string)Convert.ChangeType(value, typeof(string));
+                rawBinaryData.stringValues[index] = stringValues[index];
             }
         }
 

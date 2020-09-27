@@ -12,13 +12,14 @@
         private static List<string> _listOfKeys = new List<string>();
 
         private PlayerPrefData<T> _playerPrefData;
+        private BinaryData<T> _binaryData;
 
         #endregion
 
 
         #region Public Callback
 
-        public SavedData(string key, T value, Action<T> OnValueChanged) {
+        public SavedData(string key, T value, Action<T> OnValueChanged = null) {
 
             if (_listOfKeys.Contains(key))
             {
@@ -35,7 +36,7 @@
                     _playerPrefData = new PlayerPrefData<T>(key, value, OnValueChanged);
                     break;
                 case CoreEnums.DataSavingMode.BinaryFormater:
-
+                    _binaryData = new BinaryData<T>(key, value, OnValueChanged);
                     break;
             }
         }
@@ -52,7 +53,7 @@
                     break;
                 case CoreEnums.DataSavingMode.BinaryFormater:
 
-
+                    _binaryData.SetData(value);
 
                     break;
             }
@@ -69,7 +70,7 @@
 
                 case CoreEnums.DataSavingMode.BinaryFormater:
 
-                    return default(T);
+                    return _binaryData.GetData();
 
                 default:
 

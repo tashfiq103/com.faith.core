@@ -48,8 +48,7 @@
             else {
 
                 StopAutomaticDataSnapshotController();
-                if (gameConfiguratorAsset.dataSaveWhenApplicationLoseFocus)
-                    BinaryFormatedData.SaveDataSnapshot();
+                TakeDataSnapshop();
             }
               
         }
@@ -59,8 +58,7 @@
             if (pause)
             {
                 StopAutomaticDataSnapshotController();
-                if (gameConfiguratorAsset.dataSaveWhenApplicationLoseFocus)
-                    BinaryFormatedData.SaveDataSnapshot();
+                TakeDataSnapshop();
             }
             else {
 
@@ -71,8 +69,7 @@
         private void OnApplicationQuit()
         {
             StopAutomaticDataSnapshotController();
-            if (gameConfiguratorAsset.dataSaveWhenApplicationQuit)
-                BinaryFormatedData.SaveDataSnapshot();
+            TakeDataSnapshop();
         }
 
         #endregion
@@ -123,7 +120,7 @@
 
         private void StartAutomaticDataSnapshotController() {
 
-            if (!_isAutomaticDataSnapShopControllerRunning)
+            if (dataSavingMode == CoreEnums.DataSavingMode.BinaryFormater && !_isAutomaticDataSnapShopControllerRunning)
             {
                 _isAutomaticDataSnapShopControllerRunning = true;
                 StartCoroutine(ControllerForTakingDataSnapshopInPeriodOfTime());
@@ -132,7 +129,7 @@
 
         private void StopAutomaticDataSnapshotController() {
 
-            if (_isAutomaticDataSnapShopControllerRunning) {
+            if (dataSavingMode == CoreEnums.DataSavingMode.BinaryFormater && _isAutomaticDataSnapShopControllerRunning) {
 
                 _isAutomaticDataSnapShopControllerRunning = false;
             }
@@ -151,7 +148,7 @@
                 if (remainingTime <= 0)
                 {
                     remainingTime = gameConfiguratorAsset.snapshotFrequenceyInSec;
-                    BinaryFormatedData.SaveDataSnapshot();
+                    TakeDataSnapshop();
                 }
 
                 if (!_isAutomaticDataSnapShopControllerRunning)
@@ -160,6 +157,12 @@
             }
 
             StopCoroutine(ControllerForTakingDataSnapshopInPeriodOfTime());
+        }
+
+        private void TakeDataSnapshop() {
+
+            if(gameConfiguratorAsset.dataSavingMode == CoreEnums.DataSavingMode.BinaryFormater)
+                BinaryFormatedData.SaveDataSnapshot();
         }
 
         #endregion
