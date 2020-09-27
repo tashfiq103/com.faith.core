@@ -17,7 +17,7 @@
 
             private string _nameOfCurrency;
             private CoreEnums.AccountBalanceUpdateState _balanceState;
-            private PlayerPrefData<double> _accountBalance;
+            private SavedData<double> _accountBalance;
 
 
             private bool isAnimationRunning;
@@ -39,7 +39,7 @@
             public CurrencyType(string nameOfCurrency)
             {
                 _nameOfCurrency         = nameOfCurrency;
-                _accountBalance         = new PlayerPrefData<double>("AM_Currency_" + nameOfCurrency, 0);
+                _accountBalance         = new SavedData<double>("AM_Currency_" + nameOfCurrency, 0);
                 _balanceState           = CoreEnums.AccountBalanceUpdateState.NONE;
                 _targetedAccountBalance  = _accountBalance.GetData();
             }
