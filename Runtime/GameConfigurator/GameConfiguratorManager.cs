@@ -48,7 +48,8 @@
             else {
 
                 StopAutomaticDataSnapshotController();
-                TakeDataSnapshop();
+
+                if(gameConfiguratorAsset.dataSaveWhenApplicationLoseFocus) TakeDataSnapshop();
             }
               
         }
@@ -58,7 +59,7 @@
             if (pause)
             {
                 StopAutomaticDataSnapshotController();
-                TakeDataSnapshop();
+                if (gameConfiguratorAsset.dataSaveWhenApplicationLoseFocus) TakeDataSnapshop();
             }
             else {
 
@@ -69,7 +70,7 @@
         private void OnApplicationQuit()
         {
             StopAutomaticDataSnapshotController();
-            TakeDataSnapshop();
+            if (gameConfiguratorAsset.dataSaveWhenApplicationQuit) TakeDataSnapshop();
         }
 
         #endregion
