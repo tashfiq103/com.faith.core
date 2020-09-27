@@ -2,7 +2,6 @@
 {
     using UnityEngine;
     using UnityEditor;
-    using System.Collections.Generic;
 
     public class PlayerPrefDataViewerEditorWindow :   BaseEditorWindowClass
     {
@@ -14,11 +13,11 @@
 
         #region EditorWindow
 
-        [MenuItem("FAITH/PlayerPrefData/DataViwer")]
+        [MenuItem("FAITH/Data/PlayerPrefs DataViwer")]
         public static void ShowWindow()
         {
 
-            EditorWindow = GetWindow<PlayerPrefDataViewerEditorWindow>("PlayerPrefData Viwer", typeof(PlayerPrefDataViewerEditorWindow));
+            EditorWindow = GetWindow<PlayerPrefDataViewerEditorWindow>("PlayerPrefs DataViwer", typeof(PlayerPrefDataViewerEditorWindow));
 
             EditorWindow.minSize = new Vector2(450f, 240f);
             EditorWindow.Show();
@@ -39,11 +38,6 @@
                         "Search",
                         m_SearchText
                     );
-                if (GUILayout.Button("RandomPlayerPrefs", GUILayout.Width(125)))
-                {
-
-                    GenerateRandomPlayerPrefs();
-                }
             }
             EditorGUILayout.EndHorizontal();
             
@@ -193,42 +187,7 @@
 
         #region PublicCallback
 
-        private void GenerateRandomPlayerPrefs() {
-
-            List<string> t_RandomKeys = new List<string>();
-            int t_NumberOfRandomPlayerPrefsData = 100;
-            for (int i = 0; i < t_NumberOfRandomPlayerPrefsData; i++) {
-
-                string t_RandomKey = Random.Range(1, 100000).ToString();
-                
-                if (!t_RandomKeys.Contains(t_RandomKey)) {
-
-                    if (i % 7 == 0)
-                    {
-                        PlayerPrefData<string> t_RandomPlayerPrefData = new PlayerPrefData<string>("string_" + t_RandomKey, Random.Range(0f, 100000f).ToString());
-                    }
-                    else if (i % 5 == 0)
-                    {
-                        PlayerPrefData<double> t_RandomPlayerPrefData = new PlayerPrefData<double>("double_" + t_RandomKey, Random.Range(0f, 100f));
-                    }
-                    else if (i % 4 == 0)
-                    {
-                        PlayerPrefData<float> t_RandomPlayerPrefData = new PlayerPrefData<float>("float_" + t_RandomKey, Random.Range(0f, 100f));
-                    }
-                    else if (i % 3 == 0)
-                    {
-                        PlayerPrefData<int> t_RandomPlayerPrefData = new PlayerPrefData<int>("int_" + t_RandomKey, Random.Range(0, 100));
-                    }
-                    else{
-
-                        PlayerPrefData<bool> t_RandomPlayerPrefData = new PlayerPrefData<bool>("bool_" + t_RandomKey, Random.Range(0, 1) == 0 ? false : true);
-                    }
-
-                    t_RandomKeys.Add(t_RandomKey);
-                    
-                }
-            }
-        }
+        
 
         #endregion
     }
