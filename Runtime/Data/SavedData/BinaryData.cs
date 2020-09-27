@@ -16,22 +16,21 @@
 
         #region Public Callback
 
-        public BinaryData(string key, T value, Action<T> OnValueChanged)
+        public BinaryData(string key, T value, Action<T> OnValueChanged = null)
         {
 
             base.key = key;
-
             RegisterOnValueChangedEvent(OnValueChanged);
 
             if (!_listOfKeys.Contains(key))
             {
-                SetData(value);
+                BinaryFormatedData.RegisterInBinaryData(this);
             }
             else {
 
                 if (AssigningDataType(value)) {
 
-                    InvokeOnValueChangedEvent(GetData());
+                    BinaryFormatedData.RegisterInBinaryData(this);
                 }
             }
             
@@ -48,16 +47,21 @@
 
         public void SetIndexOfBinaryDataWrapper(int index) {
 
+            CoreDebugger.Debug.Log("SettingIndex : " + index);
             _indexOnBinaryDataWrapper = index;
         }
 
         public void SetData(T value) {
 
+            BinaryFormatedData.SetData(_indexOnBinaryDataWrapper, value);
+            InvokeOnValueChangedEvent(GetData());
         }
 
         public T GetData() {
 
-            return default(T);
+            CoreDebugger.Debug.Log("Index : " + _indexOnBinaryDataWrapper);
+
+            return BinaryFormatedData.GetData<T>(ref _indexOnBinaryDataWrapper);
         }
 
         #endregion

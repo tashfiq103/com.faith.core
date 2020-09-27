@@ -3,25 +3,26 @@
     using System;
     using System.Collections.Specialized;
     using System.Collections.Generic;
+    using System.Collections;
     using UnityEngine;
 
 
     [Serializable]
     public class BinaryDataWrapper
     {
-        [SerializeField] public Dictionary<string, bool>    boolValues;
-        [SerializeField] public Dictionary<string, int>     intValues;
-        [SerializeField] public Dictionary<string, float>   floatValues;
-        [SerializeField] public Dictionary<string, double>  doubleValues;
-        [SerializeField] public Dictionary<string, string>  stringValues;
+        [SerializeField] public OrderedDictionary boolValues;
+        [SerializeField] public OrderedDictionary intValues;
+        [SerializeField] public OrderedDictionary floatValues;
+        [SerializeField] public OrderedDictionary doubleValues;
+        [SerializeField] public OrderedDictionary stringValues;
 
         public BinaryDataWrapper() {
 
-            boolValues  = new Dictionary<string, bool>();
-            intValues   = new Dictionary<string, int>();
-            floatValues = new Dictionary<string, float>();
-            doubleValues= new Dictionary<string, double>();
-            stringValues= new Dictionary<string, string>();
+            boolValues = new OrderedDictionary();
+            intValues = new OrderedDictionary();
+            floatValues = new OrderedDictionary();
+            doubleValues = new OrderedDictionary();
+            stringValues = new OrderedDictionary();
         }
     }
 
@@ -41,19 +42,31 @@
         private static bool _isInitialDataLoaded = false;
         private static bool _isDataLoadingProcessOnGoing = false;
 
-        private static Queue<BinaryData<bool>> _listOfBooleanBinaryDataToBeRetrived;
-        private static Queue<BinaryData<int>> _listOfIntegerBinaryDataToBeRetrived;
-        private static Queue<BinaryData<float>> _listOfFloatBinaryDataToBeRetrived;
-        private static Queue<BinaryData<double>> _listOfDoubleBinaryDataToBeRetrived;
-        private static Queue<BinaryData<string>> _listOfStringBinaryDataToBeRetrived;
+        private static bool[]   boolValues;
+        private static int[]    intValues;
+        private static float[]  floatValues;
+        private static double[] doubleValues;
+        private static string[] stringValues;
+
+        private static Queue<BinaryData<bool>> _queueOfBooleanBinaryDataToBeRetrived = new Queue<BinaryData<bool>>();
+        private static Queue<BinaryData<int>> _queueOfIntegerBinaryDataToBeRetrived = new Queue<BinaryData<int>>();
+        private static Queue<BinaryData<float>> _queueOfFloatBinaryDataToBeRetrived = new Queue<BinaryData<float>>();
+        private static Queue<BinaryData<double>> _queueOfDoubleBinaryDataToBeRetrived = new Queue<BinaryData<double>>();
+        private static Queue<BinaryData<string>> _queueOfStringBinaryDataToBeRetrived = new Queue<BinaryData<string>>();
 
         #endregion
 
         #region Configuretion
 
+        private static void OnDataSavedSucced()
+        {
+            CoreDebugger.Debug.Log("Data saved successfully");
+        }
+
         private static void OnDataLoadFailed() {
 
             CoreDebugger.Debug.LogError("Failed to retrive the binaryData");
+            SaveLoadOperation.SaveData(new BinaryDataWrapper(), null, _fileName, _fileExtension);
         }
 
         private static void OnDataLoadSucceed(BinaryDataWrapper binaryDataWrapper) {
@@ -62,177 +75,307 @@
 
             _isInitialDataLoaded = true;
 
-            while (_listOfBooleanBinaryDataToBeRetrived.Count > 0)
-            {
-                BinaryData<bool> binaryData = _listOfBooleanBinaryDataToBeRetrived.Dequeue();
+            //Fetch :   BooleanData
+            int numberOfData                = rawBinaryData.boolValues.Count;
+            ICollection keyCollections      = rawBinaryData.boolValues.Keys;
+            ICollection valueCollection     = rawBinaryData.boolValues.Values;
+            
+            string[] keys                   = new string[numberOfData];
+            boolValues                      = new bool[numberOfData];
+            keyCollections.CopyTo(keys, 0);
+            valueCollection.CopyTo(boolValues, 0);
 
-                int index   = rawBinaryData.boolValues.Count;
-                bool value  = false;
+            OnPassingTheLoadedBinaryDataToDifferentQueue(numberOfData, ref keys, ref boolValues, ref _queueOfBooleanBinaryDataToBeRetrived, ref rawBinaryData.boolValues);
 
-                if (rawBinaryData.boolValues.TryGetValue(binaryData.GetKey(), out value)) {
+            //Fetch :   IntegerData
+            numberOfData = rawBinaryData.intValues.Count;
+            keyCollections = rawBinaryData.intValues.Keys;
+            valueCollection = rawBinaryData.intValues.Values;
 
-                    int numberOfElementInDictionary = rawBinaryData.boolValues.Count;
-                    for (int i = 0; i < numberOfElementInDictionary; i++) {
+            keys = new string[numberOfData];
+            intValues = new int[numberOfData];
+            keyCollections.CopyTo(keys, 0);
+            valueCollection.CopyTo(intValues, 0);
 
-                        
-                    }
-                }
-                binaryData.SetData(value);
-                binaryData.SetIndexOfBinaryDataWrapper(index);
-            }
+            OnPassingTheLoadedBinaryDataToDifferentQueue(numberOfData, ref keys, ref intValues, ref _queueOfIntegerBinaryDataToBeRetrived, ref rawBinaryData.intValues);
 
-            while (_listOfIntegerBinaryDataToBeRetrived.Count > 0)
-            {
-                BinaryData<int> binaryData = _listOfIntegerBinaryDataToBeRetrived.Dequeue();
+            //Fetch :   FloatData
+            numberOfData = rawBinaryData.floatValues.Count;
+            keyCollections = rawBinaryData.floatValues.Keys;
+            valueCollection = rawBinaryData.floatValues.Values;
 
-                int _value = 0;
-                rawBinaryData.intValues.TryGetValue(binaryData.GetKey(), out _value);
-                binaryData.SetData(_value);
+            keys = new string[numberOfData];
+            floatValues = new float[numberOfData];
+            keyCollections.CopyTo(keys, 0);
+            valueCollection.CopyTo(floatValues, 0);
 
-            }
+            OnPassingTheLoadedBinaryDataToDifferentQueue(numberOfData, ref keys, ref floatValues, ref _queueOfFloatBinaryDataToBeRetrived, ref rawBinaryData.floatValues);
 
-            while (_listOfFloatBinaryDataToBeRetrived.Count > 0)
-            {
-                BinaryData<float> binaryData = _listOfFloatBinaryDataToBeRetrived.Dequeue();
+            //Fetch :   DoubleData
+            numberOfData = rawBinaryData.doubleValues.Count;
+            keyCollections = rawBinaryData.doubleValues.Keys;
+            valueCollection = rawBinaryData.doubleValues.Values;
 
-                float _value = 0;
-                rawBinaryData.floatValues.TryGetValue(binaryData.GetKey(), out _value);
-                binaryData.SetData(_value);
+            keys = new string[numberOfData];
+            doubleValues = new double[numberOfData];
+            keyCollections.CopyTo(keys, 0);
+            valueCollection.CopyTo(doubleValues, 0);
 
-            }
+            OnPassingTheLoadedBinaryDataToDifferentQueue(numberOfData, ref keys, ref doubleValues, ref _queueOfDoubleBinaryDataToBeRetrived, ref rawBinaryData.doubleValues);
 
-            while (_listOfDoubleBinaryDataToBeRetrived.Count > 0)
-            {
-                BinaryData<double> binaryData = _listOfDoubleBinaryDataToBeRetrived.Dequeue();
+            //Fetch :   StringData
+            numberOfData = rawBinaryData.stringValues.Count;
+            keyCollections = rawBinaryData.stringValues.Keys;
+            valueCollection = rawBinaryData.stringValues.Values;
 
-                double _value = 0;
-                rawBinaryData.doubleValues.TryGetValue(binaryData.GetKey(), out _value);
-                binaryData.SetData(_value);
+            keys = new string[numberOfData];
+            stringValues = new string[numberOfData];
+            keyCollections.CopyTo(keys, 0);
+            valueCollection.CopyTo(stringValues, 0);
 
-            }
-
-            while (_listOfStringBinaryDataToBeRetrived.Count > 0)
-            {
-                BinaryData<string> binaryData = _listOfStringBinaryDataToBeRetrived.Dequeue();
-
-                string _value = "";
-                rawBinaryData.stringValues.TryGetValue(binaryData.GetKey(), out _value);
-                binaryData.SetData(_value);
-
-            }
+            OnPassingTheLoadedBinaryDataToDifferentQueue(numberOfData, ref keys, ref stringValues, ref _queueOfStringBinaryDataToBeRetrived, ref rawBinaryData.stringValues);
         }
 
-        private static void OnDataSavedSucced() {
+        private static void OnPassingTheLoadedBinaryDataToDifferentQueue<T>(
+            int numberOfDataBinaryDatabase,
+            ref string[] keys,
+            ref T[] values,
+            ref Queue<BinaryData<T>> queueOfBinaryDataToRecieveInitialValues,
+            ref OrderedDictionary orderedDictionary) {
 
-            CoreDebugger.Debug.Log("Data saved successfully");
+            CoreDebugger.Debug.Log(typeof(T) + " : Item = " + queueOfBinaryDataToRecieveInitialValues.Count);
+            int index = numberOfDataBinaryDatabase;
+            while (queueOfBinaryDataToRecieveInitialValues.Count > 0)
+            {
+                bool hasFoundInBinarayDatabase = false;
+
+                BinaryData<T> binaryData = queueOfBinaryDataToRecieveInitialValues.Dequeue();
+                T value     = default;
+
+                for (int i = 0; i < numberOfDataBinaryDatabase; i++)
+                {
+
+                    if (StringOperation.IsSameString(keys[i], binaryData.GetKey()))
+                    {
+                        index = i;
+                        value = values[i];
+                        hasFoundInBinarayDatabase = true;
+                        break;
+                    }
+                }
+
+                if (!hasFoundInBinarayDatabase) {
+
+                    orderedDictionary.Add(binaryData.GetKey(), value);
+
+                    List<T> listOfValues = new List<T>(values);
+                    listOfValues.Add(value);
+                    values = listOfValues.ToArray();
+
+                    binaryData.SetIndexOfBinaryDataWrapper(index++);
+                }else
+                    binaryData.SetIndexOfBinaryDataWrapper(index);
+
+
+                binaryData.SetData(value);
+                
+            }
         }
 
         private static void AssignedToDesignatedQueueForRetrivingData<T>(BinaryData<T> binaryData) {
-
+            
             if (typeof(T) == typeof(bool))
             {
-                _listOfBooleanBinaryDataToBeRetrived.Enqueue((BinaryData<bool>)Convert.ChangeType(binaryData, typeof(BinaryData<bool>)));
+                _queueOfBooleanBinaryDataToBeRetrived.Enqueue((BinaryData<bool>)Convert.ChangeType(binaryData, typeof(BinaryData<bool>)));
             }
             else if (typeof(T) == typeof(int))
             {
-                _listOfIntegerBinaryDataToBeRetrived.Enqueue((BinaryData<int>)Convert.ChangeType(binaryData, typeof(BinaryData<int>)));
+                CoreDebugger.Debug.Log("AssignedToQueue :   " + typeof(T));
+                _queueOfIntegerBinaryDataToBeRetrived.Enqueue((BinaryData<int>)Convert.ChangeType(binaryData, typeof(BinaryData<int>)));
             }
             else if (typeof(T) == typeof(float))
             {
-                _listOfFloatBinaryDataToBeRetrived.Enqueue((BinaryData<float>)Convert.ChangeType(binaryData, typeof(BinaryData<float>)));
+                _queueOfFloatBinaryDataToBeRetrived.Enqueue((BinaryData<float>)Convert.ChangeType(binaryData, typeof(BinaryData<float>)));
             }
             else if (typeof(T) == typeof(double))
             {
-                _listOfDoubleBinaryDataToBeRetrived.Enqueue((BinaryData<double>)Convert.ChangeType(binaryData, typeof(BinaryData<double>)));
+                _queueOfDoubleBinaryDataToBeRetrived.Enqueue((BinaryData<double>)Convert.ChangeType(binaryData, typeof(BinaryData<double>)));
             }
             else if (typeof(T) == typeof(string))
             {
-                _listOfStringBinaryDataToBeRetrived.Enqueue((BinaryData<string>)Convert.ChangeType(binaryData, typeof(BinaryData<string>)));
+                _queueOfStringBinaryDataToBeRetrived.Enqueue((BinaryData<string>)Convert.ChangeType(binaryData, typeof(BinaryData<string>)));
 
             }
         }
 
-        private static void PassRetrivedData<T>(BinaryData<T> binaryData) {
-
+        private static void PassRetrivedData<T>(ref BinaryData<T> binaryData) {
+            CoreDebugger.Debug.Log("RetriveData");
             if (typeof(T) == typeof(bool))
             {
-                bool value = false;
+                SetIndexAndPassInitialData(ref binaryData, ref rawBinaryData.boolValues);
 
-                if (!rawBinaryData.boolValues.TryGetValue(binaryData.GetKey(), out value))
-                    rawBinaryData.boolValues.Add(binaryData.GetKey(), value);
-                
-                binaryData.SetData((T)Convert.ChangeType(value, typeof(T)));
             }
             else if (typeof(T) == typeof(int))
             {
-                int value = 0;
-
-                if(!rawBinaryData.intValues.TryGetValue(binaryData.GetKey(), out value))
-                    rawBinaryData.intValues.Add(binaryData.GetKey(), value);
-
-                binaryData.SetData((T)Convert.ChangeType(value, typeof(T)));
+                SetIndexAndPassInitialData(ref binaryData, ref rawBinaryData.intValues);
             }
             else if (typeof(T) == typeof(float))
             {
-                float value = 0;
-
-                if(!rawBinaryData.floatValues.TryGetValue(binaryData.GetKey(), out value))
-                    rawBinaryData.floatValues.Add(binaryData.GetKey(), value);
-
-                binaryData.SetData((T)Convert.ChangeType(value, typeof(T)));
+                SetIndexAndPassInitialData(ref binaryData, ref rawBinaryData.floatValues);
             }
             else if (typeof(T) == typeof(double))
             {
-                double value = 0;
-
-                if(!rawBinaryData.doubleValues.TryGetValue(binaryData.GetKey(), out value))
-                    rawBinaryData.doubleValues.Add(binaryData.GetKey(), value);
-
-                binaryData.SetData((T)Convert.ChangeType(value, typeof(T)));
+                SetIndexAndPassInitialData(ref binaryData, ref rawBinaryData.doubleValues);
             }
             else if (typeof(T) == typeof(string))
             {
-                string value = "";
-
-                if(!rawBinaryData.stringValues.TryGetValue(binaryData.GetKey(), out value))
-                    rawBinaryData.stringValues.Add(binaryData.GetKey(), value);
-
-                binaryData.SetData((T)Convert.ChangeType(value, typeof(T)));
+                SetIndexAndPassInitialData(ref binaryData, ref rawBinaryData.stringValues);
             }
+        }
+
+        private static void SetIndexAndPassInitialData<T>(ref BinaryData<T> binaryData, ref OrderedDictionary orderedDictionary) {
+
+            int numberOfDataInBinaryDatabase    = orderedDictionary.Count;
+            int index                           = numberOfDataInBinaryDatabase;
+            T value                             = default;
+
+
+
+            string[] keys       = new string[numberOfDataInBinaryDatabase];
+            ICollection keyCollections  = orderedDictionary.Keys;
+            keyCollections.CopyTo(keys, 0);
+
+
+            bool hasFoundDataInTheList = false;
+            for (int i = 0; i < numberOfDataInBinaryDatabase; i++) {
+
+                if (StringOperation.IsSameString(binaryData.GetKey(), keys[i])) {
+
+                    T[] values = new T[numberOfDataInBinaryDatabase];
+                    ICollection valueCollection = orderedDictionary.Values;
+                    valueCollection.CopyTo(values, 0);
+
+                    value = values[i];
+                    index = i;
+                    hasFoundDataInTheList = true;
+                    break;
+                }
+            }
+
+            if (!hasFoundDataInTheList) {
+
+                orderedDictionary.Add(binaryData.GetKey(), value);
+
+                if (typeof(T) == typeof(bool))
+                {
+                    List<bool> listOfValues = new List<bool>(boolValues);
+                    listOfValues.Add((bool) Convert.ChangeType(value, typeof(bool)));
+                    boolValues = listOfValues.ToArray();
+                }
+                else if (typeof(T) == typeof(int))
+                {
+                    List<int> listOfValues = new List<int>(intValues);
+                    listOfValues.Add((int)Convert.ChangeType(value, typeof(int)));
+                    intValues = listOfValues.ToArray();
+                }
+                else if (typeof(T) == typeof(float))
+                {
+                    List<float> listOfValues = new List<float>(floatValues);
+                    listOfValues.Add((float)Convert.ChangeType(value, typeof(float)));
+                    floatValues = listOfValues.ToArray();
+                }
+                else if (typeof(T) == typeof(double))
+                {
+                    List<double> listOfValues = new List<double>(doubleValues);
+                    listOfValues.Add((double)Convert.ChangeType(value, typeof(double)));
+                    doubleValues = listOfValues.ToArray();
+                }
+                else if (typeof(T) == typeof(string))
+                {
+                    List<string> listOfValues = new List<string>(stringValues);
+                    listOfValues.Add((string)Convert.ChangeType(value, typeof(string)));
+                    stringValues = listOfValues.ToArray();
+                }
+
+            }
+
+            binaryData.SetIndexOfBinaryDataWrapper(index);
+            binaryData.SetData(value);
+            
         }
 
         #endregion
 
         #region Public Callback
 
-        public static void GetInitialData<T>(BinaryData<T> binaryData) {
+        public static void RegisterInBinaryData<T>(BinaryData<T> binaryData) {
 
             if (!_isInitialDataLoaded)
             {
 
+                AssignedToDesignatedQueueForRetrivingData(binaryData);
+
                 if (!_isDataLoadingProcessOnGoing)
                 {
-
                     _isDataLoadingProcessOnGoing = true;
                     SaveLoadOperation.LoadData<BinaryDataWrapper>(OnDataLoadFailed, OnDataLoadSucceed, _fileName, _fileExtension);
                 }
-
-                AssignedToDesignatedQueueForRetrivingData(binaryData);
             }
             else {
 
-                PassRetrivedData(binaryData);
+                PassRetrivedData(ref binaryData);
             }
         }
 
-        public static void GetData<T>(BinaryData<T> binaryData){
+        public static T GetData<T>(ref int index){
 
-            PassRetrivedData(binaryData);
+            if (typeof(T) == typeof(bool))
+            {
+                return (T) Convert.ChangeType(boolValues[index], typeof(T));
+            }
+            else if (typeof(T) == typeof(int))
+            {
+                return (T)Convert.ChangeType(intValues[index], typeof(T));
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                return (T)Convert.ChangeType(floatValues[index], typeof(T));
+            }
+            else if (typeof(T) == typeof(double))
+            {
+                return (T)Convert.ChangeType(doubleValues[index], typeof(T));
+            }
+            else if (typeof(T) == typeof(string))
+            {
+                return (T)Convert.ChangeType(stringValues[index], typeof(T));
+            }
+
+            return default;
         }
 
-        public static void SetData<T>(int index, BinaryData<T> binaryData) {
+        public static void SetData<T>(int index, T value) {
 
-
+            if (typeof(T) == typeof(bool))
+            {
+                boolValues[index] = (bool) Convert.ChangeType(value, typeof(bool));
+            }
+            else if (typeof(T) == typeof(int))
+            {
+                CoreDebugger.Debug.Log("###Index = " + index + ", IntValues : " + intValues.Length);
+                intValues[index] = (int)Convert.ChangeType(value, typeof(int));
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                floatValues[index] = (float)Convert.ChangeType(value, typeof(float));
+            }
+            else if (typeof(T) == typeof(double))
+            {
+                doubleValues[index] = (double)Convert.ChangeType(value, typeof(double));
+            }
+            else if (typeof(T) == typeof(string))
+            {
+                stringValues[index] = (string)Convert.ChangeType(value, typeof(string));
+            }
         }
 
         public static void TakeDataSnapshot() {

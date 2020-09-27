@@ -62,7 +62,7 @@
 
         public void InvokeOnValueChangedEvent(T value) {
 
-            OnValueChangedEvent.Invoke(value);
+            OnValueChangedEvent?.Invoke(value);
         }
 
         #endregion
