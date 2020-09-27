@@ -12,9 +12,9 @@
 
 
         public CoreEnums.DataSavingMode dataSavingMode;
-        public bool notifyInConsoleOnTakingSnapshot;
-        public bool dataSaveWhenApplicationLoseFocus;
-        public bool dataSaveWhenApplicationQuit;
+        public bool notifyInConsoleOnSavingDataSnapshot = true;
+        public bool dataSaveWhenApplicationLoseFocus = true;
+        public bool dataSaveWhenApplicationQuit = true;
         [Range(1,60)]
         public float snapshotFrequenceyInSec = 15;
 

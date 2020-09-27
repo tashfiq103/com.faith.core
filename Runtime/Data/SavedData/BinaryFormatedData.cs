@@ -61,18 +61,27 @@
         private static void OnDataSavedSucced()
         {
             CoreDebugger.Debug.Log("Data saved successfully");
+            
         }
 
         private static void OnDataLoadFailed() {
 
             CoreDebugger.Debug.LogError("Failed to retrive the binaryData");
-            SaveLoadOperation.SaveData(new BinaryDataWrapper(), null, _fileName, _fileExtension);
+            SaveLoadOperation.SaveData(
+                new BinaryDataWrapper(),
+                delegate {
+                    SaveLoadOperation.LoadData<BinaryDataWrapper>(OnDataLoadFailed, OnDataLoadSucceed, _fileName, _fileExtension);
+                },
+                _fileName,
+                _fileExtension);
         }
 
         private static void OnDataLoadSucceed(BinaryDataWrapper binaryDataWrapper) {
 
             rawBinaryData = binaryDataWrapper;
 
+
+            _isDataLoadingProcessOnGoing = false;
             _isInitialDataLoaded = true;
 
             //Fetch :   BooleanData
@@ -143,14 +152,13 @@
             ref Queue<BinaryData<T>> queueOfBinaryDataToRecieveInitialValues,
             ref OrderedDictionary orderedDictionary) {
 
-            CoreDebugger.Debug.Log(typeof(T) + " : Item = " + queueOfBinaryDataToRecieveInitialValues.Count);
             int index = numberOfDataBinaryDatabase;
             while (queueOfBinaryDataToRecieveInitialValues.Count > 0)
             {
                 bool hasFoundInBinarayDatabase = false;
 
                 BinaryData<T> binaryData = queueOfBinaryDataToRecieveInitialValues.Dequeue();
-                T value     = default;
+                T value     = binaryData.GetInitializedValue();
 
                 for (int i = 0; i < numberOfDataBinaryDatabase; i++)
                 {
@@ -190,7 +198,6 @@
             }
             else if (typeof(T) == typeof(int))
             {
-                CoreDebugger.Debug.Log("AssignedToQueue :   " + typeof(T));
                 _queueOfIntegerBinaryDataToBeRetrived.Enqueue((BinaryData<int>)Convert.ChangeType(binaryData, typeof(BinaryData<int>)));
             }
             else if (typeof(T) == typeof(float))
@@ -209,7 +216,7 @@
         }
 
         private static void PassRetrivedData<T>(ref BinaryData<T> binaryData) {
-            CoreDebugger.Debug.Log("RetriveData");
+
             if (typeof(T) == typeof(bool))
             {
                 SetIndexAndPassInitialData(ref binaryData, ref rawBinaryData.boolValues);
@@ -237,7 +244,7 @@
 
             int numberOfDataInBinaryDatabase    = orderedDictionary.Count;
             int index                           = numberOfDataInBinaryDatabase;
-            T value                             = default;
+            T value                             = binaryData.GetInitializedValue();
 
 
 
@@ -361,7 +368,6 @@
             }
             else if (typeof(T) == typeof(int))
             {
-                CoreDebugger.Debug.Log("###Index = " + index + ", IntValues : " + intValues.Length);
                 intValues[index] = (int)Convert.ChangeType(value, typeof(int));
             }
             else if (typeof(T) == typeof(float))
@@ -378,7 +384,7 @@
             }
         }
 
-        public static void TakeDataSnapshot() {
+        public static void SaveDataSnapshot() {
 
             SaveLoadOperation.SaveData(rawBinaryData, OnDataSavedSucced, _fileName, _fileExtension);
         }

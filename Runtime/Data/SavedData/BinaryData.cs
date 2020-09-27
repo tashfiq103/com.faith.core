@@ -11,6 +11,7 @@
         private static List<string> _listOfKeys = new List<string>();
 
         private int _indexOnBinaryDataWrapper = -1;
+        private T _intializedValue;
 
         #endregion
 
@@ -20,6 +21,7 @@
         {
 
             base.key = key;
+            _intializedValue = value;
             RegisterOnValueChangedEvent(OnValueChanged);
 
             if (!_listOfKeys.Contains(key))
@@ -47,7 +49,6 @@
 
         public void SetIndexOfBinaryDataWrapper(int index) {
 
-            CoreDebugger.Debug.Log("SettingIndex : " + index);
             _indexOnBinaryDataWrapper = index;
         }
 
@@ -59,9 +60,12 @@
 
         public T GetData() {
 
-            CoreDebugger.Debug.Log("Index : " + _indexOnBinaryDataWrapper);
-
             return BinaryFormatedData.GetData<T>(ref _indexOnBinaryDataWrapper);
+        }
+
+        public T GetInitializedValue() {
+
+            return _intializedValue;
         }
 
         #endregion

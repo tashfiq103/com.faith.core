@@ -14,7 +14,7 @@
         private SerializedProperty _sp_gameMode;
         private SerializedProperty _sp_logType;
         private SerializedProperty _sp_dataSavingMode;
-        private SerializedProperty _sp_notifyInConsoleOnTakingSnapshot;
+        private SerializedProperty _sp_notifyInConsoleOnSavingDataSnapshot;
         private SerializedProperty _sp_dataSaveWhenApplicationLoseFocus;
         private SerializedProperty _sp_dataSaveWhenApplicationQuit;
         private SerializedProperty _sp_snapshotFrequenceyInSec;
@@ -33,7 +33,7 @@
             _sp_gameMode = serializedObject.FindProperty("gameMode");
             _sp_logType = serializedObject.FindProperty("logType");
             _sp_dataSavingMode = serializedObject.FindProperty("dataSavingMode");
-            _sp_notifyInConsoleOnTakingSnapshot = serializedObject.FindProperty("notifyInConsoleOnTakingSnapshot");
+            _sp_notifyInConsoleOnSavingDataSnapshot = serializedObject.FindProperty("notifyInConsoleOnSavingDataSnapshot");
             _sp_dataSaveWhenApplicationLoseFocus = serializedObject.FindProperty("dataSaveWhenApplicationLoseFocus");
             _sp_dataSaveWhenApplicationQuit = serializedObject.FindProperty("dataSaveWhenApplicationQuit");
             _sp_snapshotFrequenceyInSec = serializedObject.FindProperty("snapshotFrequenceyInSec");
@@ -54,11 +54,12 @@
 
                 EditorGUI.indentLevel += 1;
 
-                EditorGUILayout.PropertyField(_sp_notifyInConsoleOnTakingSnapshot);
+                EditorGUILayout.PropertyField(_sp_notifyInConsoleOnSavingDataSnapshot);
 
                 EditorGUILayout.Space();
                 EditorGUILayout.PropertyField(_sp_dataSaveWhenApplicationLoseFocus);
                 EditorGUILayout.PropertyField(_sp_dataSaveWhenApplicationQuit);
+                EditorGUILayout.PropertyField(_sp_snapshotFrequenceyInSec);
 
                 EditorGUI.indentLevel -= 1;
                 DrawHorizontalLine();
