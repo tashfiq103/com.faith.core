@@ -9,7 +9,14 @@
 
         public CoreEnums.GameMode gameMode;
         public CoreEnums.LogType logType;
+
+
         public CoreEnums.DataSavingMode dataSavingMode;
+        public bool notifyInConsoleOnTakingSnapshot;
+        public bool dataSaveWhenApplicationLoseFocus;
+        public bool dataSaveWhenApplicationQuit;
+        [Range(1,60)]
+        public float snapshotFrequenceyInSec = 15;
 
         #endregion
 
