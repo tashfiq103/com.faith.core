@@ -307,9 +307,9 @@
 
             if (AssigningDataType(value))
             {
-
+#if UNITY_EDITOR
                 int index = PlayerPrefDataSettings.IsPlayerPrefEditorDataAlreadyInContainer(key);
-
+#endif
                 switch (_dataType)
                 {
 
