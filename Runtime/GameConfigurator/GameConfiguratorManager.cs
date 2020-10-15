@@ -1,6 +1,7 @@
 ﻿namespace com.faith.core
 {
     using UnityEngine;
+    using UnityEngine.SceneManagement;
     using System.Collections;
 
     public class GameConfiguratorManager : MonoBehaviour
@@ -116,7 +117,15 @@
             logType         = gameConfiguratorAsset.logType;
             dataSavingMode  = gameConfiguratorAsset.dataSavingMode;
 
+            if (gameConfiguratorAsset.dataSaveWhenSceneUnloaded)
+                SceneManager.sceneUnloaded += OnSceneUnloaded;
+
             StartAutomaticDataSnapshotController();
+        }
+
+        private void OnSceneUnloaded(Scene scene) {
+
+            TakeDataSnapshop();
         }
 
         private void StartAutomaticDataSnapshotController() {

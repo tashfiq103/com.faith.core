@@ -9,10 +9,9 @@
 
         public CoreEnums.GameMode gameMode;
         public CoreEnums.LogType logType;
-
-
         public CoreEnums.DataSavingMode dataSavingMode;
-        public bool notifyInConsoleOnSavingDataSnapshot = true;
+
+        public bool dataSaveWhenSceneUnloaded = true;
         public bool dataSaveWhenApplicationLoseFocus = true;
         public bool dataSaveWhenApplicationQuit = true;
         [Range(1,60)]
