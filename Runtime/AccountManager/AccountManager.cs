@@ -13,10 +13,10 @@
         internal class CurrencyType
         {
 
-            public UnityEvent<double, CoreEnums.AccountBalanceUpdateState> OnBalanceChangedEvent;
+            public UnityEvent<double, CoreEnums.ValueChangedState> OnBalanceChangedEvent;
 
             private string _nameOfCurrency;
-            private CoreEnums.AccountBalanceUpdateState _balanceState;
+            private CoreEnums.ValueChangedState _balanceState;
             private SavedData<double> _accountBalance;
 
 
@@ -40,7 +40,7 @@
             {
                 _nameOfCurrency         = nameOfCurrency;
                 _accountBalance         = new SavedData<double>("AM_Currency_" + nameOfCurrency, 0);
-                _balanceState           = CoreEnums.AccountBalanceUpdateState.NONE;
+                _balanceState           = CoreEnums.ValueChangedState.VALUE_UNCHANGED;
                 _targetedAccountBalance  = _accountBalance.GetData();
             }
 
@@ -57,9 +57,9 @@
 
             public void SetNewTargetForAccountBalance(double amount)
             {
-                if (amount == 0) _balanceState = CoreEnums.AccountBalanceUpdateState.NONE;
-                else if (amount > 0) _balanceState = CoreEnums.AccountBalanceUpdateState.ADDED;
-                else _balanceState = CoreEnums.AccountBalanceUpdateState.DEDUCTED;
+                if (amount == 0) _balanceState = CoreEnums.ValueChangedState.VALUE_UNCHANGED;
+                else if (amount > 0) _balanceState = CoreEnums.ValueChangedState.VALUE_INCREASED;
+                else _balanceState = CoreEnums.ValueChangedState.VALUE_DECREASED;
                 _targetedAccountBalance += amount;
             }
 
@@ -209,11 +209,11 @@
 
         }
 
-        public void OnBalanceChangedEvent (UnityAction<double, CoreEnums.AccountBalanceUpdateState> OnBalanceChange, AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT)
+        public void OnBalanceChangedEvent (UnityAction<double, CoreEnums.ValueChangedState> OnBalanceChange, AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT)
         {
             int currencyIndex = (int)currency;
             currencyTypes[currencyIndex].OnBalanceChangedEvent.AddListener(OnBalanceChange);
-            currencyTypes[currencyIndex].OnBalanceChangedEvent.Invoke(currencyTypes[currencyIndex].GetCurrentBalance(), CoreEnums.AccountBalanceUpdateState.NONE);
+            currencyTypes[currencyIndex].OnBalanceChangedEvent.Invoke(currencyTypes[currencyIndex].GetCurrentBalance(), CoreEnums.ValueChangedState.VALUE_UNCHANGED);
         }
 
         public string GetNameOfCurrency(AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT)

@@ -46,11 +46,12 @@
             Singleton
         }
 
-        public enum AccountBalanceUpdateState
+        public enum ValueChangedState
         {
-            ADDED,
-            DEDUCTED,
-            NONE
+            VALUE_INCREASED,
+            VALUE_DECREASED,
+            VALUE_UNCHANGED,
+            VALUE_UNDEFINED
         }
     }
 }

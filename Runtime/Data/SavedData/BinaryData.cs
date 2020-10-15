@@ -20,9 +20,9 @@
         public BinaryData(string key, T value, Action<T> OnValueChanged = null)
         {
 
-            base.key = key;
+            _key = key;
             _intializedValue = value;
-            RegisterOnValueChangedEvent(OnValueChanged);
+            if (OnValueChanged != null) OnValueChangedEvent += OnValueChanged;
 
             if (!_listOfKeys.Contains(key))
             {

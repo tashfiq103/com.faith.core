@@ -23,7 +23,7 @@
 
             if (_listOfKeys.Contains(key))
             {
-                CoreDebugger.Debug.LogError("Key : " + key + ", is already in used!. Please generate unique key for this data");
+                CoreDebugger.Debug.LogWarning("Key : " + key + ", is already in used!. Please generate unique key for this data");
             }
             else
             {

@@ -256,36 +256,36 @@
 
         #region Public Callback
 
-        public PlayerPrefData(string t_Key, T t_Value, Action<T> OnValueChanged = null)
+        public PlayerPrefData(string key, T value, Action<T> OnValueChanged = null)
         {
-            key = t_Key;
+            _key = key;
 
 
             RegisterOnValueChangedEvent(OnValueChanged);
 
             //if : The following key is not used, we initialized the data type and their respective value
-            if (!PlayerPrefs.HasKey(t_Key))
+            if (!PlayerPrefs.HasKey(key))
             {
                 //if : Valid DataType
-                SetData(t_Value);
+                SetData(value);
 #if UNITY_EDITOR
-                if (PlayerPrefDataSettings.IsPlayerPrefEditorDataAlreadyInContainer(t_Key) != -1)
+                if (PlayerPrefDataSettings.IsPlayerPrefEditorDataAlreadyInContainer(key) != -1)
                 {
-                    PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(t_Key, Convert.ChangeType(t_Value, typeof(T)).ToString(), ref OnValueChanged);
+                    PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(key, Convert.ChangeType(value, typeof(T)).ToString(), ref OnValueChanged);
                 }
                 else {
 
-                    PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(t_Key, GetData().ToString(), ref OnValueChanged);
+                    PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(key, GetData().ToString(), ref OnValueChanged);
                 }
 #endif
             }
             else {
 
-                if (AssigningDataType(t_Value)) {
+                if (AssigningDataType(value)) {
                     InvokeOnValueChangedEvent(GetData());
                 }
 #if UNITY_EDITOR
-                PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(t_Key, GetData().ToString(), ref OnValueChanged);
+                PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(key, GetData().ToString(), ref OnValueChanged);
 #endif
             }
         }
@@ -297,7 +297,7 @@
                 OnValueChangedEvent += OnValueChanged;
                 InvokeOnValueChangedEvent(GetData());
 #if UNITY_EDITOR
-                PlayerPrefDataSettings.RegisterOnValueChangedEvent(key ,ref OnValueChanged);
+                PlayerPrefDataSettings.RegisterOnValueChangedEvent(_key ,ref OnValueChanged);
 #endif
             }
         }
@@ -307,8 +307,10 @@
 
             if (AssigningDataType(value))
             {
+
+
 #if UNITY_EDITOR
-                int index = PlayerPrefDataSettings.IsPlayerPrefEditorDataAlreadyInContainer(key);
+                int index = PlayerPrefDataSettings.IsPlayerPrefEditorDataAlreadyInContainer(_key);
 #endif
                 switch (_dataType)
                 {
@@ -316,7 +318,7 @@
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_BOOL:
 
                         bool t_ParsedBoolValue = (bool)Convert.ChangeType(value, typeof(bool));
-                        PlayerPrefs.SetInt(key, t_ParsedBoolValue ? 1 : 0);
+                        PlayerPrefs.SetInt(_key, t_ParsedBoolValue ? 1 : 0);
                         InvokeOnValueChangedEvent((T)Convert.ChangeType(value, typeof(bool)));
 
 #if UNITY_EDITOR
@@ -327,7 +329,7 @@
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_INT:
 
                         int t_ParsedIntValue = (int)Convert.ChangeType(value, typeof(int));
-                        PlayerPrefs.SetInt(key, t_ParsedIntValue);
+                        PlayerPrefs.SetInt(_key, t_ParsedIntValue);
                         InvokeOnValueChangedEvent((T)Convert.ChangeType(value, typeof(int)));
 
 #if UNITY_EDITOR
@@ -338,7 +340,7 @@
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_FLOAT:
 
                         float t_ParsedFloatValue = (float)Convert.ChangeType(value, typeof(float));
-                        PlayerPrefs.SetFloat(key, t_ParsedFloatValue);
+                        PlayerPrefs.SetFloat(_key, t_ParsedFloatValue);
                         InvokeOnValueChangedEvent((T)Convert.ChangeType(value, typeof(float)));
 
 #if UNITY_EDITOR
@@ -349,7 +351,7 @@
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_DOUBLE:
 
                         double t_ParsedDoubleValue = (double)Convert.ChangeType(value, typeof(double));
-                        PlayerPrefs.SetString(key, t_ParsedDoubleValue.ToString());
+                        PlayerPrefs.SetString(_key, t_ParsedDoubleValue.ToString());
                         InvokeOnValueChangedEvent((T)Convert.ChangeType(value, typeof(double)));
 
 #if UNITY_EDITOR
@@ -360,7 +362,7 @@
                     case CoreEnums.DataTypeForSavingData.DATA_TYPE_STRING:
 
                         string t_ParsedStringValue = (string)Convert.ChangeType(value, typeof(string));
-                        PlayerPrefs.SetString(key, t_ParsedStringValue);
+                        PlayerPrefs.SetString(_key, t_ParsedStringValue);
                         InvokeOnValueChangedEvent((T)Convert.ChangeType(value, typeof(string)));
 
 #if UNITY_EDITOR
@@ -380,27 +382,27 @@
 
                 case CoreEnums.DataTypeForSavingData.DATA_TYPE_BOOL:
 
-                    return (T)Convert.ChangeType(PlayerPrefs.GetInt(key, 0) == 1 ? true : false, typeof(T));
+                    return (T)Convert.ChangeType(PlayerPrefs.GetInt(_key, 0) == 1 ? true : false, typeof(T));
 
                 case CoreEnums.DataTypeForSavingData.DATA_TYPE_INT:
 
-                    return (T)Convert.ChangeType(PlayerPrefs.GetInt(key, 0), typeof(T));
+                    return (T)Convert.ChangeType(PlayerPrefs.GetInt(_key, 0), typeof(T));
 
                 case CoreEnums.DataTypeForSavingData.DATA_TYPE_FLOAT:
 
-                    return (T)Convert.ChangeType(PlayerPrefs.GetFloat(key, 0), typeof(T));
+                    return (T)Convert.ChangeType(PlayerPrefs.GetFloat(_key, 0), typeof(T));
 
                 case CoreEnums.DataTypeForSavingData.DATA_TYPE_DOUBLE:
 
-                    return (T)Convert.ChangeType(PlayerPrefs.GetString(key, "0"), typeof(T));
+                    return (T)Convert.ChangeType(PlayerPrefs.GetString(_key, "0"), typeof(T));
 
                 case CoreEnums.DataTypeForSavingData.DATA_TYPE_STRING:
 
-                    return (T)Convert.ChangeType(PlayerPrefs.GetString(key, ""), typeof(T));
+                    return (T)Convert.ChangeType(PlayerPrefs.GetString(_key, ""), typeof(T));
 
             }
 
-            return (T)Convert.ChangeType(PlayerPrefs.GetInt(key, 0), typeof(T));
+            return (T)Convert.ChangeType(PlayerPrefs.GetInt(_key, 0), typeof(T));
         }
 
 #endregion
