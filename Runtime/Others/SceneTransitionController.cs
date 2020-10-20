@@ -17,11 +17,17 @@
 
         #region Configuretion
 
-        private static async void ControllerForLoadingScene(string sceneName, UnityAction<float> OnUpdatingProgression, UnityAction OnSceneLoaded, float animationSpeedForLoadingBar = 1, float initalDelayToInvokeOnSceneLoaded = 0)
+        private static async void ControllerForLoadingScene(
+            string sceneName,
+            UnityAction<float> OnUpdatingProgression,
+            UnityAction OnSceneLoaded,
+            float animationSpeedForLoadingBar = 1,
+            float initalDelayToInvokeOnSceneLoaded = 0,
+            LoadSceneMode loadSceneMode = LoadSceneMode.Single)
         {
             float animatedLerpValue = 0f;
 
-            AsyncOperation asyncOperationForLoadingScene = SceneManager.LoadSceneAsync(sceneName);
+            AsyncOperation asyncOperationForLoadingScene = SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
             asyncOperationForLoadingScene.allowSceneActivation = false;
             while (/*!asyncOperationForLoadingScene.isDone && */ animatedLerpValue <= 0.99f)
             {
@@ -64,12 +70,13 @@
             UnityAction<float> OnUpdatingProgression = null,
             UnityAction OnSceneLoaded = null,
             float animationSpeedForLoadingBar = 1,
-            float initalDelayToInvokeOnSceneLoaded = 0)
+            float initalDelayToInvokeOnSceneLoaded = 0,
+            LoadSceneMode loadSceneMode = LoadSceneMode.Single)
         {
             if (!_isSceneLoadOperationRunning)
             {
                 _isSceneLoadOperationRunning = true;
-                ControllerForLoadingScene(sceneName, OnUpdatingProgression, OnSceneLoaded, animationSpeedForLoadingBar, initalDelayToInvokeOnSceneLoaded);
+                ControllerForLoadingScene(sceneName, OnUpdatingProgression, OnSceneLoaded, animationSpeedForLoadingBar, initalDelayToInvokeOnSceneLoaded, loadSceneMode);
             }
             else {
 

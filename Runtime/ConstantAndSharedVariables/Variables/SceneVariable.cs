@@ -2,6 +2,7 @@
 {
     using UnityEngine;
     using UnityEngine.Events;
+    using UnityEngine.SceneManagement;
 
     [CreateAssetMenu(fileName = "SceneVariable", menuName = "FAITH/SharedVariable/SceneVariable")]
     public class SceneVariable : ScriptableObject
@@ -9,9 +10,14 @@
         #region Public Variables
 
 #if UNITY_EDITOR
-        public string scenePath;
+        public bool     isEnabled;
+        public bool     advanceOption;
+        public string   scenePath;
 #endif
-        public string sceneName;
+        public string           sceneName;
+        [Range(0.1f,1f)]
+        public float animationSpeedForLoadingBar = 0.5f;
+        public LoadSceneMode    loadSceneMode= LoadSceneMode.Single;
 
         #endregion
 
@@ -20,14 +26,13 @@
         public void LoadScene(
             UnityAction<float> OnUpdatingProgression = null,
             UnityAction OnSceneLoaded = null,
-            float animationSpeedForLoadingBar = 1,
             float initalDelayToInvokeOnSceneLoaded = 0) {
 
 #if UNITY_EDITOR
 
             if (UnityEditor.EditorApplication.isPlaying)
             {
-                UnityEditor.SceneManagement.EditorSceneManager.OpenScene(scenePath, UnityEditor.SceneManagement.OpenSceneMode.Single);
+                UnityEditor.SceneManagement.EditorSceneManager.OpenScene(scenePath, loadSceneMode == LoadSceneMode.Single ? UnityEditor.SceneManagement.OpenSceneMode.Single : UnityEditor.SceneManagement.OpenSceneMode.Additive);
             }
             else {
                 SceneTransitionController.LoadScene(
@@ -35,7 +40,8 @@
                     OnUpdatingProgression,
                     OnSceneLoaded,
                     animationSpeedForLoadingBar,
-                    initalDelayToInvokeOnSceneLoaded
+                    initalDelayToInvokeOnSceneLoaded,
+                    loadSceneMode
                 );
             }
 
@@ -45,7 +51,8 @@
                     OnUpdatingProgression,
                     OnSceneLoaded,
                     animationSpeedForLoadingBar,
-                    initalDelayToInvokeOnSceneLoaded
+                    initalDelayToInvokeOnSceneLoaded,
+                    loadSceneMode
                 );
 #endif
 

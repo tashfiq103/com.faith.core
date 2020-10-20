@@ -81,6 +81,13 @@
 
         #region Editor Module   :   Scene
 
+        protected string GetSceneNameFromPath(string scenePath) {
+
+            string[] splitedByDash = scenePath.Split('/');
+            string[] splitedByDot = splitedByDash[splitedByDash.Length - 1].Split('.');
+            return splitedByDot[0];
+        }
+
         protected bool IsSceneAlreadyInBuild(string scenePath)
         {
             int numberOfSceneInBuild = EditorBuildSettings.scenes.Length;
@@ -91,12 +98,54 @@
                     return true;
                 }
             }
+
             return false;
+        }
+
+        protected bool IsSceneEnabled(string scenePath) {
+
+
+            if (IsSceneAlreadyInBuild(scenePath)) {
+
+                EditorBuildSettingsScene[] edtiorBuildSettingsScene = EditorBuildSettings.scenes;
+                foreach (EditorBuildSettingsScene buildScene in edtiorBuildSettingsScene)
+                {
+                    if (buildScene.path == scenePath && buildScene.enabled)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        protected void EnableAndDisableScene(string scenePath, bool value) {
+
+            if (IsSceneAlreadyInBuild(scenePath)) {
+
+                EditorBuildSettingsScene[] editorBuildSettingsScene = EditorBuildSettings.scenes;
+                foreach (EditorBuildSettingsScene buildScene in editorBuildSettingsScene)
+                {
+                    if (buildScene.path == scenePath) {
+
+                        buildScene.enabled = value;
+                        break;
+                    }
+                }
+                EditorBuildSettings.scenes = editorBuildSettingsScene;
+
+            }
+        }
+
+        protected void AddSceneToBuild(string scenePath, bool isEnabled = true) {
+
+            EditorBuildSettingsScene newBuildScene = new EditorBuildSettingsScene(scenePath, isEnabled);
+            List<EditorBuildSettingsScene> tempBuildSettingsScene = EditorBuildSettings.scenes.ToList();
+            tempBuildSettingsScene.Add(newBuildScene);
+            EditorBuildSettings.scenes = tempBuildSettingsScene.ToArray();
         }
 
         protected void RemoveSceneFromBuild(string t_ScenePath)
         {
-
             List<EditorBuildSettingsScene> tempBuildSettingsScene = EditorBuildSettings.scenes.ToList();
             int numberOfCurrentSceneInTheBuild = tempBuildSettingsScene.Count;
             for (int i = 0; i < numberOfCurrentSceneInTheBuild; i++)
