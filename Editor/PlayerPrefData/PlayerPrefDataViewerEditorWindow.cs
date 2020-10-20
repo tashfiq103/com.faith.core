@@ -11,6 +11,11 @@
         private static Vector2 m_ScrollPosition;
         private static string m_SearchText;
 
+        private const float widthForDataType = 100;
+        private const float widthForValue = 140;
+        private const float widthForValueChange = 140;
+        
+
         #region EditorWindow
 
         [MenuItem("FAITH/Data/PlayerPrefs DataViwer")]
@@ -49,9 +54,9 @@
                 EditorGUILayout.BeginHorizontal();
                 {
                     EditorGUILayout.LabelField("PrefKeys (" + PlayerPrefDataSettings.listOfUsedPlayerPrefEditorData.Count.ToString() + ")", EditorStyles.boldLabel);
-                    EditorGUILayout.LabelField("DataType", EditorStyles.boldLabel, GUILayout.Width(100));
-                    EditorGUILayout.LabelField("Value", EditorStyles.boldLabel, GUILayout.Width(100));
-                    EditorGUILayout.LabelField("SetValue", EditorStyles.boldLabel, GUILayout.Width(100));
+                    EditorGUILayout.LabelField("DataType", EditorStyles.boldLabel, GUILayout.Width(widthForDataType));
+                    EditorGUILayout.LabelField("Value", EditorStyles.boldLabel, GUILayout.Width(widthForValue));
+                    EditorGUILayout.LabelField("SetValue", EditorStyles.boldLabel, GUILayout.Width(widthForValueChange));
                 }
                 EditorGUILayout.EndHorizontal();
                 DrawHorizontalLine();
@@ -70,8 +75,8 @@
                             if (t_PlayerPrefDataKey.type == typeof(bool))
                             {
 
-                                EditorGUILayout.LabelField("BOOLEAN", GUILayout.Width(100));
-                                EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(100));
+                                EditorGUILayout.LabelField("BOOLEAN", GUILayout.Width(widthForDataType));
+                                EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(widthForValue));
 
                                 bool t_BoolValue = (bool)System.Convert.ChangeType(t_PlayerPrefDataKey.value, typeof(bool));
                                 EditorGUI.BeginChangeCheck();
@@ -79,7 +84,7 @@
                                     t_BoolValue = EditorGUILayout.Toggle(
                                         "",
                                         t_BoolValue,
-                                        GUILayout.Width(100)
+                                        GUILayout.Width(widthForValueChange)
                                     );
                                 }
                                 if (EditorGUI.EndChangeCheck())
@@ -90,8 +95,8 @@
                             else if (t_PlayerPrefDataKey.type == typeof(int))
                             {
 
-                                EditorGUILayout.LabelField("INTEGER", GUILayout.Width(100));
-                                EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(100));
+                                EditorGUILayout.LabelField("INTEGER", GUILayout.Width(widthForDataType));
+                                EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(widthForValue));
 
                                 int t_IntValue = (int)System.Convert.ChangeType(t_PlayerPrefDataKey.value, typeof(int));
 
@@ -100,7 +105,7 @@
                                     t_IntValue = EditorGUILayout.IntField(
                                         "",
                                         t_IntValue,
-                                        GUILayout.Width(100)
+                                        GUILayout.Width(widthForValueChange)
                                     );
                                 }
                                 if (EditorGUI.EndChangeCheck())
@@ -110,8 +115,8 @@
                             }
                             else if (t_PlayerPrefDataKey.type == typeof(float))
                             {
-                                EditorGUILayout.LabelField("FLOAT", GUILayout.Width(100));
-                                EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(100));
+                                EditorGUILayout.LabelField("FLOAT", GUILayout.Width(widthForDataType));
+                                EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(widthForValue));
 
                                 float t_FloatValue = (float)System.Convert.ChangeType(t_PlayerPrefDataKey.value, typeof(float));
 
@@ -120,7 +125,7 @@
                                     t_FloatValue = EditorGUILayout.FloatField(
                                         "",
                                         t_FloatValue,
-                                        GUILayout.Width(100)
+                                        GUILayout.Width(widthForValueChange)
                                     );
                                 }
                                 if (EditorGUI.EndChangeCheck())
@@ -131,8 +136,8 @@
                             }
                             else if (t_PlayerPrefDataKey.type == typeof(double))
                             {
-                                EditorGUILayout.LabelField("DOUBLE", GUILayout.Width(100));
-                                EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(100));
+                                EditorGUILayout.LabelField("DOUBLE", GUILayout.Width(widthForDataType));
+                                EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(widthForValue));
 
                                 double t_DoubleValue = (double)System.Convert.ChangeType(t_PlayerPrefDataKey.value, typeof(double));
 
@@ -141,7 +146,7 @@
                                     t_DoubleValue = EditorGUILayout.DoubleField(
                                         "",
                                         t_DoubleValue,
-                                        GUILayout.Width(100)
+                                        GUILayout.Width(widthForValueChange)
                                     );
                                 }
                                 if (EditorGUI.EndChangeCheck())
@@ -153,8 +158,8 @@
                             else if (t_PlayerPrefDataKey.type == typeof(string))
                             {
 
-                                EditorGUILayout.LabelField("STRING", GUILayout.Width(100));
-                                EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(100));
+                                EditorGUILayout.LabelField("STRING", GUILayout.Width(widthForDataType));
+                                EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(widthForValue));
 
                                 string t_StringValue = (string)System.Convert.ChangeType(t_PlayerPrefDataKey.value, typeof(string));
 
@@ -163,12 +168,35 @@
                                     t_StringValue = EditorGUILayout.TextField(
                                         "",
                                         t_StringValue,
-                                        GUILayout.Width(100)
+                                        GUILayout.Width(widthForValueChange)
                                     );
                                 }
                                 if (EditorGUI.EndChangeCheck())
                                 {
                                     PlayerPrefDataSettings.SetData<string>(t_PlayerPrefDataKey.key, t_StringValue.ToString());
+                                }
+                            }
+                            else if (t_PlayerPrefDataKey.type == typeof(System.DateTime))
+                            {
+
+                                EditorGUILayout.LabelField("DATE_TIME", GUILayout.Width(widthForDataType));
+                                EditorGUILayout.LabelField(t_PlayerPrefDataKey.value, GUILayout.Width(widthForValue));
+
+                                System.DateTime dateTimeValue = (System.DateTime)System.Convert.ChangeType(t_PlayerPrefDataKey.value, typeof(System.DateTime));
+
+                                EditorGUI.BeginChangeCheck();
+                                {
+                                    GUI.enabled = false;
+                                    EditorGUILayout.TextField(
+                                        "",
+                                        dateTimeValue.ToString(),
+                                        GUILayout.Width(widthForValueChange)
+                                    );
+                                    GUI.enabled = true;
+                                }
+                                if (EditorGUI.EndChangeCheck())
+                                {
+                                    PlayerPrefDataSettings.SetData<System.DateTime>(t_PlayerPrefDataKey.key, dateTimeValue.ToString());
                                 }
                             }
                         }

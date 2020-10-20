@@ -30,6 +30,7 @@
             DATA_TYPE_FLOAT,
             DATA_TYPE_DOUBLE,
             DATA_TYPE_STRING,
+            DATA_TYPE_DATETIME,
             UNDEFINED
         }
 

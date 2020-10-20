@@ -44,6 +44,11 @@
                 _dataType = CoreEnums.DataTypeForSavingData.DATA_TYPE_STRING;
                 return true;
             }
+            else if (typeof(T) == typeof(DateTime))
+            {
+                _dataType = CoreEnums.DataTypeForSavingData.DATA_TYPE_DATETIME;
+                return true;
+            }
 
             CoreDebugger.Debug.LogError("Invalid DataType for Value : " + t_Value);
             _dataType = CoreEnums.DataTypeForSavingData.UNDEFINED;

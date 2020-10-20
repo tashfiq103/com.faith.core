@@ -50,6 +50,10 @@
 
             if (_reference.dataSavingMode == CoreEnums.DataSavingMode.BinaryFormater)
             {
+
+                DrawHorizontalLine();
+                EditorGUILayout.HelpBox("Following data saving formate is still now in 'Preview', so things might get broken for different type of data saving", MessageType.Warning);
+
                 DrawHorizontalLine();
                 EditorGUILayout.PropertyField(_sp_dataSavingMode);
 

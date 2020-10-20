@@ -23,6 +23,7 @@
             private event Action<float>     OnValueChangedForFloat;
             private event Action<double>    OnValueChangedForDouble;
             private event Action<string>    OnValueChangedForString;
+            private event Action<DateTime>  OnValueChangedForDateTime;
 
             public void AssignValueChangedEvent<T>(string value, ref Action<T> OnValueChanged) {
 
@@ -47,6 +48,11 @@
                 else if (typeof(T) == typeof(string)){
 
                     OnValueChangedForString += (Action<string>)Convert.ChangeType(OnValueChanged, typeof(Action<string>));
+                }
+                else if (typeof(T) == typeof(DateTime))
+                {
+
+                    OnValueChangedForDateTime += (Action<DateTime>)Convert.ChangeType(OnValueChanged, typeof(Action<DateTime>));
                 }
 
                 InvokeEvent(this.value); ;
@@ -80,6 +86,10 @@
                 else if (type == typeof(string))
                 {
                     OnValueChangedForString?.Invoke(GetData<string>());
+                }
+                else if (type == typeof(DateTime))
+                {
+                    OnValueChangedForDateTime?.Invoke(GetData<DateTime>());
                 }
             }
         }
@@ -169,6 +179,10 @@
                 {
                     PlayerPrefs.SetString(t_Key, t_Value);
                 }
+                else if (typeof(T) == typeof(DateTime))
+                {
+                    PlayerPrefs.SetString(t_Key, t_Value);
+                }
 
                 listOfUsedPlayerPrefEditorData[t_Index].InvokeEvent(t_Value);
             }
@@ -199,6 +213,11 @@
                     return (T)Convert.ChangeType(PlayerPrefs.GetString(key, "0"), typeof(T));
                 }
                 else if (typeof(T) == typeof(bool))
+                {
+
+                    return (T)Convert.ChangeType(PlayerPrefs.GetString(key, ""), typeof(T));
+                }
+                else if (typeof(T) == typeof(DateTime))
                 {
 
                     return (T)Convert.ChangeType(PlayerPrefs.GetString(key, ""), typeof(T));
@@ -260,9 +279,6 @@
         {
             _key = key;
 
-
-            RegisterOnValueChangedEvent(OnValueChanged);
-
             //if : The following key is not used, we initialized the data type and their respective value
             if (!PlayerPrefs.HasKey(key))
             {
@@ -288,6 +304,8 @@
                 PlayerPrefDataSettings.EnlistPlayerPrefEditorDataInContainer(key, GetData().ToString(), ref OnValueChanged);
 #endif
             }
+
+            RegisterOnValueChangedEvent(OnValueChanged);
         }
 
         public void RegisterOnValueChangedEvent(Action<T> OnValueChanged) {
@@ -370,6 +388,17 @@
 #endif
 
                         break;
+                    case CoreEnums.DataTypeForSavingData.DATA_TYPE_DATETIME:
+
+                        DateTime t_ParsedDateTime = (DateTime)Convert.ChangeType(value, typeof(DateTime));
+                        PlayerPrefs.SetString(_key, t_ParsedDateTime.ToString());
+                        InvokeOnValueChangedEvent((T)Convert.ChangeType(value, typeof(DateTime)));
+
+#if UNITY_EDITOR
+                        if (index != -1) PlayerPrefDataSettings.listOfUsedPlayerPrefEditorData[index].InvokeEvent(t_ParsedDateTime.ToString());
+#endif
+
+                        break;
                 }
             }
         }
@@ -399,6 +428,9 @@
                 case CoreEnums.DataTypeForSavingData.DATA_TYPE_STRING:
 
                     return (T)Convert.ChangeType(PlayerPrefs.GetString(_key, ""), typeof(T));
+                case CoreEnums.DataTypeForSavingData.DATA_TYPE_DATETIME:
+
+                    return (T)Convert.ChangeType(PlayerPrefs.GetString(_key, "1/1/2020 00:00:00"), typeof(T));
 
             }
 
