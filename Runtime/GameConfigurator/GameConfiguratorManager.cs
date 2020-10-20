@@ -9,9 +9,13 @@
 
         #region Public Varaibles
 
-        public static CoreEnums.GameMode        gameMode        = CoreEnums.GameMode.DEBUG;
-        public static CoreEnums.LogType         logType         = CoreEnums.LogType.Verbose;
-        public static CoreEnums.DataSavingMode  dataSavingMode  = CoreEnums.DataSavingMode.PlayerPrefsData;
+        public static CoreEnums.GameMode gameMode = CoreEnums.GameMode.DEBUG;
+        public static CoreEnums.LogType logType = CoreEnums.LogType.Verbose;
+        public static CoreEnums.DataSavingMode dataSavingMode = CoreEnums.DataSavingMode.PlayerPrefsData;
+
+        public CoreEnums.GameMode GameMode { get { return gameMode; } }
+        public CoreEnums.LogType LogType { get { return logType; } }
+        public CoreEnums.DataSavingMode DataSavingMode { get { return dataSavingMode; } }
 
 #if UNITY_EDITOR
 
@@ -26,7 +30,9 @@
 
         #region Private Variables
 
-        private bool _isAutomaticDataSnapShopControllerRunning = false;
+        
+
+        private bool    _isAutomaticDataSnapShopControllerRunning = false;
 
         #endregion
 
