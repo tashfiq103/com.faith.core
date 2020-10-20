@@ -5,7 +5,9 @@
     using System.Collections.Generic;
     using System.Collections;
     using UnityEngine;
-
+    //Key       :   Value
+    //TestCas1  : 1.0
+    //TestCase2 : MyName
 
     [Serializable]
     public class BinaryDataWrapper
@@ -109,7 +111,8 @@
                     if (StringOperation.IsSameString(_listOfBinaryDataKeys[i], binaryData.GetKey()))
                     {
                         index = i;
-                        value = (T) rawBinaryData.keyedValues[i];
+                        //value =  (T)rawBinaryData.keyedValues[i];
+                        value = (T)Convert.ChangeType(rawBinaryData.keyedValues[i], typeof(T));
                         hasFoundInBinarayDatabase = true;
                         break;
                     }

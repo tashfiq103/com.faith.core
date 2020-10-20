@@ -48,10 +48,6 @@
 
             useConstant.boolValue = result == 0;
 
-            //EditorGUI.PropertyField(position,
-            //    useConstant.boolValue ? sceneName : variable,
-            //    GUIContent.none);
-
             if (useConstant.boolValue)
             {
 

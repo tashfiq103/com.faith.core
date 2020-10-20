@@ -1,6 +1,7 @@
 ﻿namespace com.faith.core {
     using UnityEditor;
     using UnityEngine;
+    using System.Linq;
     using System.Collections.Generic;
 
     public class BaseEditorClass : Editor {
@@ -20,7 +21,7 @@
         #region Editor Module   :   Asset
 
 
-        public List<T> GetAsset<T>(string nameFilter, bool returnIfGetAny = false, params string[] directoryFilters) {
+        protected List<T> GetAsset<T>(string nameFilter, bool returnIfGetAny = false, params string[] directoryFilters) {
 
             List<T> listOfAsset = new List<T>();
             string[] GUIDs;
@@ -42,15 +43,15 @@
 
         #region Editor Module   :   GUI
 
-        public void DrawHorizontalLine () {
+        protected void DrawHorizontalLine () {
             EditorGUILayout.LabelField ("", GUI.skin.horizontalSlider);
         }
 
-        public void DrawHorizontalLineOnGUI (Rect rect) {
+        protected void DrawHorizontalLineOnGUI (Rect rect) {
             EditorGUI.LabelField (rect, "", GUI.skin.horizontalSlider);
         }
 
-        public void DrawSettingsEditor (Object settings, System.Action OnSettingsUpdated, ref bool foldout, ref Editor editor) {
+        protected void DrawSettingsEditor (Object settings, System.Action OnSettingsUpdated, ref bool foldout, ref Editor editor) {
 
             if (settings != null) {
 
@@ -74,6 +75,40 @@
                 }
             }
 
+        }
+
+        #endregion
+
+        #region Editor Module   :   Scene
+
+        protected bool IsSceneAlreadyInBuild(string scenePath)
+        {
+            int numberOfSceneInBuild = EditorBuildSettings.scenes.Length;
+            for (int i = 0; i < numberOfSceneInBuild; i++)
+            {
+                if (EditorBuildSettings.scenes[i].path == scenePath)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        protected void RemoveSceneFromBuild(string t_ScenePath)
+        {
+
+            List<EditorBuildSettingsScene> tempBuildSettingsScene = EditorBuildSettings.scenes.ToList();
+            int numberOfCurrentSceneInTheBuild = tempBuildSettingsScene.Count;
+            for (int i = 0; i < numberOfCurrentSceneInTheBuild; i++)
+            {
+                if (tempBuildSettingsScene[i].path == t_ScenePath)
+                {
+                    tempBuildSettingsScene.RemoveAt(i);
+                    tempBuildSettingsScene.TrimExcess();
+                    break;
+                }
+            }
+            EditorBuildSettings.scenes = tempBuildSettingsScene.ToArray();
         }
 
         #endregion
