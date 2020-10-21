@@ -54,6 +54,24 @@
             VALUE_UNCHANGED,
             VALUE_UNDEFINED
         }
+
+        public enum AxisType
+        {
+            OneForAll,
+            Seperate
+        }
+
+        public enum TransitionType
+        {
+            TransitionIn,
+            TransitionOut
+        }
+
+        public enum InitialScalePoint
+        {
+            Current,
+            New
+        }
     }
 }
 
