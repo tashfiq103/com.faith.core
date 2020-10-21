@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-
+﻿
 public static class ScriptableObjectAssetMenu
 {
     public const int        ORDER_SHARED_VARIABLE_INT           = 0;
@@ -25,6 +24,5 @@ public static class ScriptableObjectAssetMenu
 
 }
 
-#endif
 
 
