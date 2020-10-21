@@ -13,10 +13,6 @@
         public static CoreEnums.LogType logType = CoreEnums.LogType.Verbose;
         public static CoreEnums.DataSavingMode dataSavingMode = CoreEnums.DataSavingMode.PlayerPrefsData;
 
-        public CoreEnums.GameMode GameMode { get { return gameMode; } }
-        public CoreEnums.LogType LogType { get { return logType; } }
-        public CoreEnums.DataSavingMode DataSavingMode { get { return dataSavingMode; } }
-
 #if UNITY_EDITOR
 
         public bool isGameConfiguratorAssetVisible;

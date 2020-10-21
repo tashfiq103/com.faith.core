@@ -2,7 +2,10 @@
 {
     using UnityEngine;
 
-    [CreateAssetMenu(fileName = "FloatVariable", menuName = "FAITH/SharedVariable/FloatVariable")]
+    [CreateAssetMenu(
+        fileName    = "Float Variable",
+        menuName    = ScriptableObjectAssetMenu.MENU_SHARED_VARIABLE_FLOAT,
+        order       = ScriptableObjectAssetMenu.ORDER_SHARED_VARIABLE_FLOAT)]
     public class FloatVariable : ScriptableObject
     {
 #if UNITY_EDITOR

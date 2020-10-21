@@ -2,7 +2,10 @@
 {
     using UnityEngine;
 
-    [CreateAssetMenu(fileName = "IntVariables", menuName = "FAITH/SharedVariable/IntVariables")]
+    [CreateAssetMenu(
+        fileName = "Int Variable",
+        menuName = ScriptableObjectAssetMenu.MENU_SHARED_VARIABLE_INT,
+        order = ScriptableObjectAssetMenu.ORDER_SHARED_VARIABLE_INT)]
     public class IntVariables : ScriptableObject
     {
 #if UNITY_EDITOR

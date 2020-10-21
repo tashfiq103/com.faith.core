@@ -4,7 +4,10 @@
     using UnityEngine.Events;
     using UnityEngine.SceneManagement;
 
-    [CreateAssetMenu(fileName = "SceneVariable", menuName = "FAITH/SharedVariable/SceneVariable")]
+    [CreateAssetMenu(
+        fileName = "SceneVariable",
+        menuName = ScriptableObjectAssetMenu.MENU_SCENE_MANAGEMENT_SCENE_VARIABLE,
+        order    = ScriptableObjectAssetMenu.ORDER_SCENE_MANAGEMENT_SCENE_VARIABLE)]
     public class SceneVariable : ScriptableObject
     {
         #region Public Variables
