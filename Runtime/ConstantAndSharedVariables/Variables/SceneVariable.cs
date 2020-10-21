@@ -30,7 +30,7 @@
 
 #if UNITY_EDITOR
 
-            if (UnityEditor.EditorApplication.isPlaying)
+            if (!UnityEditor.EditorApplication.isPlaying)
             {
                 UnityEditor.SceneManagement.EditorSceneManager.OpenScene(scenePath, loadSceneMode == LoadSceneMode.Single ? UnityEditor.SceneManagement.OpenSceneMode.Single : UnityEditor.SceneManagement.OpenSceneMode.Additive);
             }

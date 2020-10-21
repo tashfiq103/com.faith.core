@@ -29,14 +29,13 @@
 
             AsyncOperation asyncOperationForLoadingScene = SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
             asyncOperationForLoadingScene.allowSceneActivation = false;
-            while (/*!asyncOperationForLoadingScene.isDone && */ animatedLerpValue <= 0.99f)
+            while (animatedLerpValue <= 0.99f)
             {
                 animatedLerpValue = Mathf.Lerp(
                     animatedLerpValue,
                     Mathf.Clamp(asyncOperationForLoadingScene.progress, 0, 0.9f) / LOAD_READY_PERCENTAGE,
                     animationSpeedForLoadingBar);
 
-                CoreDebugger.Debug.LogWarning("AnimatedLerpValue : " + asyncOperationForLoadingScene.progress  + ", " + animatedLerpValue);
                 OnUpdatingProgression?.Invoke(animatedLerpValue);
 
                 await Task.Delay(1);
@@ -44,7 +43,7 @@
 
             OnUpdatingProgression?.Invoke(1);
 
-            while (!asyncOperationForLoadingScene.isDone) {
+            while (asyncOperationForLoadingScene.progress < 0.9f) {
 
                 await Task.Delay(33);
             }

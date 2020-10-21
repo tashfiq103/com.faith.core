@@ -2,6 +2,7 @@
 {
 
     using UnityEngine.Events;
+    using UnityEngine.SceneManagement;
 
     [System.Serializable]
     public class SceneReference
@@ -44,33 +45,41 @@
             float initalDelayToInvokeOnSceneLoaded = 0)
         {
 
+            if (UseConstant)
+            {
 #if UNITY_EDITOR
 
-            if (UnityEditor.EditorApplication.isPlaying)
-            {
-                UnityEditor.SceneManagement.EditorSceneManager.OpenScene(scenePath, UnityEditor.SceneManagement.OpenSceneMode.Single);
-            }
-            else
-            {
-                SceneTransitionController.LoadScene(
-                    sceneName,
-                    OnUpdatingProgression,
-                    OnSceneLoaded,
-                    animationSpeedForLoadingBar,
-                    initalDelayToInvokeOnSceneLoaded
-                );
-            }
+                if (!UnityEditor.EditorApplication.isPlaying)
+                {
+                    UnityEditor.SceneManagement.EditorSceneManager.OpenScene(scenePath, UnityEditor.SceneManagement.OpenSceneMode.Single);
+                }
+                else
+                {
+                    SceneTransitionController.LoadScene(
+                        sceneName,
+                        OnUpdatingProgression,
+                        OnSceneLoaded,
+                        animationSpeedForLoadingBar,
+                        initalDelayToInvokeOnSceneLoaded,
+                        LoadSceneMode.Single
+                    );
+                }
 
 #else
             SceneTransitionController.LoadScene(
-                    sceneName,
-                    OnUpdatingProgression,
-                    OnSceneLoaded,
-                    animationSpeedForLoadingBar,
-                    initalDelayToInvokeOnSceneLoaded
-                );
+                        sceneName,
+                        OnUpdatingProgression,
+                        OnSceneLoaded,
+                        animationSpeedForLoadingBar,
+                        initalDelayToInvokeOnSceneLoaded,
+                        LoadSceneMode.Single
+                    );
 #endif
+            }
+            else {
 
+                Variable.LoadScene(OnUpdatingProgression, OnSceneLoaded, initalDelayToInvokeOnSceneLoaded);
+            }
         }
 
         public static implicit operator string(SceneReference reference)
