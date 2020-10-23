@@ -1,4 +1,5 @@
 ﻿namespace com.faith.core {
+    using UnityEditorInternal;
     using UnityEditor;
     using UnityEngine;
     using System.Linq;
@@ -7,13 +8,16 @@
     public class BaseEditorClass : Editor {
 
         protected static CoreEnums.CorePackageStatus _packageStatus = CoreEnums.CorePackageStatus.InDevelopment;
+        protected float singleLineHeight;
 
         #region OnEditor
 
         public virtual void OnEnable()
         {
-            if(_packageStatus == CoreEnums.CorePackageStatus.InDevelopment)
-                _packageStatus = AssetDatabase.FindAssets("com.faith.core", new string[] { "Packages" }).Length > 0 ? CoreEnums.CorePackageStatus.Production : CoreEnums.CorePackageStatus.InDevelopment;  
+            if (_packageStatus == CoreEnums.CorePackageStatus.InDevelopment)
+                _packageStatus = AssetDatabase.FindAssets("com.faith.core", new string[] { "Packages" }).Length > 0 ? CoreEnums.CorePackageStatus.Production : CoreEnums.CorePackageStatus.InDevelopment;
+
+            singleLineHeight = EditorGUIUtility.singleLineHeight;
         }
 
         #endregion
@@ -31,7 +35,7 @@
             foreach (string GUID in GUIDs) {
 
                 string assetPath = AssetDatabase.GUIDToAssetPath(GUID);
-                listOfAsset.Add((T) System.Convert.ChangeType(AssetDatabase.LoadAssetAtPath(assetPath, typeof(T)), typeof(T)));
+                listOfAsset.Add((T)System.Convert.ChangeType(AssetDatabase.LoadAssetAtPath(assetPath, typeof(T)), typeof(T)));
                 if (returnIfGetAny)
                     break;
             }
@@ -50,38 +54,69 @@
             EditorGUI.EndDisabledGroup();
         }
 
-        protected void DrawHorizontalLine () {
-            EditorGUILayout.LabelField ("", GUI.skin.horizontalSlider);
+        protected void DrawHorizontalLine() {
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         }
 
-        protected void DrawHorizontalLineOnGUI (Rect rect) {
-            EditorGUI.LabelField (rect, "", GUI.skin.horizontalSlider);
+        protected void DrawHorizontalLineOnGUI(Rect rect) {
+            EditorGUI.LabelField(rect, "", GUI.skin.horizontalSlider);
         }
 
-        protected void DrawSettingsEditor (Object settings, System.Action OnSettingsUpdated, ref bool foldout, ref Editor editor) {
+        protected void DrawSettingsEditor(Object settings, System.Action OnSettingsUpdated, ref bool foldout, ref Editor editor) {
 
             if (settings != null) {
 
-                using (var check = new EditorGUI.ChangeCheckScope ()) {
+                using (var check = new EditorGUI.ChangeCheckScope()) {
 
-                    foldout = EditorGUILayout.InspectorTitlebar (foldout, settings);
+                    foldout = EditorGUILayout.InspectorTitlebar(foldout, settings);
 
                     if (foldout) {
 
-                        CreateCachedEditor (settings, null, ref editor);
-                        editor.OnInspectorGUI ();
+                        CreateCachedEditor(settings, null, ref editor);
+                        editor.OnInspectorGUI();
 
                         if (check.changed) {
 
                             if (OnSettingsUpdated != null) {
 
-                                OnSettingsUpdated.Invoke ();
+                                OnSettingsUpdated.Invoke();
                             }
                         }
                     }
                 }
             }
 
+        }
+
+        protected ReorderableList GetSimpleReorderableList(SerializedProperty listOfProperty, bool drawLineSeperator = false){
+
+            ReorderableList newReorderableList = new ReorderableList(serializedObject, listOfProperty) {
+
+                displayAdd = true,
+                displayRemove = true,
+                draggable = true,
+                drawHeaderCallback = rect =>
+                {
+                    EditorGUI.LabelField(new Rect(rect.x, rect.y, rect.width, singleLineHeight), listOfProperty.displayName);
+                },
+                drawElementCallback = (rect,index, isActive, isFocused) => {
+
+                    SerializedProperty element  = listOfProperty.GetArrayElementAtIndex(index);
+                    float heightOfElement       = EditorGUI.GetPropertyHeight(element);
+
+                    EditorGUI.PropertyField(
+                        new Rect(rect.x, rect.y, rect.width, heightOfElement),
+                        element);
+
+                    if (drawLineSeperator)
+                        DrawHorizontalLineOnGUI(new Rect(rect.x, rect.y + heightOfElement, rect.width, singleLineHeight));
+                },
+                elementHeightCallback = index => {
+
+                    return EditorGUI.GetPropertyHeight(listOfProperty.GetArrayElementAtIndex(index)) + (drawLineSeperator? singleLineHeight : 0);
+                }
+            };
+            return newReorderableList;
         }
 
         #endregion
