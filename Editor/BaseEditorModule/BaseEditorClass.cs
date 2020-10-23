@@ -10,6 +10,94 @@
         protected static CoreEnums.CorePackageStatus _packageStatus = CoreEnums.CorePackageStatus.InDevelopment;
         protected float singleLineHeight;
 
+        #region CustomEditorClass
+
+        public class ReorderableList {
+
+            #region Private Variables
+
+            private SerializedProperty sourceProperty;
+            private bool isFoldout = false;
+            private UnityEditorInternal.ReorderableList reorderableList;
+            
+
+            #endregion
+
+            #region Public Callback
+
+            public ReorderableList(SerializedObject serializedObject, SerializedProperty sourceProperty, bool drawLineSeperator = false)
+            {
+                this.sourceProperty     = sourceProperty;
+                float singleLineHeight  = EditorGUIUtility.singleLineHeight;
+
+                reorderableList = new UnityEditorInternal.ReorderableList(serializedObject, sourceProperty)
+                {
+
+                    displayAdd = true,
+                    displayRemove = true,
+                    draggable = true,
+                    drawHeaderCallback = rect =>
+                    {
+                        isFoldout = EditorGUI.Foldout(
+                                new Rect(rect.x + 12, rect.y, rect.width, singleLineHeight),
+                                isFoldout,
+                                sourceProperty.displayName,
+                                true
+                            );
+                    },
+                    drawElementCallback = (rect, index, isActive, isFocused) => {
+
+                        SerializedProperty element = sourceProperty.GetArrayElementAtIndex(index);
+                        float heightOfElement = EditorGUI.GetPropertyHeight(element);
+
+                        if (isFoldout) {
+
+                            EditorGUI.PropertyField(
+                                new Rect(rect.x + 12, rect.y, rect.width, heightOfElement),
+                                element,
+                                true
+                            );
+
+                            if (drawLineSeperator)
+                                EditorGUI.LabelField(new Rect(rect.x, rect.y + heightOfElement, rect.width, singleLineHeight), "", GUI.skin.horizontalSlider);
+                        }
+
+                       
+ 
+                    },
+                    elementHeightCallback = index => {
+
+                        return isFoldout ? EditorGUI.GetPropertyHeight(sourceProperty.GetArrayElementAtIndex(index)) + (drawLineSeperator ? singleLineHeight : 0) : 0;
+                    }
+                };
+            }
+
+            public void DoLayoutList() {
+
+                if (!isFoldout)
+                {
+
+                    isFoldout = EditorGUILayout.Foldout(
+                                isFoldout,
+                                "(Reorderable) : " + sourceProperty.displayName,
+                                true
+                            );
+                }
+                else {
+
+                    reorderableList.DoLayoutList();
+                }
+
+                
+            }
+
+            #endregion
+
+
+        }
+
+        #endregion
+
         #region OnEditor
 
         public virtual void OnEnable()
@@ -88,35 +176,9 @@
 
         }
 
-        protected ReorderableList GetSimpleReorderableList(SerializedProperty listOfProperty, bool drawLineSeperator = false){
+        protected ReorderableList GetReorderableList(SerializedProperty sourceProperty,  bool drawLineSeperator = false) {
 
-            ReorderableList newReorderableList = new ReorderableList(serializedObject, listOfProperty) {
-
-                displayAdd = true,
-                displayRemove = true,
-                draggable = true,
-                drawHeaderCallback = rect =>
-                {
-                    EditorGUI.LabelField(new Rect(rect.x, rect.y, rect.width, singleLineHeight), listOfProperty.displayName);
-                },
-                drawElementCallback = (rect,index, isActive, isFocused) => {
-
-                    SerializedProperty element  = listOfProperty.GetArrayElementAtIndex(index);
-                    float heightOfElement       = EditorGUI.GetPropertyHeight(element);
-
-                    EditorGUI.PropertyField(
-                        new Rect(rect.x, rect.y, rect.width, heightOfElement),
-                        element);
-
-                    if (drawLineSeperator)
-                        DrawHorizontalLineOnGUI(new Rect(rect.x, rect.y + heightOfElement, rect.width, singleLineHeight));
-                },
-                elementHeightCallback = index => {
-
-                    return EditorGUI.GetPropertyHeight(listOfProperty.GetArrayElementAtIndex(index)) + (drawLineSeperator? singleLineHeight : 0);
-                }
-            };
-            return newReorderableList;
+            return new ReorderableList(serializedObject, sourceProperty, drawLineSeperator);
         }
 
         #endregion
