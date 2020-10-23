@@ -39,6 +39,9 @@
 
         public override void OnInspectorGUI()
         {
+
+            ShowScriptReference();
+
             serializedObject.Update();
 
             SceneAsset oldScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath.stringValue);

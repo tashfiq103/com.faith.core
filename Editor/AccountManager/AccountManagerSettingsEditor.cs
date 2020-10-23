@@ -52,6 +52,9 @@
 
         public override void OnInspectorGUI()
         {
+
+            ShowScriptReference();
+
             serializedObject.Update();
 
             EditorGUILayout.BeginHorizontal();

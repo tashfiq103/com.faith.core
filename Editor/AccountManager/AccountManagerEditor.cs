@@ -28,6 +28,9 @@
 
         public override void OnInspectorGUI()
         {
+
+            ShowScriptReference();
+
             serializedObject.Update();
 
             EditorGUILayout.PropertyField(_sp_instanceBehaviour);

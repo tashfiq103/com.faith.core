@@ -43,6 +43,13 @@
 
         #region Editor Module   :   GUI
 
+        protected void ShowScriptReference() {
+
+            EditorGUI.BeginDisabledGroup(true);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Script"));
+            EditorGUI.EndDisabledGroup();
+        }
+
         protected void DrawHorizontalLine () {
             EditorGUILayout.LabelField ("", GUI.skin.horizontalSlider);
         }

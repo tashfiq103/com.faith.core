@@ -36,6 +36,8 @@ namespace com.faith.core
 
         public override void OnInspectorGUI()
         {
+            ShowScriptReference();
+
             serializedObject.Update();
 
             if (_packageStatus == CoreEnums.CorePackageStatus.InDevelopment) {
