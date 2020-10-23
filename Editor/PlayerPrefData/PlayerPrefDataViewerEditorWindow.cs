@@ -18,7 +18,7 @@
 
         #region EditorWindow
 
-        [MenuItem("FAITH/Data/PlayerPrefs DataViwer")]
+        [MenuItem("FAITH/Core/PlayerPrefs/DataViwer", priority = 0)]
         public static void ShowWindow()
         {
 
