@@ -1,6 +1,8 @@
 ﻿
 namespace com.faith.core
 {
+    using System.Collections.Generic;
+    using UnityEngine;
     using UnityEditor;
 
     [CustomEditor(typeof(GameConfiguratorManager))]
@@ -14,6 +16,36 @@ namespace com.faith.core
 
         private SerializedProperty _sp_instanceBehaviour;
         private SerializedProperty _sp_gameConfiguratorAsset;
+
+
+
+        #endregion
+
+        #region Configuretion
+
+        private void ChangeConfiguretion() {
+
+            List<GameConfiguratorAsset> listOfGameConfiguretorAsset =  GetAsset<GameConfiguratorAsset>();
+            foreach (GameConfiguratorAsset asset in listOfGameConfiguretorAsset) {
+
+                SerializedObject gameConfiguretionAsset = new SerializedObject(asset);
+
+                if (_sp_gameConfiguratorAsset.objectReferenceValue == gameConfiguretionAsset.targetObject)
+                {
+                    gameConfiguretionAsset.FindProperty("_isUsedByCentralGameConfiguretion").boolValue = true;
+                    gameConfiguretionAsset.FindProperty("_linkWithCentralGameConfiguretion").boolValue = false;
+                    gameConfiguretionAsset.ApplyModifiedProperties();
+                }
+                else {
+
+                    gameConfiguretionAsset.FindProperty("_isUsedByCentralGameConfiguretion").boolValue = false;
+                    gameConfiguretionAsset.ApplyModifiedProperties();
+                }
+
+                //CoreDebugger.Debug.Log(gameConfiguretionAsset.targetObject.name + " : " + gameConfiguretionAsset.FindProperty("_isUsedByCentralGameConfiguretion").boolValue, Color.blue);
+            }
+
+        }
 
         #endregion
 
@@ -49,11 +81,23 @@ namespace com.faith.core
             EditorGUILayout.PropertyField(_sp_instanceBehaviour);
 
             DrawHorizontalLine();
-            EditorGUILayout.PropertyField(_sp_gameConfiguratorAsset);
+
+
+            EditorGUI.BeginChangeCheck();
+            _sp_gameConfiguratorAsset.objectReferenceValue = EditorGUILayout.ObjectField(
+                    "Game Configuretor Asset",
+                    _sp_gameConfiguratorAsset.objectReferenceValue,
+                    typeof(GameConfiguratorAsset),
+                    false
+                ) as GameConfiguratorAsset;
+            if (EditorGUI.EndChangeCheck()) {
+                ChangeConfiguretion();
+            }
 
             if (_reference.gameConfiguratorAsset != null)
             {
                 EditorGUI.indentLevel += 1;
+                EditorGUILayout.Space();
                 DrawSettingsEditor(_sp_gameConfiguratorAsset.objectReferenceValue, null, ref _reference.isGameConfiguratorAssetVisible, ref _gameConfiguratorAssetEditor);
                 EditorGUI.indentLevel -= 1;
             }

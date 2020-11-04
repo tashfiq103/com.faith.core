@@ -10,6 +10,9 @@
 
         private GameConfiguratorAsset _reference;
 
+        private SerializedProperty _sp_isUsedByCentralGameConfiguretion;
+        private SerializedProperty _sp_linkWithCentralGameConfiguretion;
+
         private SerializedProperty _sp_gameMode;
 
         private SerializedProperty _sp_logType;
@@ -35,6 +38,9 @@
             if (_reference == null)
                 return;
 
+            _sp_isUsedByCentralGameConfiguretion = serializedObject.FindProperty("_isUsedByCentralGameConfiguretion");
+            _sp_linkWithCentralGameConfiguretion = serializedObject.FindProperty("_linkWithCentralGameConfiguretion");
+
             _sp_gameMode = serializedObject.FindProperty("_gameMode");
 
             _sp_logType = serializedObject.FindProperty("_logType");
@@ -56,55 +62,80 @@
 
             serializedObject.Update();
 
-            EditorGUILayout.PropertyField(_sp_gameMode);
-            DrawHorizontalLine();
-
-            EditorGUILayout.PropertyField(_sp_logType);
-            EditorGUI.indentLevel += 1;
-            switch (_reference.logType) {
-                case CoreEnums.LogType.None:
-                    
-                    break;
-                case CoreEnums.LogType.Error:
-                    EditorGUILayout.PropertyField(_sp_colorForLogError);
-                    break;
-                case CoreEnums.LogType.Info:
-                    EditorGUILayout.PropertyField(_sp_colorForLog);
-                    EditorGUILayout.PropertyField(_sp_colorForLogError);
-                    break;
-                case CoreEnums.LogType.Verbose:
-                    EditorGUILayout.PropertyField(_sp_colorForLog);
-                    EditorGUILayout.PropertyField(_sp_colorForLogWarning);
-                    EditorGUILayout.PropertyField(_sp_colorForLogError);
-                    break;
-            }
-            EditorGUI.indentLevel -= 1;
-            DrawHorizontalLine();
-
-            if (_reference.dataSavingMode == CoreEnums.DataSavingMode.BinaryFormater)
+            //Linking With Central Configuretor
+            if (!_sp_isUsedByCentralGameConfiguretion.boolValue)
             {
 
-                DrawHorizontalLine();
-                EditorGUILayout.HelpBox("Following data saving formate is still now in 'Preview', so things might get broken for different type of data saving", MessageType.Warning);
-
-                DrawHorizontalLine();
-                EditorGUILayout.PropertyField(_sp_dataSavingMode);
-
-                EditorGUI.indentLevel += 1;
-
-                EditorGUILayout.Space();
-                EditorGUILayout.PropertyField(_sp_dataSaveWhenSceneUnloaded);
-                EditorGUILayout.PropertyField(_sp_dataSaveWhenApplicationLoseFocus);
-                EditorGUILayout.PropertyField(_sp_dataSaveWhenApplicationQuit);
-                EditorGUILayout.PropertyField(_sp_snapshotFrequenceyInSec);
-
-                EditorGUI.indentLevel -= 1;
+                EditorGUILayout.PropertyField(_sp_linkWithCentralGameConfiguretion);
                 DrawHorizontalLine();
             }
             else {
-                EditorGUILayout.PropertyField(_sp_dataSavingMode);
+
+                EditorGUILayout.HelpBox("The following configuretion asset is used in 'GameConfiguretionManager'.", MessageType.Info);
+                DrawHorizontalLine();
             }
 
+            if (_sp_linkWithCentralGameConfiguretion.boolValue)
+            {
+                EditorGUILayout.HelpBox("The following configuretion is now synced with 'GameConfiguretionManager'. To make it standalone, unlink it", MessageType.Info);
+            }
+            else {
+
+                EditorGUILayout.PropertyField(_sp_gameMode);
+                DrawHorizontalLine();
+
+                EditorGUILayout.PropertyField(_sp_logType);
+                EditorGUI.indentLevel += 1;
+                switch (_sp_logType.enumValueIndex)
+                {
+                    case (int)CoreEnums.LogType.None:
+
+                        break;
+                    case (int)CoreEnums.LogType.Error:
+                        EditorGUILayout.PropertyField(_sp_colorForLogError);
+                        break;
+                    case (int)CoreEnums.LogType.Info:
+                        EditorGUILayout.PropertyField(_sp_colorForLog);
+                        EditorGUILayout.PropertyField(_sp_colorForLogError);
+                        break;
+                    case (int)CoreEnums.LogType.Verbose:
+                        EditorGUILayout.PropertyField(_sp_colorForLog);
+                        EditorGUILayout.PropertyField(_sp_colorForLogWarning);
+                        EditorGUILayout.PropertyField(_sp_colorForLogError);
+                        break;
+                }
+                EditorGUI.indentLevel -= 1;
+                DrawHorizontalLine();
+
+                if (_sp_isUsedByCentralGameConfiguretion.boolValue)
+                {
+
+                    if (_reference.dataSavingMode == CoreEnums.DataSavingMode.BinaryFormater)
+                    {
+
+                        DrawHorizontalLine();
+                        EditorGUILayout.HelpBox("Following data saving formate is still now in 'Preview', so things might get broken for different type of data saving", MessageType.Warning);
+
+                        DrawHorizontalLine();
+                        EditorGUILayout.PropertyField(_sp_dataSavingMode);
+
+                        EditorGUI.indentLevel += 1;
+
+                        EditorGUILayout.Space();
+                        EditorGUILayout.PropertyField(_sp_dataSaveWhenSceneUnloaded);
+                        EditorGUILayout.PropertyField(_sp_dataSaveWhenApplicationLoseFocus);
+                        EditorGUILayout.PropertyField(_sp_dataSaveWhenApplicationQuit);
+                        EditorGUILayout.PropertyField(_sp_snapshotFrequenceyInSec);
+
+                        EditorGUI.indentLevel -= 1;
+                        DrawHorizontalLine();
+                    }
+                    else
+                    {
+                        EditorGUILayout.PropertyField(_sp_dataSavingMode);
+                    }
+                }
+            }
             serializedObject.ApplyModifiedProperties();
         }
     }

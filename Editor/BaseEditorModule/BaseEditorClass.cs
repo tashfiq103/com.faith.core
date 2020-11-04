@@ -112,6 +112,10 @@
 
         #region Editor Module   :   Asset
 
+        protected List<T> GetAsset<T>(bool returnIfGetAny = false, params string[] directoryFilters) {
+
+            return GetAsset<T>("t:" + typeof(T).ToString().Replace("UnityEngine.", ""), returnIfGetAny, directoryFilters);
+        }
 
         protected List<T> GetAsset<T>(string nameFilter, bool returnIfGetAny = false, params string[] directoryFilters) {
 
@@ -119,7 +123,7 @@
             string[] GUIDs;
             if (directoryFilters == null) GUIDs = AssetDatabase.FindAssets(nameFilter);
             else GUIDs = AssetDatabase.FindAssets(nameFilter, directoryFilters);
-
+            
             foreach (string GUID in GUIDs) {
 
                 string assetPath = AssetDatabase.GUIDToAssetPath(GUID);
