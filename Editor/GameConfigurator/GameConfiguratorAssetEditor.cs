@@ -11,7 +11,12 @@
         private GameConfiguratorAsset _reference;
 
         private SerializedProperty _sp_gameMode;
+
         private SerializedProperty _sp_logType;
+        private SerializedProperty _sp_colorForLog;
+        private SerializedProperty _sp_colorForLogWarning;
+        private SerializedProperty _sp_colorForLogError;
+
         private SerializedProperty _sp_dataSavingMode;
 
         private SerializedProperty _sp_dataSaveWhenSceneUnloaded;
@@ -30,9 +35,14 @@
             if (_reference == null)
                 return;
 
-            _sp_gameMode = serializedObject.FindProperty("gameMode");
-            _sp_logType = serializedObject.FindProperty("logType");
-            _sp_dataSavingMode = serializedObject.FindProperty("dataSavingMode");
+            _sp_gameMode = serializedObject.FindProperty("_gameMode");
+
+            _sp_logType = serializedObject.FindProperty("_logType");
+            _sp_colorForLog = serializedObject.FindProperty("colorForLog");
+            _sp_colorForLogWarning = serializedObject.FindProperty("colorForWarning");
+            _sp_colorForLogError = serializedObject.FindProperty("colorForLogError");
+
+            _sp_dataSavingMode = serializedObject.FindProperty("_dataSavingMode");
 
             _sp_dataSaveWhenSceneUnloaded = serializedObject.FindProperty("dataSaveWhenSceneUnloaded");
             _sp_dataSaveWhenApplicationLoseFocus = serializedObject.FindProperty("dataSaveWhenApplicationLoseFocus");
@@ -47,8 +57,29 @@
             serializedObject.Update();
 
             EditorGUILayout.PropertyField(_sp_gameMode);
+            DrawHorizontalLine();
+
             EditorGUILayout.PropertyField(_sp_logType);
-            
+            EditorGUI.indentLevel += 1;
+            switch (_reference.logType) {
+                case CoreEnums.LogType.None:
+                    
+                    break;
+                case CoreEnums.LogType.Error:
+                    EditorGUILayout.PropertyField(_sp_colorForLogError);
+                    break;
+                case CoreEnums.LogType.Info:
+                    EditorGUILayout.PropertyField(_sp_colorForLog);
+                    EditorGUILayout.PropertyField(_sp_colorForLogError);
+                    break;
+                case CoreEnums.LogType.Verbose:
+                    EditorGUILayout.PropertyField(_sp_colorForLog);
+                    EditorGUILayout.PropertyField(_sp_colorForLogWarning);
+                    EditorGUILayout.PropertyField(_sp_colorForLogError);
+                    break;
+            }
+            EditorGUI.indentLevel -= 1;
+            DrawHorizontalLine();
 
             if (_reference.dataSavingMode == CoreEnums.DataSavingMode.BinaryFormater)
             {
