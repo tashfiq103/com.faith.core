@@ -8,16 +8,23 @@
 
             //Section   :   LogWarning  :   Verbose
             //------------------------
-            public static void LogWarning(object message)
+            public static void LogWarning(object message, Color color = new Color())
             {
                 if (GameConfiguratorManager.logType == CoreEnums.LogType.Verbose)
-                    UnityEngine.Debug.LogWarning(message);
+                    UnityEngine.Debug.LogWarning(string.Format("{0}{1}{2}",
+                        color == Color.black ? "" : ("<color=" + StringOperation.GetHexColorFromRGBColor(color) + ">"),
+                        message,
+                        color == Color.black ? "" : "</color>"));
             }
 
-            public static void LogWarning(object message, Object context)
+            public static void LogWarning(object message, Object context, Color color = new Color())
             {
                 if (GameConfiguratorManager.logType == CoreEnums.LogType.Verbose)
-                    UnityEngine.Debug.LogWarning(message, context);
+                    UnityEngine.Debug.LogWarning(string.Format("{0}{1}{2}",
+                        color == Color.black ? "" : ("<color=" + StringOperation.GetHexColorFromRGBColor(color) + ">"),
+                        message,
+                        color == Color.black ? "" : "</color>"),
+                        context);
             }
 
             public static void LogWarningFormat(string message, params object[] args)
@@ -35,16 +42,23 @@
 
             //Section   :   Log     :   Verbose|Info
             //------------------------
-            public static void Log(object message) {
+            public static void Log(object message, Color color = new Color()) {
 
                 if(GameConfiguratorManager.logType == CoreEnums.LogType.Verbose || GameConfiguratorManager.logType == CoreEnums.LogType.Info)
-                    UnityEngine.Debug.Log(message);
+                    UnityEngine.Debug.Log(string.Format("{0}{1}{2}",
+                        color == Color.black ? "" : ("<color=" + StringOperation.GetHexColorFromRGBColor(color) + ">"),
+                        message,
+                        color == Color.black ? "" : "</color>"));
             }
 
-            public static void Log(object message, Object context)
+            public static void Log(object message, Object context, Color color = new Color())
             {
                 if (GameConfiguratorManager.logType == CoreEnums.LogType.Verbose || GameConfiguratorManager.logType == CoreEnums.LogType.Info)
-                    UnityEngine.Debug.Log(message, context);
+                    UnityEngine.Debug.Log(string.Format("{0}{1}{2}",
+                        color == Color.black ? "" : ("<color=" + StringOperation.GetHexColorFromRGBColor(color) + ">"),
+                        message,
+                        color == Color.black ? "" : "</color>"),
+                        context);
             }
 
             public static void LogFormat(string message, params object[] args)
@@ -61,17 +75,24 @@
 
             //Section   :   LogError    :   Verbose|Info|Error
             //------------------------
-            public static void LogError(object message)
+            public static void LogError(object message, Color color = new Color())
             {
 
                 if (GameConfiguratorManager.logType == CoreEnums.LogType.Verbose || GameConfiguratorManager.logType == CoreEnums.LogType.Info || GameConfiguratorManager.logType == CoreEnums.LogType.Error)
-                    UnityEngine.Debug.LogError(message);
+                    UnityEngine.Debug.LogError(string.Format("{0}{1}{2}",
+                        color == Color.black ? "" : ("<color=" + StringOperation.GetHexColorFromRGBColor(color) + ">"),
+                        message,
+                        color == Color.black ? "" : "</color>"));
             }
 
-            public static void LogError(object message, Object context)
+            public static void LogError(object message, Object context, Color color = new Color())
             {
                 if (GameConfiguratorManager.logType == CoreEnums.LogType.Verbose || GameConfiguratorManager.logType == CoreEnums.LogType.Info || GameConfiguratorManager.logType == CoreEnums.LogType.Error)
-                    UnityEngine.Debug.LogError(message, context);
+                    UnityEngine.Debug.LogError(string.Format("{0}{1}{2}",
+                        color == Color.black ? "" : ("<color=" + StringOperation.GetHexColorFromRGBColor(color) + ">"),
+                        message,
+                        color == Color.black ? "" : "</color>"),
+                        context);
             }
 
             public static void LogErrorFormat(string message, params object[] args)

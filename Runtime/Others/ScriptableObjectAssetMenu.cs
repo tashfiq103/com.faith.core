@@ -19,6 +19,11 @@ public static class ScriptableObjectAssetMenu
 
     //----------------------
 
+    public const int ORDER_SCENE_CONTAINER = 1;
+    public const string MENU_SCENE_CONTAINER = "FAITH/Scene/SceneContainer";
+
+    //----------------------
+
     public const int        ORDER_VISUAL_TRANSFORM_ANIMATOR     = 0;
     public const string     MENU_VISUAL_TRANSFORM_ANIMATOR      = "FAITH/Visual/TransformAnimator";
 
