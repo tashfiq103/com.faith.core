@@ -36,10 +36,10 @@
 
             #region Public Callback
 
-            public CurrencyType(string nameOfCurrency)
+            public CurrencyType(string nameOfCurrency, double defaultCurrencyValue)
             {
                 _nameOfCurrency         = nameOfCurrency;
-                _accountBalance         = new SavedData<double>("AM_Currency_" + nameOfCurrency, 0);
+                _accountBalance         = new SavedData<double>("AM_Currency_" + nameOfCurrency, defaultCurrencyValue);
                 _balanceState           = CoreEnums.ValueChangedState.VALUE_UNCHANGED;
                 _targetedAccountBalance  = _accountBalance.GetData();
             }
@@ -170,7 +170,9 @@
 
             for (int i = 0; i < numberOfCurrency; i++)
             {
-                currencyTypes[i] = new CurrencyType(accountManagerSettings.listOfCurrencyInfos[i].enumName);
+                currencyTypes[i] = new CurrencyType(
+                    accountManagerSettings.listOfCurrencyInfos[i].enumName,
+                    accountManagerSettings.listOfCurrencyInfos[i].currencydefaultAmount);
             }
         }
 
