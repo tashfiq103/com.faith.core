@@ -1,8 +1,8 @@
 ﻿namespace com.faith.core
 {
+    using System;
     using System.Collections;
     using UnityEngine;
-    using UnityEngine.Events;
 
     public class AccountManager : MonoBehaviour
     {
@@ -13,10 +13,11 @@
         internal class CurrencyType
         {
 
-            public UnityEvent<double, CoreEnums.ValueChangedState> OnBalanceChangedEvent;
+            public event Action<double, CoreEnums.ValueChangedState> OnBalanceChangingEvent;
+            public event Action<double, CoreEnums.ValueChangedState> OnBalanceChangingEndEvent;
 
             private string _nameOfCurrency;
-            private CoreEnums.ValueChangedState _balanceState;
+            private CoreEnums.ValueChangedState _balanceState = CoreEnums.ValueChangedState.VALUE_UNCHANGED;
             private SavedData<double> _accountBalance;
 
 
@@ -29,7 +30,7 @@
             private void SetNewBalance(double amount)
             {
                 _accountBalance.SetData(amount);
-                OnBalanceChangedEvent?.Invoke(amount, _balanceState);
+                InvokeOnBalanceChangingEvent(amount, _balanceState);
             }
 
             #endregion
@@ -95,7 +96,19 @@
                 }
 
                 SetNewBalance(_targetedAccountBalance);
+                InvokeOnBalanceChangeEndEvent(_targetedAccountBalance, _balanceState);
+
                 isAnimationRunning = false;
+            }
+
+            public void InvokeOnBalanceChangingEvent(double amount, CoreEnums.ValueChangedState balanceState) {
+
+                OnBalanceChangingEvent?.Invoke(amount, balanceState);
+            }
+
+            public void InvokeOnBalanceChangeEndEvent(double amount, CoreEnums.ValueChangedState balanceState) {
+
+                OnBalanceChangingEndEvent?.Invoke(amount, balanceState);
             }
 
             #endregion
@@ -211,11 +224,46 @@
 
         }
 
-        public void OnBalanceChangedEvent (UnityAction<double, CoreEnums.ValueChangedState> OnBalanceChange, AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT)
+        /// <summary>
+        /// Invoke : Everytime animated frame for currency update
+        /// </summary>
+        /// <param name="OnBalanceChanging"></param>
+        /// <param name="currency"></param>
+        public void OnBalanceChangingEvent (Action<double, CoreEnums.ValueChangedState> OnBalanceChanging, AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT)
         {
             int currencyIndex = (int)currency;
-            currencyTypes[currencyIndex].OnBalanceChangedEvent.AddListener(OnBalanceChange);
-            currencyTypes[currencyIndex].OnBalanceChangedEvent.Invoke(currencyTypes[currencyIndex].GetCurrentBalance(), CoreEnums.ValueChangedState.VALUE_UNCHANGED);
+            currencyTypes[currencyIndex].OnBalanceChangingEvent += OnBalanceChanging;
+            currencyTypes[currencyIndex].InvokeOnBalanceChangingEvent(currencyTypes[currencyIndex].GetCurrentBalance(), CoreEnums.ValueChangedState.VALUE_UNCHANGED);
+        }
+
+        /// <summary>
+        /// Invoke : Only when the currency update animation end
+        /// </summary>
+        /// <param name="OnBalanceChangeEnd"></param>
+        /// <param name="currency"></param>
+        public void OnBalanceChangingEndEvent(Action<double, CoreEnums.ValueChangedState> OnBalanceChangeEnd, AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT) {
+
+            int currencyIndex = (int)currency;
+            currencyTypes[currencyIndex].OnBalanceChangingEndEvent += OnBalanceChangeEnd;
+            currencyTypes[currencyIndex].InvokeOnBalanceChangeEndEvent(currencyTypes[currencyIndex].GetCurrentBalance(), CoreEnums.ValueChangedState.VALUE_UNCHANGED);
+        }
+
+
+        /// <summary>
+        /// Invoke : Both when the currency updated in every frame and when the currency update get finished
+        /// </summary>
+        /// <param name="OnBalanceChanging"></param>
+        /// <param name="OnBalanceChangeEnd"></param>
+        /// <param name="currency"></param>
+        public void OnBalanceChangeEvent(Action<double, CoreEnums.ValueChangedState> OnBalanceChanging, Action<double, CoreEnums.ValueChangedState> OnBalanceChangeEnd, AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT) {
+
+            int currencyIndex = (int)currency;
+
+            currencyTypes[currencyIndex].OnBalanceChangingEvent += OnBalanceChanging;
+            currencyTypes[currencyIndex].InvokeOnBalanceChangingEvent(currencyTypes[currencyIndex].GetCurrentBalance(), CoreEnums.ValueChangedState.VALUE_UNCHANGED);
+
+            currencyTypes[currencyIndex].OnBalanceChangingEndEvent += OnBalanceChangeEnd;
+            currencyTypes[currencyIndex].InvokeOnBalanceChangeEndEvent(currencyTypes[currencyIndex].GetCurrentBalance(), CoreEnums.ValueChangedState.VALUE_UNCHANGED);
         }
 
         public string GetNameOfCurrency(AccountManagerCurrencyEnum currency = AccountManagerCurrencyEnum.DEFAULT)
