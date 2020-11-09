@@ -24,6 +24,7 @@
         public CoreEnums.GameMode gameMode { get { return _linkWithCentralGameConfiguretion ? GameConfiguratorManager.gameMode : _gameMode; } }
 
         public CoreEnums.LogType logType { get { return _linkWithCentralGameConfiguretion ? GameConfiguratorManager.logType : _logType; } }
+        public string prefix = "";
         public Color colorForLog = new Color();
         public Color colorForWarning = Color.yellow;
         public Color colorForLogError = Color.red;

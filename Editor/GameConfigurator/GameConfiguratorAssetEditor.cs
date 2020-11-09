@@ -16,6 +16,7 @@
         private SerializedProperty _sp_gameMode;
 
         private SerializedProperty _sp_logType;
+        private SerializedProperty _sp_prefix;
         private SerializedProperty _sp_colorForLog;
         private SerializedProperty _sp_colorForLogWarning;
         private SerializedProperty _sp_colorForLogError;
@@ -44,6 +45,7 @@
             _sp_gameMode = serializedObject.FindProperty("_gameMode");
 
             _sp_logType = serializedObject.FindProperty("_logType");
+            _sp_prefix = serializedObject.FindProperty("prefix");
             _sp_colorForLog = serializedObject.FindProperty("colorForLog");
             _sp_colorForLogWarning = serializedObject.FindProperty("colorForWarning");
             _sp_colorForLogError = serializedObject.FindProperty("colorForLogError");
@@ -92,13 +94,16 @@
 
                         break;
                     case (int)CoreEnums.LogType.Error:
+                        EditorGUILayout.PropertyField(_sp_prefix);
                         EditorGUILayout.PropertyField(_sp_colorForLogError);
                         break;
                     case (int)CoreEnums.LogType.Info:
+                        EditorGUILayout.PropertyField(_sp_prefix);
                         EditorGUILayout.PropertyField(_sp_colorForLog);
                         EditorGUILayout.PropertyField(_sp_colorForLogError);
                         break;
                     case (int)CoreEnums.LogType.Verbose:
+                        EditorGUILayout.PropertyField(_sp_prefix);
                         EditorGUILayout.PropertyField(_sp_colorForLog);
                         EditorGUILayout.PropertyField(_sp_colorForLogWarning);
                         EditorGUILayout.PropertyField(_sp_colorForLogError);
