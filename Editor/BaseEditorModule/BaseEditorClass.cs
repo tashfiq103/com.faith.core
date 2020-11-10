@@ -16,10 +16,43 @@
 
             #region Private Variables
 
-            private SerializedProperty sourceProperty;
-            private bool isFoldout = false;
-            private UnityEditorInternal.ReorderableList reorderableList;
-            
+            private UnityEditorInternal.ReorderableList _reorderableList;
+            private SerializedProperty _sourceProperty;
+            private bool _isFoldout = false;
+            private int _popUpValue = 0;
+            private int _genericArraySize = 0;
+            private string[] _popupOptions = new string[] { "Generic", "Reorderable" };
+            #endregion
+
+            #region Configuretion
+
+            private void DrawGenericList() {
+
+                _isFoldout = EditorGUILayout.Foldout(
+                        _isFoldout,
+                        _sourceProperty.displayName,
+                        true
+                    );
+                if (_isFoldout) {
+
+                    EditorGUI.indentLevel += 1;
+                    EditorGUI.BeginChangeCheck();
+                    _genericArraySize = EditorGUILayout.IntField("Size", _genericArraySize);
+                    if (EditorGUI.EndChangeCheck()) {
+
+                        _sourceProperty.arraySize = _genericArraySize;
+                        _sourceProperty.serializedObject.ApplyModifiedProperties();
+                    }
+                    EditorGUI.indentLevel -= 1;
+
+                    for (int i = 0; i < _genericArraySize; i++) {
+
+                        EditorGUI.indentLevel += 1;
+                        EditorGUILayout.PropertyField(_sourceProperty.GetArrayElementAtIndex(i), true);
+                        EditorGUI.indentLevel -= 1;
+                    }
+                }
+            }
 
             #endregion
 
@@ -27,10 +60,10 @@
 
             public ReorderableList(SerializedObject serializedObject, SerializedProperty sourceProperty, bool drawLineSeperator = false)
             {
-                this.sourceProperty     = sourceProperty;
+                _sourceProperty     = sourceProperty;
                 float singleLineHeight  = EditorGUIUtility.singleLineHeight;
 
-                reorderableList = new UnityEditorInternal.ReorderableList(serializedObject, sourceProperty)
+                _reorderableList = new UnityEditorInternal.ReorderableList(serializedObject, sourceProperty)
                 {
 
                     displayAdd = true,
@@ -38,9 +71,9 @@
                     draggable = true,
                     drawHeaderCallback = rect =>
                     {
-                        isFoldout = EditorGUI.Foldout(
+                        _isFoldout = EditorGUI.Foldout(
                                 new Rect(rect.x + 12, rect.y, rect.width, singleLineHeight),
-                                isFoldout,
+                                _isFoldout,
                                 sourceProperty.displayName,
                                 true
                             );
@@ -50,7 +83,7 @@
                         SerializedProperty element = sourceProperty.GetArrayElementAtIndex(index);
                         float heightOfElement = EditorGUI.GetPropertyHeight(element);
 
-                        if (isFoldout) {
+                        if (_isFoldout) {
 
                             EditorGUI.PropertyField(
                                 new Rect(rect.x + 12, rect.y, rect.width, heightOfElement),
@@ -67,28 +100,45 @@
                     },
                     elementHeightCallback = index => {
 
-                        return isFoldout ? EditorGUI.GetPropertyHeight(sourceProperty.GetArrayElementAtIndex(index)) + (drawLineSeperator ? singleLineHeight : 0) : 0;
+                        return _isFoldout ? EditorGUI.GetPropertyHeight(sourceProperty.GetArrayElementAtIndex(index)) + (drawLineSeperator ? singleLineHeight : 0) : 0;
                     }
                 };
             }
 
-            public void DoLayoutList() {
+            public void DoLayoutList()
+            {
 
-                if (!isFoldout)
+                if (!_isFoldout)
                 {
-
-                    isFoldout = EditorGUILayout.Foldout(
-                                isFoldout,
-                                "(Reorderable) : " + sourceProperty.displayName,
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        _isFoldout = EditorGUILayout.Foldout(
+                                _isFoldout,
+                                _sourceProperty.displayName,
                                 true
                             );
-                }
-                else {
 
-                    reorderableList.DoLayoutList();
-                }
+                        EditorGUI.BeginChangeCheck();
+                        _popUpValue = EditorGUILayout.Popup(
+                                _popUpValue,
+                                _popupOptions,
+                                GUILayout.Width(100)
+                            );
+                        if (EditorGUI.EndChangeCheck()) {
 
-                
+                            if (_popUpValue == 0) _genericArraySize = _sourceProperty.arraySize;
+                        }
+                        
+                    }
+                    EditorGUILayout.EndHorizontal();
+
+                }
+                else
+                {
+
+                    if (_popUpValue == 0) DrawGenericList();
+                    else _reorderableList.DoLayoutList();
+                }
             }
 
             #endregion
@@ -106,6 +156,7 @@
                 _packageStatus = AssetDatabase.FindAssets("com.faith.core", new string[] { "Packages" }).Length > 0 ? CoreEnums.CorePackageStatus.Production : CoreEnums.CorePackageStatus.InDevelopment;
 
             singleLineHeight = EditorGUIUtility.singleLineHeight;
+
         }
 
         #endregion
