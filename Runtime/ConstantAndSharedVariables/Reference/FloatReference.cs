@@ -19,7 +19,18 @@
 
         public float Value
         {
-            get { return UseConstant ? ConstantValue : Variable.Value; }
+            get {
+                if (UseConstant)
+                    return ConstantValue;
+                else {
+                    if (Variable != null)
+                        return Variable.Value;
+                    else {
+                        CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
+                        return ConstantValue;
+                    }
+                }
+            }
         }
 
         public static implicit operator float(FloatReference reference)

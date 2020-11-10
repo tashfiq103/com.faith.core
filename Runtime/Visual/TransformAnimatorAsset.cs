@@ -415,7 +415,7 @@
             else
             {
 
-                CoreDebugger.Debug.LogError("One of the 'transform' is busy with another animation. Failed To Execute the requested animation");
+                CoreDebugger.Debug.LogWarning("One of the 'transform' is busy with another animation. Failed To Execute the requested animation");
             }
         }
 

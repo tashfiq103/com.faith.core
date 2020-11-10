@@ -21,7 +21,21 @@
 
         public string SceneName
         {
-            get { return UseConstant ? sceneName : Variable.sceneName; }
+            get
+            {
+                if (UseConstant)
+                    return sceneName;
+                else
+                {
+                    if (Variable != null)
+                        return Variable.sceneName;
+                    else
+                    {
+                        CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
+                        return sceneName;
+                    }
+                }
+            }
         }
 
         #endregion
