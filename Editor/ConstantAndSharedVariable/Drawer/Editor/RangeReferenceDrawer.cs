@@ -53,19 +53,32 @@
 
             SerializedProperty variable = property.FindPropertyRelative("Variable");
 
-            SerializedObject scriptableObject = new SerializedObject(variable.objectReferenceValue);
-            SerializedProperty variableValue = scriptableObject.FindProperty("Value");
+            if (variable.serializedObject != null && variable.objectReferenceValue != null)
+            {
+                SerializedObject scriptableObject = new SerializedObject(variable.objectReferenceValue);
+                SerializedProperty variableValue = scriptableObject.FindProperty("Value");
 
-            
-
-            string labelFormat = string.Format(
+                string labelFormat = string.Format(
                     "{0} [ {1} <-> {2} ]",
                     property.displayName,
-                    useConstant.boolValue || variable.objectReferenceValue == null ? constantValue.vector2Value.x.ToString("F2") : variableValue.vector2Value.x.ToString("F2"),
-                    useConstant.boolValue || variable.objectReferenceValue == null ? constantValue.vector2Value.y.ToString("F2") : variableValue.vector2Value.y.ToString("F2")
+                    useConstant.boolValue  ? constantValue.vector2Value.x.ToString("F2") : variableValue.vector2Value.x.ToString("F2"),
+                    useConstant.boolValue  ? constantValue.vector2Value.y.ToString("F2") : variableValue.vector2Value.y.ToString("F2")
                 );
 
-            label.text = labelFormat;
+                label.text = labelFormat;
+            }
+            else {
+
+                string labelFormat = string.Format(
+                    "{0} [ {1} <-> {2} ]",
+                    property.displayName,
+                    constantValue.vector2Value.x.ToString("F2"),
+                    constantValue.vector2Value.y.ToString("F2")
+                );
+
+                label.text = labelFormat;
+            }
+
             label = EditorGUI.BeginProperty(position, label, property);
             position = EditorGUI.PrefixLabel(position, label);
 
