@@ -7,7 +7,10 @@ public static class ScriptableObjectAssetMenu
     public const int        ORDER_SHARED_VARIABLE_FLOAT         = 1;
     public const string     MENU_SHARED_VARIABLE_FLOAT          = "FAITH/Shared Variable/FloatVariable";
 
-    public const int ORDER_SCENE_MANAGEMENT_SCENE_VARIABLE      = 2;
+    public const int ORDER_SHARED_VARIABLE_RANGE                = 2;
+    public const string MENU_SHARED_VARIABLE_RANGE              = "FAITH/Shared Variable/RangeVariable";
+
+    public const int ORDER_SCENE_MANAGEMENT_SCENE_VARIABLE      = 3;
     public const string MENU_SCENE_MANAGEMENT_SCENE_VARIABLE    = "FAITH/Shared Variable/SceneVariable";
     //----------------------
 
