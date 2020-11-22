@@ -25,6 +25,7 @@
             float initalDelayToInvokeOnSceneLoaded = 0,
             LoadSceneMode loadSceneMode = LoadSceneMode.Single)
         {
+            animationSpeedForLoadingBar = Mathf.Clamp01(animationSpeedForLoadingBar);
             float animatedLerpValue = 0f;
 
             AsyncOperation asyncOperationForLoadingScene = SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
