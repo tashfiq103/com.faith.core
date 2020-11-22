@@ -52,10 +52,11 @@
             SerializedProperty constantValue = property.FindPropertyRelative("ConstantValue");
 
             SerializedProperty variable = property.FindPropertyRelative("Variable");
-            SerializedProperty variableValue = variable.FindPropertyRelative("Value");
 
-            SerializedProperty min = property.FindPropertyRelative("min");
-            SerializedProperty max = property.FindPropertyRelative("max");
+            SerializedObject scriptableObject = new SerializedObject(variable.objectReferenceValue);
+            SerializedProperty variableValue = scriptableObject.FindProperty("Value");
+
+            
 
             string labelFormat = string.Format(
                     "{0} [ {1} <-> {2} ]",
@@ -86,6 +87,8 @@
 
             if (useConstant.boolValue)
             {
+                SerializedProperty min = property.FindPropertyRelative("min");
+                SerializedProperty max = property.FindPropertyRelative("max");
 
                 Rect[] splitedRect = SplitedRect(position, 3);
                 min.floatValue = EditorGUI.FloatField(

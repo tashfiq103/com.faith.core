@@ -14,6 +14,9 @@
 #endif
         public Vector2 Value;
 
+        [SerializeField] private float min = 0;
+        [SerializeField] private float max = 1;
+
         public void SetValue(Vector2 value)
         {
             Value = value;
