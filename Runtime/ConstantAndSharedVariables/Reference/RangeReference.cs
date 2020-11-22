@@ -44,7 +44,7 @@
 
         public static implicit operator float(RangeReference reference)
         {
-            return reference.UseConstant ? Random.Range(reference.ConstantValue.x, reference.ConstantValue.y) : Random.Range(reference.Variable.Value.x, reference.Variable.Value.y);
+            return reference.UseConstant ? Random.Range(reference.ConstantValue.x, reference.ConstantValue.y) :  (reference.Variable != null ? Random.Range(reference.Variable.Value.x, reference.Variable.Value.y) : Random.Range(reference.ConstantValue.x, reference.ConstantValue.y));
         }
     }
 }
