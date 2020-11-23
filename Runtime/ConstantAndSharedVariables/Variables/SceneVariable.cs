@@ -18,7 +18,6 @@
         public string   scenePath;
 #endif
         public string           sceneName;
-        [Range(0.1f,1f)]
         public FloatReference   animationSpeedForLoadingBar;
         public LoadSceneMode    loadSceneMode= LoadSceneMode.Single;
 
