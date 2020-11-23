@@ -4,6 +4,7 @@
     using UnityEngine.SceneManagement;
     using System.Collections;
 
+    [DefaultExecutionOrder(CoreConstant.EXECUTION_ORDER_GAME_CONFIGURETION_MANAGER)]
     public class GameConfiguratorManager : MonoBehaviour
     {
 

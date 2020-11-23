@@ -21,6 +21,22 @@
 
         #region Public Variables 
 
+#if UNITY_EDITOR
+        public bool EditorAccessIfUsedByCentralGameConfiguretion {
+            get
+            {
+                return _isUsedByCentralGameConfiguretion;
+            }
+        }
+        public bool EditorAccessIfLinkWithCentralGameConfiguretion
+        {
+            get
+            {
+                return _linkWithCentralGameConfiguretion;
+            }
+        }
+#endif
+
         public CoreEnums.GameMode gameMode { get { return _linkWithCentralGameConfiguretion ? GameConfiguratorManager.gameMode : _gameMode; } }
 
         public CoreEnums.LogType logType { get { return _linkWithCentralGameConfiguretion ? GameConfiguratorManager.logType : _logType; } }

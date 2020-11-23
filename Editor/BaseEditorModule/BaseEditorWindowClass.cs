@@ -21,8 +21,13 @@
 
         #region Editor Module   :   Asset
 
+        protected static List<T> GetAsset<T>(bool returnIfGetAny = false, params string[] directoryFilters)
+        {
 
-        public List<T> GetAsset<T>(string nameFilter, bool returnIfGetAny = false, params string[] directoryFilters)
+            return GetAsset<T>("t:" + typeof(T).ToString().Replace("UnityEngine.", ""), returnIfGetAny, directoryFilters);
+        }
+
+        public static List<T> GetAsset<T>(string nameFilter, bool returnIfGetAny = false, params string[] directoryFilters)
         {
 
             List<T> listOfAsset = new List<T>();
