@@ -34,8 +34,8 @@
         public override void OnEnable()
         {
             base.OnEnable();
-            _reference = (GameConfiguratorAsset)target;
 
+            _reference = (GameConfiguratorAsset)target;
             if (_reference == null)
                 return;
 

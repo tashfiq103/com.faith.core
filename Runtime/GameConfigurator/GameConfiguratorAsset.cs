@@ -2,10 +2,6 @@
 {
     using UnityEngine;
 
-    [CreateAssetMenu(
-        fileName = "GameConfiguretionSettings",
-        menuName = ScriptableObjectAssetMenu.MENU_GAME_CONFIGURETION_SETTINGS,
-        order = ScriptableObjectAssetMenu.ORDER_GAME_CONFIGURETION_SETTINGS)]
     public class GameConfiguratorAsset : ScriptableObject
     {
 
