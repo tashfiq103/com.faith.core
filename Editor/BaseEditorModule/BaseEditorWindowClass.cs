@@ -62,7 +62,7 @@
             EditorGUI.LabelField(rect, "", GUI.skin.horizontalSlider);
         }
 
-        public void DrawSettingsEditor(Object settings, System.Action OnSettingsUpdated, ref bool foldout, ref Editor editor)
+        public void DrawSettingsEditor(Object settings, System.Action OnSettingsUpdated, ref bool foldout, ref Editor editor, bool drawInspector = true)
         {
 
             if (settings != null)
@@ -77,7 +77,8 @@
                     {
 
                         UnityEditor.Editor.CreateCachedEditor(settings, null, ref editor);
-                        editor.OnInspectorGUI();
+                        if(drawInspector)
+                            editor.OnInspectorGUI();
 
                         if (check.changed)
                         {

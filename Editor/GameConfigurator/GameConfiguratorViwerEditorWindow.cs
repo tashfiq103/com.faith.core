@@ -20,13 +20,30 @@
         
 
         private static Vector2 _scrollPosition;
-        
-        private static string _searchString;
 
+        private const string _defaultName               = "NewGameConfig";
+        private static string _nameOfConfiguretorFile   = _defaultName;
+
+        private static GUIStyle DefaultStyle = new GUIStyle();
+        private static GUIStyle HeighlightedBackgroundStyle = new GUIStyle();
+        private static GUIStyle HeighlightedBackgroundWithBoldStyle = new GUIStyle();
 
         #endregion
 
         #region Configuretion
+
+        private static int IsThereAnyGameConfigAssetWithTheGivenName(string name)
+        {
+            int _numberOfDuplicateName = 0;
+            List<GameConfiguratorAsset> gameConfiguratorAssets = GetAsset<GameConfiguratorAsset>();
+            foreach (GameConfiguratorAsset gameConfigAsset in gameConfiguratorAssets)
+            {
+                if (gameConfigAsset.name.Contains(name))
+                    _numberOfDuplicateName++;
+            }
+
+            return _numberOfDuplicateName;
+        }
 
         private static bool IsAnyGameConfiguretionAssetUsedByGameConfiguretionManager() {
 
@@ -99,14 +116,15 @@
         private void CreateNewGameConfiguretorAsset() {
 
             if (!Directory.Exists(CoreConstant.DirectoryForGameConfiguretionAsset))
-            {
-
                 Directory.CreateDirectory(CoreConstant.DirectoryForGameConfiguretionAsset);
-            }
+
+            _nameOfConfiguretorFile     = _nameOfConfiguretorFile.Length == 0 ? _defaultName : _nameOfConfiguretorFile;
+            int numberOfDuplicateName   = IsThereAnyGameConfigAssetWithTheGivenName(_nameOfConfiguretorFile);
+            string absoluteName         = _nameOfConfiguretorFile + (numberOfDuplicateName == 0 ? "" : (" " + numberOfDuplicateName));
 
             GameConfiguratorAsset newGameConfiguretionAsset = ScriptableObject.CreateInstance<GameConfiguratorAsset>();
 
-            AssetDatabase.CreateAsset(newGameConfiguretionAsset, CoreConstant.DirectoryForGameConfiguretionAsset + "/NewGameConfig.asset");
+            AssetDatabase.CreateAsset(newGameConfiguretionAsset, CoreConstant.DirectoryForGameConfiguretionAsset + "/" + absoluteName + ".asset");
             AssetDatabase.SaveAssets();
 
             EditorUtility.FocusProjectWindow();
@@ -132,13 +150,13 @@
             EditorWindow.Show();
         }
 
-        [MenuItem("FAITH/Core/GameConfigurator/Link : Production", priority = 1)]
+        [MenuItem("FAITH/Core/GameConfigurator/Use Production Settings", priority = 1)]
         public static void LinkWithProductionGameConfiguretor() {
 
             SetLinkStatusWithCentralGameConfiguretion(true);
         }
 
-        [MenuItem("FAITH/Core/GameConfigurator/Unlink : Production", priority = 1)]
+        [MenuItem("FAITH/Core/GameConfigurator/Use Standalone Settings", priority = 1)]
         public static void UnlinkWithProductionGameConfiguretor()
         {
             SetLinkStatusWithCentralGameConfiguretion(false);
@@ -147,6 +165,11 @@
         public override void OnEnable()
         {
             base.OnEnable();
+
+            HeighlightedBackgroundStyle         = new GUIStyle { normal = { background = Texture2D.whiteTexture } };
+            HeighlightedBackgroundWithBoldStyle = new GUIStyle { normal = { background = Texture2D.whiteTexture }, fontStyle = FontStyle.Bold };
+            _nameOfConfiguretorFile     = _defaultName;
+
             UpdateListOfGameConfiguretorAsset();
         }
 
@@ -155,21 +178,14 @@
 
             HeaderGUI();
 
-
-            EditorGUILayout.BeginScrollView(_scrollPosition);
+            if (_productionGameConfiguretorAsset == null)
             {
-                if (_productionGameConfiguretorAsset == null)
-                {
-                    EditorGUILayout.HelpBox("Please assign at least one 'GameConfiguretorAsset' to 'GameConfiguretorManager' in order configure through 'ControlPanel'", MessageType.Error);
-                }
-                else {
-
-                    GameConfiguretorGUI();
-                }
-                
-
+                EditorGUILayout.HelpBox("Please assign at least one 'GameConfiguretorAsset' to 'GameConfiguretorManager' in order configure through 'ControlPanel'", MessageType.Error);
             }
-            EditorGUILayout.EndScrollView();
+            else
+            {
+                GameConfiguretorGUI();
+            }
         }
 
         #endregion
@@ -181,7 +197,7 @@
             EditorGUILayout.Space();
             EditorGUILayout.BeginHorizontal();
             {
-                _searchString = EditorGUILayout.TextField("SearchWindow", _searchString);
+                _nameOfConfiguretorFile = EditorGUILayout.TextField("Name", _nameOfConfiguretorFile);
                 if (GUILayout.Button("+GameConfiguretorAsset", GUILayout.Width(175f))) {
 
                     CreateNewGameConfiguretorAsset();
@@ -200,56 +216,59 @@
 
         private void GameConfiguretorGUI() {
 
-            Color defaultContentColor = GUI.contentColor;
+            Color defaultBackgroundColor    = GUI.backgroundColor;
+            Color defaultContentColor       = GUI.contentColor;
 
-            for (int i = 0; i < _numberOfGameConfiguretorAsset; i++) {
+            if (_numberOfGameConfiguretorAsset > 0) {
+
+                GUI.backgroundColor = Color.yellow;
+                EditorGUILayout.LabelField("Production Asset", HeighlightedBackgroundWithBoldStyle);
+                GUI.backgroundColor = defaultBackgroundColor;
 
                 EditorGUILayout.Space();
+                DrawSettingsEditor(_productionGameConfiguretorAsset, null, ref _isFoldOut[0], ref _editorForGameConfiguretorAsset[0]);
 
-                if (i == 0)
+                if (_numberOfGameConfiguretorAsset > 1)
                 {
-                    GUI.contentColor = Color.yellow;
-                    EditorGUILayout.LabelField("Production Asset", EditorStyles.boldLabel);
+
+                    DrawHorizontalLine();
+                    GUI.contentColor = Color.cyan;
+                    _isFoldOutOtherConfigAsset = EditorGUILayout.Foldout(
+                            _isFoldOutOtherConfigAsset,
+                            "Other Asset",
+                            true
+                        );
                     GUI.contentColor = defaultContentColor;
+                }
 
-                    EditorGUILayout.Space();
-                    DrawSettingsEditor(_productionGameConfiguretorAsset, null, ref _isFoldOut[0], ref _editorForGameConfiguretorAsset[0]);
+                
+                _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
+                {
+                    for (int i = 1; i < _numberOfGameConfiguretorAsset; i++)
+                    {
+                        if (_isFoldOutOtherConfigAsset)
+                        {
+                                if (_productionGameConfiguretorAsset == _listOfGameConfiguretorAsset[i])
+                                    DrawSettingsEditor(_listOfGameConfiguretorAsset[0], null, ref _isFoldOut[i], ref _editorForGameConfiguretorAsset[i]);
+                                else if (_productionGameConfiguretorAsset != _listOfGameConfiguretorAsset[i])
+                                    DrawSettingsEditor(_listOfGameConfiguretorAsset[i], null, ref _isFoldOut[i], ref _editorForGameConfiguretorAsset[i]);
 
-                    if (_numberOfGameConfiguretorAsset > 1) {
 
-                        DrawHorizontalLine();
-                        GUI.contentColor = Color.cyan;
-                        _isFoldOutOtherConfigAsset = EditorGUILayout.Foldout(
-                                _isFoldOutOtherConfigAsset,
-                                "Other Asset",
-                                true
-                            );
-                        GUI.contentColor = defaultContentColor;
+
+
+                            if (i < _numberOfGameConfiguretorAsset - 1)
+                            {
+                                EditorGUILayout.Space();
+                                DrawHorizontalLine();
+                                EditorGUILayout.Space();
+                            }
+                        }
                     }
 
-                    
-                    EditorGUI.indentLevel += 24;
                 }
-                else {
-
-                    if (_isFoldOutOtherConfigAsset) {
-
-                        GUI.backgroundColor = Color.cyan;
-                        if (_productionGameConfiguretorAsset == _listOfGameConfiguretorAsset[i])
-                            DrawSettingsEditor(_listOfGameConfiguretorAsset[0], null, ref _isFoldOut[i], ref _editorForGameConfiguretorAsset[i]);
-                        else if (_productionGameConfiguretorAsset != _listOfGameConfiguretorAsset[i])
-                            DrawSettingsEditor(_listOfGameConfiguretorAsset[i], null, ref _isFoldOut[i], ref _editorForGameConfiguretorAsset[i]);
-                        GUI.backgroundColor = defaultContentColor;
-
-                        if (i < _numberOfGameConfiguretorAsset - 1)
-                            DrawHorizontalLine();
-                    }
-                }
-                EditorGUI.indentLevel -= 24;
+                EditorGUILayout.EndScrollView();
             }
-
         }
-
         #endregion
     }
 }
