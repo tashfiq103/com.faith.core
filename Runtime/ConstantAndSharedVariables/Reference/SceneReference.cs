@@ -1,6 +1,7 @@
 ﻿namespace com.faith.core
 {
 
+    using UnityEngine;
     using UnityEngine.Events;
     using UnityEngine.SceneManagement;
 
@@ -10,9 +11,9 @@
         #region Public Variable
 
 #if UNITY_EDITOR
-        public string scenePath;
+        [SerializeField] public string scenePath;
 #endif
-        public string sceneName { get; private set; }
+        [SerializeField] private string sceneName;
 
 
         //Control Variable

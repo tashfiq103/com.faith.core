@@ -67,6 +67,7 @@
                     string[] splitedByDash = newPath.Split('/');
                     string[] splitedByDot = splitedByDash[splitedByDash.Length - 1].Split('.');
 
+
                     scenePath.stringValue = newPath;
                     sceneName.stringValue = splitedByDot[0];
 

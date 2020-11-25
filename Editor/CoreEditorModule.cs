@@ -139,7 +139,15 @@ public class CoreEditorModule    :   Editor
             else
             {
                 if (_popUpValue == 0) DrawGenericList();
-                else _reorderableList.DoLayoutList();
+                else {
+                    EditorGUI.BeginChangeCheck();
+                    _reorderableList.DoLayoutList();
+                    if (EditorGUI.EndChangeCheck()) {
+
+                        _sourceProperty.arraySize = _reorderableList.count;
+                        SaveModifiedProperties();
+                    }
+                }
             }
         }
 
