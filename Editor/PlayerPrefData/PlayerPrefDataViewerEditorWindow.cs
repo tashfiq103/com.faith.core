@@ -50,7 +50,7 @@
             m_ScrollPosition = EditorGUILayout.BeginScrollView(m_ScrollPosition, false, false);
             {
                 //SettingMenu
-                DrawHorizontalLine();
+                CoreEditorModule.DrawHorizontalLine();
                 EditorGUILayout.BeginHorizontal();
                 {
                     EditorGUILayout.LabelField("PrefKeys (" + PlayerPrefDataSettings.listOfUsedPlayerPrefEditorData.Count.ToString() + ")", EditorStyles.boldLabel);
@@ -59,7 +59,7 @@
                     EditorGUILayout.LabelField("SetValue", EditorStyles.boldLabel, GUILayout.Width(widthForValueChange));
                 }
                 EditorGUILayout.EndHorizontal();
-                DrawHorizontalLine();
+                CoreEditorModule.DrawHorizontalLine();
 
                 //Traversing List
                 int t_Index = 1;

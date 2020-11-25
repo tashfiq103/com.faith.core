@@ -16,7 +16,7 @@
         private static Editor[] _editorForGameConfiguretorAsset;
         private static int _numberOfGameConfiguretorAsset;
         private static bool[]   _isFoldOut;
-        private static bool _isFoldOutOtherConfigAsset;
+        private static bool _isFoldOutOtherGameConfiguretorAsset;
         
 
         private static Vector2 _scrollPosition;
@@ -35,7 +35,7 @@
         private static int IsThereAnyGameConfigAssetWithTheGivenName(string name)
         {
             int _numberOfDuplicateName = 0;
-            List<GameConfiguratorAsset> gameConfiguratorAssets = GetAsset<GameConfiguratorAsset>();
+            List<GameConfiguratorAsset> gameConfiguratorAssets = CoreEditorModule.GetAsset<GameConfiguratorAsset>();
             foreach (GameConfiguratorAsset gameConfigAsset in gameConfiguratorAssets)
             {
                 if (gameConfigAsset.name.Contains(name))
@@ -47,7 +47,7 @@
 
         private static bool IsAnyGameConfiguretionAssetUsedByGameConfiguretionManager() {
 
-            List<GameConfiguratorAsset> gameConfiguratorAssets = GetAsset<GameConfiguratorAsset>();
+            List<GameConfiguratorAsset> gameConfiguratorAssets = CoreEditorModule.GetAsset<GameConfiguratorAsset>();
             foreach (GameConfiguratorAsset gameConfigAsset in gameConfiguratorAssets) {
 
                 if (gameConfigAsset.EditorAccessIfUsedByCentralGameConfiguretion)
@@ -61,7 +61,7 @@
 
             if (IsAnyGameConfiguretionAssetUsedByGameConfiguretionManager()) {
 
-                List<GameConfiguratorAsset> gameConfiguratorAssets = GetAsset<GameConfiguratorAsset>();
+                List<GameConfiguratorAsset> gameConfiguratorAssets = CoreEditorModule.GetAsset<GameConfiguratorAsset>();
 
                 foreach (GameConfiguratorAsset gameConfigAsset in gameConfiguratorAssets)
                 {
@@ -81,7 +81,7 @@
 
         private static void UpdateListOfGameConfiguretorAsset() {
 
-            _listOfGameConfiguretorAsset = GetAsset<GameConfiguratorAsset>();
+            _listOfGameConfiguretorAsset = CoreEditorModule.GetAsset<GameConfiguratorAsset>();
             _numberOfGameConfiguretorAsset = _listOfGameConfiguretorAsset.Count;
 
             //Marking   :   Central Game Configuretor Asset
@@ -144,7 +144,7 @@
 
             UpdateListOfGameConfiguretorAsset();
 
-            EditorWindow = GetWindow<GameConfiguratorViwerEditorWindow>("ControlPanel", typeof(GameConfiguratorViwerEditorWindow));
+            EditorWindow = GetWindow<GameConfiguratorViwerEditorWindow>("GameConfigPanel", typeof(GameConfiguratorViwerEditorWindow));
 
             EditorWindow.minSize = new Vector2(450f, 240f);
             EditorWindow.Show();
@@ -211,7 +211,7 @@
             }
             EditorGUILayout.EndHorizontal();
 
-            DrawHorizontalLine();
+            CoreEditorModule.DrawHorizontalLine();
         }
 
         private void GameConfiguretorGUI() {
@@ -226,15 +226,15 @@
                 GUI.backgroundColor = defaultBackgroundColor;
 
                 EditorGUILayout.Space();
-                DrawSettingsEditor(_productionGameConfiguretorAsset, null, ref _isFoldOut[0], ref _editorForGameConfiguretorAsset[0]);
+                CoreEditorModule.DrawSettingsEditor(_productionGameConfiguretorAsset, null, ref _isFoldOut[0], ref _editorForGameConfiguretorAsset[0]);
 
                 if (_numberOfGameConfiguretorAsset > 1)
                 {
 
-                    DrawHorizontalLine();
+                    CoreEditorModule.DrawHorizontalLine();
                     GUI.contentColor = Color.cyan;
-                    _isFoldOutOtherConfigAsset = EditorGUILayout.Foldout(
-                            _isFoldOutOtherConfigAsset,
+                    _isFoldOutOtherGameConfiguretorAsset = EditorGUILayout.Foldout(
+                            _isFoldOutOtherGameConfiguretorAsset,
                             "Other Asset",
                             true
                         );
@@ -246,12 +246,12 @@
                 {
                     for (int i = 1; i < _numberOfGameConfiguretorAsset; i++)
                     {
-                        if (_isFoldOutOtherConfigAsset)
+                        if (_isFoldOutOtherGameConfiguretorAsset)
                         {
                                 if (_productionGameConfiguretorAsset == _listOfGameConfiguretorAsset[i])
-                                    DrawSettingsEditor(_listOfGameConfiguretorAsset[0], null, ref _isFoldOut[i], ref _editorForGameConfiguretorAsset[i]);
+                                CoreEditorModule.DrawSettingsEditor(_listOfGameConfiguretorAsset[0], null, ref _isFoldOut[i], ref _editorForGameConfiguretorAsset[i]);
                                 else if (_productionGameConfiguretorAsset != _listOfGameConfiguretorAsset[i])
-                                    DrawSettingsEditor(_listOfGameConfiguretorAsset[i], null, ref _isFoldOut[i], ref _editorForGameConfiguretorAsset[i]);
+                                CoreEditorModule.DrawSettingsEditor(_listOfGameConfiguretorAsset[i], null, ref _isFoldOut[i], ref _editorForGameConfiguretorAsset[i]);
 
 
 
@@ -259,7 +259,7 @@
                             if (i < _numberOfGameConfiguretorAsset - 1)
                             {
                                 EditorGUILayout.Space();
-                                DrawHorizontalLine();
+                                CoreEditorModule.DrawHorizontalLine();
                                 EditorGUILayout.Space();
                             }
                         }

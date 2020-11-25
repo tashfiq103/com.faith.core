@@ -1,5 +1,4 @@
 ﻿namespace com.faith.core {
-    using UnityEditorInternal;
     using UnityEditor;
     using UnityEngine;
     using System.Linq;
@@ -12,40 +11,50 @@
 
         #region CustomEditorClass
 
-        public class ReorderableList {
+        protected class ReorderableList
+        {
 
             #region Private Variables
 
             private UnityEditorInternal.ReorderableList _reorderableList;
+            private SerializedObject _serializedObject;
             private SerializedProperty _sourceProperty;
             private bool _isFoldout = false;
             private int _popUpValue = 0;
-            private int _genericArraySize = 0;
             private string[] _popupOptions = new string[] { "Generic", "Reorderable" };
             #endregion
 
             #region Configuretion
 
-            private void DrawGenericList() {
+            private void SaveModifiedProperties()
+            {
+
+                _serializedObject.ApplyModifiedProperties();
+                _sourceProperty.serializedObject.ApplyModifiedProperties();
+            }
+
+            private void DrawGenericList()
+            {
 
                 _isFoldout = EditorGUILayout.Foldout(
                         _isFoldout,
                         _sourceProperty.displayName,
                         true
                     );
-                if (_isFoldout) {
+                if (_isFoldout)
+                {
 
                     EditorGUI.indentLevel += 1;
                     EditorGUI.BeginChangeCheck();
-                    _genericArraySize = EditorGUILayout.IntField("Size", _genericArraySize);
-                    if (EditorGUI.EndChangeCheck()) {
-
-                        _sourceProperty.arraySize = _genericArraySize;
-                        _sourceProperty.serializedObject.ApplyModifiedProperties();
+                    _sourceProperty.arraySize = EditorGUILayout.IntField("Size", _sourceProperty.arraySize);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        SaveModifiedProperties();
                     }
                     EditorGUI.indentLevel -= 1;
 
-                    for (int i = 0; i < _genericArraySize; i++) {
+                    for (int i = 0; i < _sourceProperty.arraySize; i++)
+                    {
 
                         EditorGUI.indentLevel += 1;
                         EditorGUILayout.PropertyField(_sourceProperty.GetArrayElementAtIndex(i), true);
@@ -60,10 +69,11 @@
 
             public ReorderableList(SerializedObject serializedObject, SerializedProperty sourceProperty, bool drawLineSeperator = false)
             {
-                _sourceProperty     = sourceProperty;
-                float singleLineHeight  = EditorGUIUtility.singleLineHeight;
+                _serializedObject = serializedObject;
+                _sourceProperty = sourceProperty;
+                float singleLineHeight = EditorGUIUtility.singleLineHeight;
 
-                _reorderableList = new UnityEditorInternal.ReorderableList(serializedObject, sourceProperty)
+                _reorderableList = new UnityEditorInternal.ReorderableList(_serializedObject, _sourceProperty)
                 {
 
                     displayAdd = true,
@@ -74,16 +84,17 @@
                         _isFoldout = EditorGUI.Foldout(
                                 new Rect(rect.x + 12, rect.y, rect.width, singleLineHeight),
                                 _isFoldout,
-                                sourceProperty.displayName,
+                                _sourceProperty.displayName,
                                 true
                             );
                     },
                     drawElementCallback = (rect, index, isActive, isFocused) => {
 
-                        SerializedProperty element = sourceProperty.GetArrayElementAtIndex(index);
+                        SerializedProperty element = _sourceProperty.GetArrayElementAtIndex(index);
                         float heightOfElement = EditorGUI.GetPropertyHeight(element);
 
-                        if (_isFoldout) {
+                        if (_isFoldout)
+                        {
 
                             EditorGUI.PropertyField(
                                 new Rect(rect.x + 12, rect.y, rect.width, heightOfElement),
@@ -95,12 +106,12 @@
                                 EditorGUI.LabelField(new Rect(rect.x, rect.y + heightOfElement, rect.width, singleLineHeight), "", GUI.skin.horizontalSlider);
                         }
 
-                       
- 
+
+
                     },
                     elementHeightCallback = index => {
 
-                        return _isFoldout ? EditorGUI.GetPropertyHeight(sourceProperty.GetArrayElementAtIndex(index)) + (drawLineSeperator ? singleLineHeight : 0) : 0;
+                        return _isFoldout ? EditorGUI.GetPropertyHeight(_sourceProperty.GetArrayElementAtIndex(index)) + (drawLineSeperator ? singleLineHeight : 0) : 0;
                     }
                 };
             }
@@ -124,25 +135,18 @@
                                 _popupOptions,
                                 GUILayout.Width(100)
                             );
-                        if (EditorGUI.EndChangeCheck()) {
-
-                            if (_popUpValue == 0) _genericArraySize = _sourceProperty.arraySize;
-                        }
-                        
                     }
                     EditorGUILayout.EndHorizontal();
 
                 }
                 else
                 {
-
                     if (_popUpValue == 0) DrawGenericList();
                     else _reorderableList.DoLayoutList();
                 }
             }
 
             #endregion
-
 
         }
 
@@ -231,10 +235,6 @@
 
         }
 
-        protected ReorderableList GetReorderableList(SerializedProperty sourceProperty,  bool drawLineSeperator = false) {
-
-            return new ReorderableList(serializedObject, sourceProperty, drawLineSeperator);
-        }
 
         #endregion
 
@@ -320,5 +320,6 @@
         }
 
         #endregion
+
     }
 }

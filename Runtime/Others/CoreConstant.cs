@@ -11,7 +11,8 @@
         #region Directory
 
         public const string RootDirectory                       = "Assets/CoreContent";
-        public const string DirectoryForGameConfiguretionAsset  = RootDirectory + "/" + "GameConfiguretionAssets";
+        public const string DirectoryForGameConfiguretionAsset  = RootDirectory + "/GameConfiguretionAssets";
+        public const string DirectoryForSceneContainerAsset     = RootDirectory + "/SceneContainerAsset";
 
         #endregion
 

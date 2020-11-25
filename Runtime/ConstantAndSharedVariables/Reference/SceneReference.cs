@@ -12,7 +12,7 @@
 #if UNITY_EDITOR
         public string scenePath;
 #endif
-        public string sceneName;
+        public string sceneName { get; private set; }
 
 
         //Control Variable
