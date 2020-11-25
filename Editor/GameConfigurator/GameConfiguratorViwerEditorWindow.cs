@@ -222,7 +222,7 @@
             if (_numberOfGameConfiguretorAsset > 0) {
 
                 GUI.backgroundColor = Color.yellow;
-                EditorGUILayout.LabelField("Production Asset", HeighlightedBackgroundWithBoldStyle);
+                EditorGUILayout.LabelField("GameConfig  :   Production", HeighlightedBackgroundWithBoldStyle);
                 GUI.backgroundColor = defaultBackgroundColor;
 
                 EditorGUILayout.Space();
@@ -235,7 +235,7 @@
                     GUI.contentColor = Color.cyan;
                     _isFoldOutOtherGameConfiguretorAsset = EditorGUILayout.Foldout(
                             _isFoldOutOtherGameConfiguretorAsset,
-                            "Other Asset",
+                            "GameConfig  :   Others",
                             true
                         );
                     GUI.contentColor = defaultContentColor;
