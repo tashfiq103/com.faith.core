@@ -64,7 +64,7 @@ public class CoreEditorModule    :   Editor
 
         #region Public Callback
 
-        public ReorderableList(ref SerializedObject serializedObject, ref SerializedProperty sourceProperty, bool drawLineSeperator = false)
+        public ReorderableList(SerializedObject serializedObject, SerializedProperty sourceProperty, bool drawLineSeperator = false)
         {
             _serializedObject = serializedObject;
             _sourceProperty = sourceProperty;
@@ -151,7 +151,7 @@ public class CoreEditorModule    :   Editor
 
     #region Editor Module   :   GUI
 
-    public static void ShowScriptReference(ref SerializedObject serializedObject)
+    public static void ShowScriptReference(SerializedObject serializedObject)
     {
 
         EditorGUI.BeginDisabledGroup(true);
@@ -235,7 +235,7 @@ public class CoreEditorModule    :   Editor
 
     #region Editor Module   :   Scene
 
-    protected string GetSceneNameFromPath(string scenePath)
+    public static string GetSceneNameFromPath(string scenePath)
     {
 
         string[] splitedByDash = scenePath.Split('/');
@@ -243,7 +243,7 @@ public class CoreEditorModule    :   Editor
         return splitedByDot[0];
     }
 
-    protected bool IsSceneAlreadyInBuild(string scenePath)
+    public static bool IsSceneAlreadyInBuild(string scenePath)
     {
         int numberOfSceneInBuild = EditorBuildSettings.scenes.Length;
         for (int i = 0; i < numberOfSceneInBuild; i++)
@@ -257,7 +257,7 @@ public class CoreEditorModule    :   Editor
         return false;
     }
 
-    protected bool IsSceneEnabled(string scenePath)
+    public static bool IsSceneEnabled(string scenePath)
     {
 
 
@@ -275,7 +275,7 @@ public class CoreEditorModule    :   Editor
         return false;
     }
 
-    protected void EnableAndDisableScene(string scenePath, bool value)
+    public static void EnableAndDisableScene(string scenePath, bool value)
     {
 
         if (IsSceneAlreadyInBuild(scenePath))
@@ -296,7 +296,7 @@ public class CoreEditorModule    :   Editor
         }
     }
 
-    protected void AddSceneToBuild(string scenePath, bool isEnabled = true)
+    public static void AddSceneToBuild(string scenePath, bool isEnabled = true)
     {
 
         EditorBuildSettingsScene newBuildScene = new EditorBuildSettingsScene(scenePath, isEnabled);
@@ -305,7 +305,7 @@ public class CoreEditorModule    :   Editor
         EditorBuildSettings.scenes = tempBuildSettingsScene.ToArray();
     }
 
-    protected void RemoveSceneFromBuild(string t_ScenePath)
+    public static void RemoveSceneFromBuild(string t_ScenePath)
     {
         List<EditorBuildSettingsScene> tempBuildSettingsScene = EditorBuildSettings.scenes.ToList();
         int numberOfCurrentSceneInTheBuild = tempBuildSettingsScene.Count;

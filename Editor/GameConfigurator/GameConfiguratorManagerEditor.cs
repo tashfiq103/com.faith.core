@@ -25,7 +25,7 @@ namespace com.faith.core
 
         private void ChangeConfiguretion() {
 
-            List<GameConfiguratorAsset> listOfGameConfiguretorAsset =  GetAsset<GameConfiguratorAsset>();
+            List<GameConfiguratorAsset> listOfGameConfiguretorAsset = CoreEditorModule.GetAsset<GameConfiguratorAsset>();
             foreach (GameConfiguratorAsset asset in listOfGameConfiguretorAsset) {
 
                 SerializedObject gameConfiguretionAsset = new SerializedObject(asset);
@@ -68,19 +68,19 @@ namespace com.faith.core
 
         public override void OnInspectorGUI()
         {
-            ShowScriptReference();
+            CoreEditorModule.ShowScriptReference(serializedObject);
 
             serializedObject.Update();
 
             if (_packageStatus == CoreEnums.CorePackageStatus.InDevelopment) {
 
                 EditorGUILayout.LabelField("PackageMode :   InDevelopment");
-                DrawHorizontalLine();
+                CoreEditorModule.DrawHorizontalLine();
             }
 
             EditorGUILayout.PropertyField(_sp_instanceBehaviour);
 
-            DrawHorizontalLine();
+            CoreEditorModule.DrawHorizontalLine();
 
 
             EditorGUI.BeginChangeCheck();
@@ -98,7 +98,7 @@ namespace com.faith.core
             {
                 EditorGUI.indentLevel += 1;
                 EditorGUILayout.Space();
-                DrawSettingsEditor(_sp_gameConfiguratorAsset.objectReferenceValue, null, ref _reference.isGameConfiguratorAssetVisible, ref _gameConfiguratorAssetEditor);
+                CoreEditorModule.DrawSettingsEditor(_sp_gameConfiguratorAsset.objectReferenceValue, null, ref _reference.isGameConfiguratorAssetVisible, ref _gameConfiguratorAssetEditor);
                 EditorGUI.indentLevel -= 1;
             }
             serializedObject.ApplyModifiedProperties();

@@ -29,7 +29,7 @@
         public override void OnInspectorGUI()
         {
 
-            ShowScriptReference();
+            CoreEditorModule.ShowScriptReference(serializedObject);
 
             serializedObject.Update();
 
@@ -38,11 +38,11 @@
 
             if (_reference.accountManagerSettings != null)
             {
-                DrawSettingsEditor(_reference.accountManagerSettings, null, ref _reference.showAccountManagerSettings, ref _editorForAccountManagerSettings);
+                CoreEditorModule.DrawSettingsEditor(_reference.accountManagerSettings, null, ref _reference.showAccountManagerSettings, ref _editorForAccountManagerSettings);
 
                 if (EditorApplication.isPlaying)
                 {
-                    DrawHorizontalLine();
+                    CoreEditorModule.DrawHorizontalLine();
                     int numberOfCurrency = _reference.accountManagerSettings.GetNumberOfAvailableCurrency();
 
                     for (int i = 0; i < numberOfCurrency; i++)

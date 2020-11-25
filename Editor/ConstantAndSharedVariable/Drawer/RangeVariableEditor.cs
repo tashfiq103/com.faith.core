@@ -39,15 +39,15 @@
 
         public override void OnInspectorGUI()
         {
-            ShowScriptReference();
+            CoreEditorModule.ShowScriptReference(serializedObject);
 
             serializedObject.Update();
 
             EditorGUILayout.PropertyField(DeveloperDescription);
 
-            DrawHorizontalLine();
+            CoreEditorModule.DrawHorizontalLine();
             EditorGUILayout.HelpBox("In order get the return type from the following Range. use 'RangeReference' in your script, which will return the value from the given range from the 'ScriptableObject' based on your 'Property' configuretion", MessageType.Info);
-            DrawHorizontalLine();
+            CoreEditorModule.DrawHorizontalLine();
 
             MinMaxSliderGUI();
 

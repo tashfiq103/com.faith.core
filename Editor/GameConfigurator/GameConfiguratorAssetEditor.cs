@@ -60,7 +60,7 @@
 
         public override void OnInspectorGUI()
         {
-            ShowScriptReference();
+            CoreEditorModule.ShowScriptReference(serializedObject);
 
             serializedObject.Update();
 
@@ -69,12 +69,12 @@
             {
 
                 EditorGUILayout.PropertyField(_sp_linkWithCentralGameConfiguretion);
-                DrawHorizontalLine();
+                CoreEditorModule.DrawHorizontalLine();
             }
             else {
 
                 EditorGUILayout.HelpBox("The following configuretion asset is used in 'GameConfiguretionManager'.", MessageType.Info);
-                DrawHorizontalLine();
+                CoreEditorModule.DrawHorizontalLine();
             }
 
             if (_sp_linkWithCentralGameConfiguretion.boolValue)
@@ -84,7 +84,7 @@
             else {
 
                 EditorGUILayout.PropertyField(_sp_gameMode);
-                DrawHorizontalLine();
+                CoreEditorModule.DrawHorizontalLine();
 
                 EditorGUILayout.PropertyField(_sp_logType);
                 EditorGUI.indentLevel += 1;
@@ -110,7 +110,7 @@
                         break;
                 }
                 EditorGUI.indentLevel -= 1;
-                DrawHorizontalLine();
+                CoreEditorModule.DrawHorizontalLine();
 
                 if (_sp_isUsedByCentralGameConfiguretion.boolValue)
                 {
@@ -118,10 +118,10 @@
                     if (_reference.dataSavingMode == CoreEnums.DataSavingMode.BinaryFormater)
                     {
 
-                        DrawHorizontalLine();
+                        CoreEditorModule.DrawHorizontalLine();
                         EditorGUILayout.HelpBox("Following data saving formate is still now in 'Preview', so things might get broken for different type of data saving", MessageType.Warning);
 
-                        DrawHorizontalLine();
+                        CoreEditorModule.DrawHorizontalLine();
                         EditorGUILayout.PropertyField(_sp_dataSavingMode);
 
                         EditorGUI.indentLevel += 1;
@@ -133,7 +133,7 @@
                         EditorGUILayout.PropertyField(_sp_snapshotFrequenceyInSec);
 
                         EditorGUI.indentLevel -= 1;
-                        DrawHorizontalLine();
+                        CoreEditorModule.DrawHorizontalLine();
                     }
                     else
                     {

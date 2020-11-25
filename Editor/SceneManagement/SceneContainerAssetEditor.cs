@@ -11,7 +11,7 @@
 
         private SerializedProperty _listOfScene;
 
-        private ReorderableList _reorderableListOfScene;
+        private CoreEditorModule.ReorderableList _reorderableListOfScene;
         #endregion
 
 
@@ -29,14 +29,14 @@
 
             _listOfScene = serializedObject.FindProperty("listOfScene");
 
-            _reorderableListOfScene = new ReorderableList(serializedObject,  _listOfScene);
+            _reorderableListOfScene = new CoreEditorModule.ReorderableList(serializedObject,  _listOfScene);
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
-            ShowScriptReference();
+            CoreEditorModule.ShowScriptReference(serializedObject);
 
             _reorderableListOfScene.DoLayoutList();
 

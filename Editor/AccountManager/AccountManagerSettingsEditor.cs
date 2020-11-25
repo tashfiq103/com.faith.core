@@ -53,7 +53,7 @@
         public override void OnInspectorGUI()
         {
 
-            ShowScriptReference();
+            CoreEditorModule.ShowScriptReference(serializedObject);
 
             serializedObject.Update();
 
@@ -83,7 +83,7 @@
             //Section   :   Currency To Be Added
             if (_listOfCurrencyToBeAdded.Count > 0) {
 
-                DrawHorizontalLine();
+                CoreEditorModule.DrawHorizontalLine();
                 EditorGUILayout.LabelField("Currency to be Added :", EditorStyles.boldLabel);
                 EditorGUI.indentLevel += 1;
                 foreach (AccountManagerSettings.CurrecnyInfo currencyInfo in _listOfCurrencyToBeAdded) {
@@ -93,7 +93,7 @@
                 EditorGUI.indentLevel -= 1;
             }
 
-            DrawHorizontalLine();
+            CoreEditorModule.DrawHorizontalLine();
             //Section   :   Added Currency
 
             EditorGUILayout.BeginHorizontal();

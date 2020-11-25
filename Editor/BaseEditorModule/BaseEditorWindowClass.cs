@@ -1,8 +1,6 @@
 ﻿namespace com.faith.core
 {
     using UnityEditor;
-    using UnityEngine;
-    using System.Collections.Generic;
 
     public class BaseEditorWindowClass : EditorWindow
     {

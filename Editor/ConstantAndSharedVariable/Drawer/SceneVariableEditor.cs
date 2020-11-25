@@ -40,7 +40,7 @@
         public override void OnInspectorGUI()
         {
 
-            ShowScriptReference();
+            CoreEditorModule.ShowScriptReference(serializedObject);
 
             serializedObject.Update();
 
@@ -60,20 +60,20 @@
                 scenePath.stringValue = newPath;
                 scenePath.serializedObject.ApplyModifiedProperties();
 
-                sceneName.stringValue = GetSceneNameFromPath(newPath);
+                sceneName.stringValue = CoreEditorModule.GetSceneNameFromPath(newPath);
                 sceneName.serializedObject.ApplyModifiedProperties();
 
-                if (IsSceneAlreadyInBuild(newPath))
+                if (CoreEditorModule.IsSceneAlreadyInBuild(newPath))
                 {
 
-                    _reference.isEnabled = IsSceneEnabled(newPath);
+                    _reference.isEnabled = CoreEditorModule.IsSceneEnabled(newPath);
                 }
             }
 
 
             if (newScene != null) {
 
-                DrawHorizontalLine();
+                CoreEditorModule.DrawHorizontalLine();
                 advanceOption.boolValue = EditorGUILayout.Foldout(
                     advanceOption.boolValue,
                     "Advance Option",
@@ -88,10 +88,10 @@
                 }
 
 
-                DrawHorizontalLine();
+                CoreEditorModule.DrawHorizontalLine();
                 EditorGUILayout.BeginHorizontal();
                 {
-                    if (IsSceneAlreadyInBuild(_reference.scenePath))
+                    if (CoreEditorModule.IsSceneAlreadyInBuild(_reference.scenePath))
                     {
 
                         EditorGUI.BeginChangeCheck();
@@ -103,7 +103,7 @@
                         {
 
                             isEnabled.serializedObject.ApplyModifiedProperties();
-                            EnableAndDisableScene(_reference.scenePath, isEnabled.boolValue);
+                            CoreEditorModule.EnableAndDisableScene(_reference.scenePath, isEnabled.boolValue);
                         }
 
                         if (GUILayout.Button("LoadScene")) {
@@ -112,7 +112,7 @@
                         }
                         if (GUILayout.Button("Remove", GUILayout.Width(100)))
                         {
-                            RemoveSceneFromBuild(_reference.scenePath);
+                            CoreEditorModule.RemoveSceneFromBuild(_reference.scenePath);
                         }
                     }
                     else {
@@ -120,7 +120,7 @@
                         EditorGUILayout.HelpBox("Please add scene to the build settings", MessageType.Info);
                         if (GUILayout.Button("Add", GUILayout.Width(100))) {
 
-                            AddSceneToBuild(_reference.scenePath, _reference.isEnabled);
+                            CoreEditorModule.AddSceneToBuild(_reference.scenePath, _reference.isEnabled);
                         }
                     }
                     

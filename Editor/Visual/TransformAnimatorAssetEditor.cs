@@ -56,7 +56,7 @@
         public override void OnInspectorGUI()
         {
 
-            ShowScriptReference();
+            CoreEditorModule.ShowScriptReference(serializedObject);
 
             serializedObject.Update();
 
@@ -66,7 +66,7 @@
             if (_reference.showAnimationProperty)
             {
 
-                DrawHorizontalLine();
+                CoreEditorModule.DrawHorizontalLine();
 
                 _reference.showAnimationProperty = EditorGUILayout.Foldout(
                     _reference.showAnimationProperty,
@@ -155,7 +155,7 @@
                     EditorGUI.indentLevel -= 1;
                 }
                 EditorGUILayout.EndVertical();
-                DrawHorizontalLine();
+                CoreEditorModule.DrawHorizontalLine();
             }
 
         }
@@ -210,7 +210,7 @@
                     EditorGUI.indentLevel -= 1;
                 }
                 EditorGUILayout.EndVertical();
-                DrawHorizontalLine();
+                CoreEditorModule.DrawHorizontalLine();
             }
 
         }
@@ -278,7 +278,7 @@
                     EditorGUI.indentLevel -= 1;
                 }
                 EditorGUILayout.EndVertical();
-                DrawHorizontalLine();
+                CoreEditorModule.DrawHorizontalLine();
             }
         }
 

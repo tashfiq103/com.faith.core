@@ -91,7 +91,7 @@
                 _serializedObjectOfSceneContainerAsset[i] = new SerializedObject(_listOfSceneContainerAsset[i]);
                 _serializedPropertyOfSceneList[i] = _serializedObjectOfSceneContainerAsset[i].FindProperty("listOfScene");
 
-                _reorderableListOfSceneContainerAsset[i] = new CoreEditorModule.ReorderableList(ref _serializedObjectOfSceneContainerAsset[i], ref _serializedPropertyOfSceneList[i], true);
+                _reorderableListOfSceneContainerAsset[i] = new CoreEditorModule.ReorderableList(_serializedObjectOfSceneContainerAsset[i], _serializedPropertyOfSceneList[i], true);
             }
         }
 
