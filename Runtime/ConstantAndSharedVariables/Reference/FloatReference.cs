@@ -17,6 +17,7 @@
             ConstantValue = value;
         }
 
+        [UnityEngine.SerializeField]
         public float Value
         {
             get {

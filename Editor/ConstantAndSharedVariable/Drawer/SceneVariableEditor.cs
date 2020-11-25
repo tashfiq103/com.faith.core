@@ -66,7 +66,7 @@
                 if (CoreEditorModule.IsSceneAlreadyInBuild(newPath))
                 {
 
-                    _reference.isEnabled = CoreEditorModule.IsSceneEnabled(newPath);
+                    isEnabled.boolValue = CoreEditorModule.IsSceneEnabled(newPath);
                 }
             }
 
@@ -82,7 +82,65 @@
                 if (advanceOption.boolValue)
                 {
                     EditorGUI.indentLevel += 1;
+
+                    EditorGUI.BeginChangeCheck();
                     EditorGUILayout.PropertyField(animationSpeedForLoadingBar);
+                    if (EditorGUI.EndChangeCheck()) {
+
+                        animationSpeedForLoadingBar.serializedObject.ApplyModifiedProperties();
+
+                        bool usingConstant = animationSpeedForLoadingBar.FindPropertyRelative("UseConstant").boolValue;
+
+                        if (usingConstant)
+                        {
+                            float clampedValue = animationSpeedForLoadingBar.FindPropertyRelative("ConstantValue").floatValue;
+
+                            if (clampedValue < 0.1f || clampedValue > 1)
+                            {
+                                float willBeChangedValue = clampedValue;
+                                clampedValue = Mathf.Clamp(willBeChangedValue, 0.1f, 1);
+                                CoreDebugger.Debug.LogError(string.Format("animationValue need to be within the range of [0.1 , 1]. Changed '{0}' -> '{1}'", willBeChangedValue, clampedValue));
+
+                            }
+
+                            clampedValue = Mathf.Clamp(clampedValue, 0.1f, 1);
+
+                            animationSpeedForLoadingBar.FindPropertyRelative("ConstantValue").floatValue = clampedValue;
+                            animationSpeedForLoadingBar.FindPropertyRelative("ConstantValue").serializedObject.ApplyModifiedProperties();
+
+                            animationSpeedForLoadingBar.serializedObject.ApplyModifiedProperties();
+                        }
+                        else {
+
+                            if (animationSpeedForLoadingBar.FindPropertyRelative("Variable").objectReferenceValue != null)
+                            {
+                                SerializedObject floatVariable = new SerializedObject(animationSpeedForLoadingBar.FindPropertyRelative("Variable").objectReferenceValue);
+                                
+                                float clampedValue = floatVariable.FindProperty("Value").floatValue;
+
+                                if (clampedValue < 0.1f || clampedValue > 1)
+                                {
+                                    float willBeChangedValue = clampedValue;
+                                    clampedValue = Mathf.Clamp(willBeChangedValue, 0.1f, 1);
+                                    CoreDebugger.Debug.LogError(string.Format("animationValue need to be within the range of [0.1 , 1]. Changed '{0}' -> '{1}'",willBeChangedValue, clampedValue));
+                                    
+                                }
+
+                                floatVariable.FindProperty("DeveloperDescription").stringValue = "Value Should Be Within [0.1,1]";
+                                floatVariable.FindProperty("DeveloperDescription").serializedObject.ApplyModifiedProperties();
+
+                                floatVariable.FindProperty("Value").floatValue = clampedValue;
+                                floatVariable.FindProperty("Value").serializedObject.ApplyModifiedProperties();
+
+                                animationSpeedForLoadingBar.serializedObject.ApplyModifiedProperties();
+                            }
+                            else {
+
+                                CoreDebugger.Debug.LogError("Please add 'SceneVariable' before modifying animationSpeed");
+                            }
+                        }
+                    }
+
                     EditorGUILayout.PropertyField(loadSceneMode);
                     EditorGUI.indentLevel -= 1;
                 }
@@ -91,7 +149,7 @@
                 CoreEditorModule.DrawHorizontalLine();
                 EditorGUILayout.BeginHorizontal();
                 {
-                    if (CoreEditorModule.IsSceneAlreadyInBuild(_reference.scenePath))
+                    if (CoreEditorModule.IsSceneAlreadyInBuild(scenePath.stringValue))
                     {
 
                         EditorGUI.BeginChangeCheck();
@@ -103,7 +161,7 @@
                         {
 
                             isEnabled.serializedObject.ApplyModifiedProperties();
-                            CoreEditorModule.EnableAndDisableScene(_reference.scenePath, isEnabled.boolValue);
+                            CoreEditorModule.EnableAndDisableScene(scenePath.stringValue, isEnabled.boolValue);
                         }
 
                         if (GUILayout.Button("LoadScene")) {
@@ -112,7 +170,7 @@
                         }
                         if (GUILayout.Button("Remove", GUILayout.Width(100)))
                         {
-                            CoreEditorModule.RemoveSceneFromBuild(_reference.scenePath);
+                            CoreEditorModule.RemoveSceneFromBuild(scenePath.stringValue);
                         }
                     }
                     else {
@@ -120,7 +178,7 @@
                         EditorGUILayout.HelpBox("Please add scene to the build settings", MessageType.Info);
                         if (GUILayout.Button("Add", GUILayout.Width(100))) {
 
-                            CoreEditorModule.AddSceneToBuild(_reference.scenePath, _reference.isEnabled);
+                            CoreEditorModule.AddSceneToBuild(scenePath.stringValue, isEnabled.boolValue);
                         }
                     }
                     

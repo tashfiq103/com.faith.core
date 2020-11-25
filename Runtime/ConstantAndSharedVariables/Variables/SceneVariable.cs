@@ -13,13 +13,17 @@
         #region Public Variables
 
 #if UNITY_EDITOR
-        public bool     isEnabled;
-        public bool     advanceOption;
-        public string   scenePath;
+        [SerializeField] private bool       isEnabled;
+        [SerializeField] private bool       advanceOption;
+        [SerializeField] private string     scenePath;
+
+        [SerializeField] private string     sceneName;
+        [SerializeField] private FloatReference animationSpeedForLoadingBar;
+        [SerializeField] private LoadSceneMode loadSceneMode = LoadSceneMode.Single;
 #endif
-        public string           sceneName;
-        public FloatReference   animationSpeedForLoadingBar;
-        public LoadSceneMode    loadSceneMode= LoadSceneMode.Single;
+
+        public string SceneName { get { return sceneName; } }
+        
 
         #endregion
 
@@ -38,7 +42,7 @@
             }
             else {
                 SceneTransitionController.LoadScene(
-                    sceneName,
+                    SceneName,
                     OnUpdatingProgression,
                     OnSceneLoaded,
                     animationSpeedForLoadingBar,

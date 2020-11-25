@@ -29,7 +29,7 @@
                 else
                 {
                     if (Variable != null)
-                        return Variable.sceneName;
+                        return Variable.SceneName;
                     else
                     {
                         CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
@@ -71,7 +71,7 @@
                 else
                 {
                     SceneTransitionController.LoadScene(
-                        sceneName,
+                        SceneName,
                         OnUpdatingProgression,
                         OnSceneLoaded,
                         animationSpeedForLoadingBar,
@@ -82,7 +82,7 @@
 
 #else
             SceneTransitionController.LoadScene(
-                        sceneName,
+                        SceneName,
                         OnUpdatingProgression,
                         OnSceneLoaded,
                         animationSpeedForLoadingBar,
