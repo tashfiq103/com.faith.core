@@ -35,6 +35,8 @@
             sceneName = serializedObject.FindProperty("sceneName");
             animationSpeedForLoadingBar = serializedObject.FindProperty("animationSpeedForLoadingBar");
             loadSceneMode = serializedObject.FindProperty("loadSceneMode");
+
+            ClampAnimationValue();
         }
 
         public override void OnInspectorGUI()
@@ -89,56 +91,7 @@
 
                         animationSpeedForLoadingBar.serializedObject.ApplyModifiedProperties();
 
-                        bool usingConstant = animationSpeedForLoadingBar.FindPropertyRelative("UseConstant").boolValue;
-
-                        if (usingConstant)
-                        {
-                            float clampedValue = animationSpeedForLoadingBar.FindPropertyRelative("ConstantValue").floatValue;
-
-                            if (clampedValue < 0.1f || clampedValue > 1)
-                            {
-                                float willBeChangedValue = clampedValue;
-                                clampedValue = Mathf.Clamp(willBeChangedValue, 0.1f, 1);
-                                CoreDebugger.Debug.LogError(string.Format("animationValue need to be within the range of [0.1 , 1]. Changed '{0}' -> '{1}'", willBeChangedValue, clampedValue));
-
-                            }
-
-                            clampedValue = Mathf.Clamp(clampedValue, 0.1f, 1);
-
-                            animationSpeedForLoadingBar.FindPropertyRelative("ConstantValue").floatValue = clampedValue;
-                            animationSpeedForLoadingBar.FindPropertyRelative("ConstantValue").serializedObject.ApplyModifiedProperties();
-
-                            animationSpeedForLoadingBar.serializedObject.ApplyModifiedProperties();
-                        }
-                        else {
-
-                            if (animationSpeedForLoadingBar.FindPropertyRelative("Variable").objectReferenceValue != null)
-                            {
-                                SerializedObject floatVariable = new SerializedObject(animationSpeedForLoadingBar.FindPropertyRelative("Variable").objectReferenceValue);
-                                
-                                float clampedValue = floatVariable.FindProperty("Value").floatValue;
-
-                                if (clampedValue < 0.1f || clampedValue > 1)
-                                {
-                                    float willBeChangedValue = clampedValue;
-                                    clampedValue = Mathf.Clamp(willBeChangedValue, 0.1f, 1);
-                                    CoreDebugger.Debug.LogError(string.Format("animationValue need to be within the range of [0.1 , 1]. Changed '{0}' -> '{1}'",willBeChangedValue, clampedValue));
-                                    
-                                }
-
-                                floatVariable.FindProperty("DeveloperDescription").stringValue = "Value Should Be Within [0.1,1]";
-                                floatVariable.FindProperty("DeveloperDescription").serializedObject.ApplyModifiedProperties();
-
-                                floatVariable.FindProperty("Value").floatValue = clampedValue;
-                                floatVariable.FindProperty("Value").serializedObject.ApplyModifiedProperties();
-
-                                animationSpeedForLoadingBar.serializedObject.ApplyModifiedProperties();
-                            }
-                            else {
-
-                                CoreDebugger.Debug.LogError("Please add 'SceneVariable' before modifying animationSpeed");
-                            }
-                        }
+                        ClampAnimationValue();
                     }
 
                     EditorGUILayout.PropertyField(loadSceneMode);
@@ -193,7 +146,64 @@
 
         #region Configuretion
 
-        
+        private void ClampAnimationValue() {
+
+            bool usingConstant = animationSpeedForLoadingBar.FindPropertyRelative("UseConstant").boolValue;
+
+            if (usingConstant)
+            {
+                float clampedValue = animationSpeedForLoadingBar.FindPropertyRelative("ConstantValue").floatValue;
+
+                if (clampedValue < 0.1f || clampedValue > 1)
+                {
+                    float willBeChangedValue = clampedValue;
+                    clampedValue = Mathf.Clamp(willBeChangedValue, 0.1f, 1);
+                    CoreDebugger.Debug.LogError(string.Format("animationValue need to be within the range of [0.1 , 1]. Changed '{0}' -> '{1}'", willBeChangedValue, clampedValue));
+
+                }
+
+                clampedValue = Mathf.Clamp(clampedValue, 0.1f, 1);
+
+                animationSpeedForLoadingBar.FindPropertyRelative("ConstantValue").floatValue = clampedValue;
+                animationSpeedForLoadingBar.FindPropertyRelative("ConstantValue").serializedObject.ApplyModifiedProperties();
+
+                animationSpeedForLoadingBar.serializedObject.ApplyModifiedProperties();
+            }
+            else
+            {
+
+                if (animationSpeedForLoadingBar.FindPropertyRelative("Variable").objectReferenceValue != null)
+                {
+                    SerializedObject floatVariable = new SerializedObject(animationSpeedForLoadingBar.FindPropertyRelative("Variable").objectReferenceValue);
+
+                    float clampedValue = floatVariable.FindProperty("Value").floatValue;
+
+                    if (clampedValue < 0.1f || clampedValue > 1)
+                    {
+                        float willBeChangedValue = clampedValue;
+                        clampedValue = Mathf.Clamp(willBeChangedValue, 0.1f, 1);
+                        CoreDebugger.Debug.LogError(string.Format("animationValue need to be within the range of [0.1 , 1]. Changed '{0}' -> '{1}'", willBeChangedValue, clampedValue));
+
+                    }
+
+                    floatVariable.FindProperty("DeveloperDescription").stringValue = "Value Should Be Within [0.1,1]";
+                    floatVariable.FindProperty("DeveloperDescription").serializedObject.ApplyModifiedProperties();
+
+                    floatVariable.FindProperty("Value").floatValue = clampedValue;
+                    floatVariable.FindProperty("Value").serializedObject.ApplyModifiedProperties();
+
+                    animationSpeedForLoadingBar.serializedObject.ApplyModifiedProperties();
+                }
+                else
+                {
+
+                    CoreDebugger.Debug.LogError("Please add 'SceneVariable' before modifying animationSpeed");
+                }
+            }
+
+
+            animationSpeedForLoadingBar.serializedObject.ApplyModifiedProperties();
+        }
 
         #endregion
     }
