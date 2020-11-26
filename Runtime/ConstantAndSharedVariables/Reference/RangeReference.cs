@@ -42,6 +42,24 @@
             }
         }
 
+        public float InterpolatedValue(float interpolationPoint) {
+
+            interpolationPoint = Mathf.Clamp01(interpolationPoint);
+
+            if (UseConstant)
+                return Mathf.Lerp(ConstantValue.x, ConstantValue.y, interpolationPoint);
+            else
+            {
+                if (Variable != null)
+                    return Mathf.Lerp(Variable.Value.x, Variable.Value.y, interpolationPoint);
+                else
+                {
+                    CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
+                    return Mathf.Lerp(ConstantValue.x, ConstantValue.y, interpolationPoint);
+                }
+            }
+        }
+
         public static implicit operator float(RangeReference reference)
         {
             return reference.UseConstant ? Random.Range(reference.ConstantValue.x, reference.ConstantValue.y) :  (reference.Variable != null ? Random.Range(reference.Variable.Value.x, reference.Variable.Value.y) : Random.Range(reference.ConstantValue.x, reference.ConstantValue.y));
