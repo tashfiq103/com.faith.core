@@ -25,40 +25,11 @@ public class CoreEditorModule    :   Editor
 
         private void SaveModifiedProperties()
         {
-
             _serializedObject.ApplyModifiedProperties();
             _sourceProperty.serializedObject.ApplyModifiedProperties();
         }
 
-        private void DrawGenericList()
-        {
 
-            _isFoldout = EditorGUILayout.Foldout(
-                    _isFoldout,
-                    _sourceProperty.displayName,
-                    true
-                );
-            if (_isFoldout)
-            {
-
-                EditorGUI.indentLevel += 1;
-                EditorGUI.BeginChangeCheck();
-                _sourceProperty.arraySize = EditorGUILayout.IntField("Size", _sourceProperty.arraySize);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    SaveModifiedProperties();
-                }
-                EditorGUI.indentLevel -= 1;
-
-                for (int i = 0; i < _sourceProperty.arraySize; i++)
-                {
-
-                    EditorGUI.indentLevel += 1;
-                    EditorGUILayout.PropertyField(_sourceProperty.GetArrayElementAtIndex(i), true);
-                    EditorGUI.indentLevel -= 1;
-                }
-            }
-        }
 
         #endregion
 
@@ -79,11 +50,16 @@ public class CoreEditorModule    :   Editor
                 drawHeaderCallback = rect =>
                 {
                     _isFoldout = EditorGUI.Foldout(
-                            new Rect(rect.x + 12, rect.y, rect.width, singleLineHeight),
+                            new Rect(rect.x, rect.y, rect.width - 125, singleLineHeight),
                             _isFoldout,
                             _sourceProperty.displayName,
                             true
                         );
+
+                    _popUpValue = EditorGUI.Popup(
+                        new Rect(rect.x + rect.width - 125, rect.y, 125, singleLineHeight),
+                        _popUpValue,
+                        _popupOptions);
                 },
                 drawElementCallback = (rect, index, isActive, isFocused) => {
 
@@ -94,7 +70,7 @@ public class CoreEditorModule    :   Editor
                     {
 
                         EditorGUI.PropertyField(
-                            new Rect(rect.x + 12, rect.y, rect.width, heightOfElement),
+                            new Rect(rect.x, rect.y, rect.width, heightOfElement),
                             element,
                             true
                         );
@@ -107,7 +83,6 @@ public class CoreEditorModule    :   Editor
 
                 },
                 elementHeightCallback = index => {
-
                     return _isFoldout ? EditorGUI.GetPropertyHeight(_sourceProperty.GetArrayElementAtIndex(index)) + (drawLineSeperator ? singleLineHeight : 0) : 0;
                 }
             };
@@ -115,40 +90,33 @@ public class CoreEditorModule    :   Editor
 
         public void DoLayoutList()
         {
-
-            if (!_isFoldout)
+            EditorGUI.BeginChangeCheck();
+            if (_popUpValue == 0)
             {
+
                 EditorGUILayout.BeginHorizontal();
                 {
-                    _isFoldout = EditorGUILayout.Foldout(
-                            _isFoldout,
-                            _sourceProperty.displayName,
-                            true
-                        );
-
-                    EditorGUI.BeginChangeCheck();
-                    _popUpValue = EditorGUILayout.Popup(
+                    EditorGUILayout.PropertyField(_sourceProperty);
+                    if (!_sourceProperty.isExpanded)
+                    {
+                        _popUpValue = EditorGUILayout.Popup(
                             _popUpValue,
                             _popupOptions,
-                            GUILayout.Width(100)
+                            GUILayout.Width(125)
                         );
-                }
-                EditorGUILayout.EndHorizontal();
-
-            }
-            else
-            {
-                if (_popUpValue == 0) DrawGenericList();
-                else {
-                    EditorGUI.BeginChangeCheck();
-                    _reorderableList.DoLayoutList();
-                    if (EditorGUI.EndChangeCheck()) {
-
-                        _sourceProperty.arraySize = _reorderableList.count;
-                        SaveModifiedProperties();
                     }
                 }
+                EditorGUILayout.EndHorizontal();
             }
+            else {
+
+                _reorderableList.DoLayoutList();
+            }
+            if (EditorGUI.EndChangeCheck()) {
+
+                SaveModifiedProperties();
+            }
+
         }
 
         #endregion

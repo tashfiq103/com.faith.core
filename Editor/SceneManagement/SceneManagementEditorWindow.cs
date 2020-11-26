@@ -24,12 +24,12 @@
         private static bool _isFoldOutOtherSceneContainerAsset;
 
         private static int                          _productionSceneIndex;
-        private static int                          _numberOfSceneContainerAsset;
+        private static int                          _numberOfSceneContainerAsset = 0;
         private static int[]                        _popUpOption;
 
         private const string _defaultName = "NewSceneContainer";
         private static string _nameOfSceneContainer = _defaultName;
-        private static string[] _viewMode = new string[] { "BrowsingView", "ConfigView" };
+        private static string[] _viewMode = new string[] { "Browsing View", "Config View" };
 
         private static GUIStyle WhiteBackgroundGUIStyle = new GUIStyle();
 
@@ -75,8 +75,14 @@
 
         private static void UpdateListOfSceneContainerAsset()
         {
+
             _listOfSceneContainerAsset      = CoreEditorModule.GetAsset<SceneContainerAsset>();
+
+            if (_listOfSceneContainerAsset.Count == _numberOfSceneContainerAsset)
+                return;
+
             _numberOfSceneContainerAsset    = _listOfSceneContainerAsset.Count;
+
 
             _popUpOption                    = new int[_numberOfSceneContainerAsset];
             _isFoldOut                      = new bool[_numberOfSceneContainerAsset];
@@ -105,14 +111,15 @@
             {
                 _isFoldOut[index] = EditorGUILayout.Foldout(
                         _isFoldOut[index],
-                        sceneContainer.name
+                        sceneContainer.name,
+                        true
                     );
 
                 if (_isFoldOut[index]) {
                     _popUpOption[index] = EditorGUILayout.Popup(
                         _popUpOption[index],
                         _viewMode,
-                        GUILayout.Width(100)
+                        GUILayout.Width(125)
                     );
                 }
                 
@@ -128,12 +135,12 @@
                 switch (_popUpOption[index])
                 {
                     case 0:
-                        _reorderableListOfSceneContainerAsset[index].DoLayoutList();
+                        CoreEditorModule.DrawSettingsEditor(sceneContainer, null, ref _isFoldOut[index], ref _editorForSceneContainerAsset[index]);
                         break;
 
                     case 1:
 
-                        
+                       
                         break;
                 }
 
