@@ -89,6 +89,23 @@
                 if (EditorGUI.EndChangeCheck())
                 {
 
+                    //Adjusting Range Value
+                    if (min.floatValue >= max.floatValue)
+                    {
+                        min.floatValue = max.floatValue - 1;
+                        minValue = min.floatValue;
+                        maxValue = minValue + 0.01f;
+                    }
+
+                    if (max.floatValue <= min.floatValue)
+                    {
+                        max.floatValue = min.floatValue + 1;
+
+                        minValue = max.floatValue - 0.01f;
+                        maxValue = max.floatValue;
+                    }
+
+                    //Adjusting Slider Value
                     if (minValue < min.floatValue)
                         minValue = min.floatValue;
 
