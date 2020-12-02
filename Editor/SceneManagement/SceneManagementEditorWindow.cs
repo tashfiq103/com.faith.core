@@ -29,11 +29,6 @@
 
         private const string _defaultName = "NewSceneContainer";
         private static string _nameOfSceneContainer = _defaultName;
-        private static string[] _viewMode = new string[] { "Browsing View", "Config View" };
-
-        private static GUIStyle WhiteBackgroundGUIStyle = new GUIStyle();
-
-        private Color colorForHeader = new Color(0, 1, 1, 0.1f);
 
         #endregion
 
@@ -101,55 +96,6 @@
             }
         }
 
-        private void DrawSceneContainer(int index, ref SceneContainerAsset sceneContainer, Color color = new Color()) {
-
-            SerializedObject serializedSceneContainer   = new SerializedObject(sceneContainer);
-
-            //Color defaultColor = GUI.backgroundColor;
-            //GUI.backgroundColor = color == new Color() ? defaultColor : color;
-            EditorGUILayout.BeginHorizontal();
-            {
-                _isFoldOut[index] = EditorGUILayout.Foldout(
-                        _isFoldOut[index],
-                        sceneContainer.name,
-                        true
-                    );
-
-                if (_isFoldOut[index]) {
-                    _popUpOption[index] = EditorGUILayout.Popup(
-                        _popUpOption[index],
-                        _viewMode,
-                        GUILayout.Width(125)
-                    );
-                }
-                
-            }
-            EditorGUILayout.EndHorizontal();
-
-            if (_isFoldOut[index]) {
-
-                EditorGUI.indentLevel += 1;
-
-                CoreEditorModule.DrawHorizontalLine();
-
-                switch (_popUpOption[index])
-                {
-                    case 0:
-                        CoreEditorModule.DrawSettingsEditor(sceneContainer, null, ref _isFoldOut[index], ref _editorForSceneContainerAsset[index]);
-                        break;
-
-                    case 1:
-
-                       
-                        break;
-                }
-
-                EditorGUI.indentLevel -= 1;
-            }
-        }
-
-
-
         #endregion
 
         #region CustomGUI
@@ -177,9 +123,8 @@
 
         private void DrawSceneContainerAddedInBuildSettingsGUI()
         {
+            CoreEditorModule.DrawSettingsEditor(_productionSceneContainer, null, ref _isFoldOut[_productionSceneIndex], ref _editorForSceneContainerAsset[_productionSceneIndex]);
 
-            if (_productionSceneContainer != null)
-                DrawSceneContainer(_productionSceneIndex, ref _productionSceneContainer);
         }
 
         private void DrawSceneContainerOtherThanBuildSettingsGUI()
@@ -190,8 +135,7 @@
                 if (_listOfSceneContainerAsset[i] != _productionSceneContainer)
                 {
 
-                    SceneContainerAsset sceneContainer = _listOfSceneContainerAsset[i];
-                    DrawSceneContainer(i, ref sceneContainer, new Color(0, 1, 1, 0.1f));
+                    CoreEditorModule.DrawSettingsEditor(_listOfSceneContainerAsset[i], null, ref _isFoldOut[i], ref _editorForSceneContainerAsset[i]);
                 }
             }
         }
@@ -221,8 +165,6 @@
         public override void OnEnable()
         {
             base.OnEnable();
-
-            WhiteBackgroundGUIStyle = new GUIStyle { normal = { background = Texture2D.whiteTexture } };
 
             UpdateListOfSceneContainerAsset();
         }
