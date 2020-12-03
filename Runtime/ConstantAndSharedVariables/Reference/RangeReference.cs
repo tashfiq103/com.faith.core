@@ -23,6 +23,9 @@
 
         }
 
+        public float Min { get { return Variable == null ? min : Variable.Min; } }
+        public float Max { get { return Variable == null ? max : Variable.Max; } }
+
         public float Value
         {
             get
@@ -38,24 +41,6 @@
                         CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
                         return Random.Range(ConstantValue.x, ConstantValue.y);
                     }
-                }
-            }
-        }
-
-        public float InterpolatedValue(float interpolationPoint) {
-
-            interpolationPoint = Mathf.Clamp01(interpolationPoint);
-
-            if (UseConstant)
-                return Mathf.Lerp(ConstantValue.x, ConstantValue.y, interpolationPoint);
-            else
-            {
-                if (Variable != null)
-                    return Mathf.Lerp(Variable.Value.x, Variable.Value.y, interpolationPoint);
-                else
-                {
-                    CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
-                    return Mathf.Lerp(ConstantValue.x, ConstantValue.y, interpolationPoint);
                 }
             }
         }
