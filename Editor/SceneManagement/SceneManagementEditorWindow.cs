@@ -7,11 +7,16 @@
 
     public class SceneManagementEditorWindow    :   BaseEditorWindowClass
     {
+        #region Public Variables
+
+        public static SceneContainerAsset           productionSceneContainer;
+
+        #endregion
+
         #region Private Variables
 
         private static SceneManagementEditorWindow EditorWindow;
 
-        private static SceneContainerAsset          _productionSceneContainer;
         private static List<SceneContainerAsset>    _listOfSceneContainerAsset;
 
         private static SerializedObject[]           _serializedObjectOfSceneContainerAsset;
@@ -107,7 +112,7 @@
 
             EditorGUILayout.BeginHorizontal();
             {
-                EditorGUILayout.LabelField(_productionSceneContainer == null ? "No Scene Container" : "Active SceneContainer : " + _productionSceneContainer.name, EditorStyles.boldLabel);
+                EditorGUILayout.LabelField(productionSceneContainer == null ? "No Scene Container" : "Active SceneContainer : " + productionSceneContainer.name, EditorStyles.boldLabel);
  
                 if (GUILayout.Button("+SceneContainer")) {
 
@@ -123,7 +128,7 @@
 
         private void DrawSceneContainerAddedInBuildSettingsGUI()
         {
-            CoreEditorModule.DrawSettingsEditor(_productionSceneContainer, null, ref _isFoldOut[_productionSceneIndex], ref _editorForSceneContainerAsset[_productionSceneIndex]);
+            CoreEditorModule.DrawSettingsEditor(productionSceneContainer, null, ref _isFoldOut[_productionSceneIndex], ref _editorForSceneContainerAsset[_productionSceneIndex]);
 
         }
 
@@ -132,7 +137,7 @@
             for (int i = 0; i < _numberOfSceneContainerAsset; i++)
             {
 
-                if (_listOfSceneContainerAsset[i] != _productionSceneContainer)
+                if (_listOfSceneContainerAsset[i] != productionSceneContainer)
                 {
 
                     CoreEditorModule.DrawSettingsEditor(_listOfSceneContainerAsset[i], null, ref _isFoldOut[i], ref _editorForSceneContainerAsset[i]);

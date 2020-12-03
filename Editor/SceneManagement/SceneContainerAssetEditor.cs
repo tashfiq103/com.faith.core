@@ -1,7 +1,7 @@
 ﻿namespace com.faith.core
 {
+    using UnityEngine;
     using UnityEditor;
-    using System.Linq;
     using System.Collections.Generic;
 
     [CustomEditor(typeof(SceneContainerAsset))]
@@ -38,6 +38,11 @@
 
             CoreEditorModule.ShowScriptReference(serializedObject);
 
+            if (GUILayout.Button("PushToBuild")) {
+
+                PushToBuild();
+            }
+
             _reorderableListOfScene.DoLayoutList();
 
             serializedObject.ApplyModifiedProperties();
@@ -48,15 +53,15 @@
 
         private void PushToBuild() {
 
+            SceneManagementEditorWindow.productionSceneContainer = _reference;
+
             List<EditorBuildSettingsScene> editorBuildSettingsScene = new List<EditorBuildSettingsScene>();
             int arraySize = _listOfScene.arraySize;
+            CoreDebugger.Debug.Log("ArraySize : " + arraySize);
             for (int i = 0; i < arraySize; i++) {
 
-                if(_listOfScene.GetArrayElementAtIndex(i).objectReferenceValue != null){
-
-                    string scenePath = _listOfScene.GetArrayElementAtIndex(i).FindPropertyRelative("scenePath").stringValue;
-                    editorBuildSettingsScene.Add(new EditorBuildSettingsScene(scenePath, true));
-                }
+                string scenePath = _listOfScene.GetArrayElementAtIndex(i).FindPropertyRelative("scenePath").stringValue;
+                editorBuildSettingsScene.Add(new EditorBuildSettingsScene(scenePath, true));
             }
             EditorBuildSettings.scenes = editorBuildSettingsScene.ToArray();
         }
