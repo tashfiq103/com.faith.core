@@ -9,6 +9,12 @@
         public Vector2          ConstantValue;
         public RangeVariable    Variable;
 
+        public float Min { get { return (Variable == null ? ConstantValue.x : Variable.Min); } }
+        public float Max { get { return (Variable == null ? ConstantValue.y : Variable.Max); } }
+
+        public float MinRange { get { return (Variable == null ? min : Variable.Min); } }
+        public float MaxRange { get { return (Variable == null ? max : Variable.Max); } }
+
         [SerializeField] private float min = 0;
         [SerializeField] private float max = 1;
 
@@ -38,6 +44,24 @@
                         CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
                         return Random.Range(ConstantValue.x, ConstantValue.y);
                     }
+                }
+            }
+        }
+
+        public float InterpolatedValue(float interpolationPoint) {
+
+            interpolationPoint = Mathf.Clamp01(interpolationPoint);
+
+            if (UseConstant)
+                return Mathf.Lerp(ConstantValue.x, ConstantValue.y, interpolationPoint);
+            else
+            {
+                if (Variable != null)
+                    return Mathf.Lerp(Variable.Value.x, Variable.Value.y, interpolationPoint);
+                else
+                {
+                    CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
+                    return Mathf.Lerp(ConstantValue.x, ConstantValue.y, interpolationPoint);
                 }
             }
         }

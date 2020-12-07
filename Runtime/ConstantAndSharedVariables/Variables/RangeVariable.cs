@@ -14,6 +14,12 @@
 #endif
         public Vector2 Value;
 
+        public float Min { get { return Value.x; } }
+        public float Max { get { return Value.y; } }
+
+        public float MinRange { get { return min; } }
+        public float MaxRange { get { return max; } }
+
         [SerializeField] private float min = 0;
         [SerializeField] private float max = 1;
 
