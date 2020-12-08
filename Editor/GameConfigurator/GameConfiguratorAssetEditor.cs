@@ -1,5 +1,6 @@
 ﻿namespace com.faith.core
 {
+    using UnityEngine;
     using UnityEditor;
 
     [CustomEditor(typeof(GameConfiguratorAsset))]
@@ -12,6 +13,11 @@
 
         private SerializedProperty _sp_isUsedByCentralGameConfiguretion;
         private SerializedProperty _sp_linkWithCentralGameConfiguretion;
+
+        private SerializedProperty _sp_enableStackTrace;
+        private SerializedProperty _sp_numberOfLog;
+        private SerializedProperty _sp_clearLogType;
+        private SerializedProperty _sp_listOfLogInfo;
 
         private SerializedProperty _sp_gameMode;
 
@@ -35,12 +41,18 @@
         {
             base.OnEnable();
 
-            _reference = (GameConfiguratorAsset)target;
-            if (_reference == null)
+            if (target.GetType() != typeof(GameConfiguratorAsset))
                 return;
+
+            _reference = (GameConfiguratorAsset)target;
 
             _sp_isUsedByCentralGameConfiguretion = serializedObject.FindProperty("_isUsedByCentralGameConfiguretion");
             _sp_linkWithCentralGameConfiguretion = serializedObject.FindProperty("_linkWithCentralGameConfiguretion");
+
+            _sp_enableStackTrace = serializedObject.FindProperty("_enableStackTrace");
+            _sp_numberOfLog = serializedObject.FindProperty("_numberOfLog");
+            _sp_clearLogType = serializedObject.FindProperty("_clearLogType");
+            _sp_listOfLogInfo = serializedObject.FindProperty("_listOfLogInfo");
 
             _sp_gameMode = serializedObject.FindProperty("_gameMode");
 
@@ -109,6 +121,64 @@
                         EditorGUILayout.PropertyField(_sp_colorForLogError);
                         break;
                 }
+
+                if (_sp_logType.enumValueIndex != 3) {
+
+                    CoreEditorModule.DrawHorizontalLine();
+
+                    EditorGUI.BeginChangeCheck();
+                    _sp_enableStackTrace.boolValue = EditorGUILayout.Foldout(
+                            _sp_enableStackTrace.boolValue,
+                            "StackTrace",
+                            true
+                        );
+                    if (EditorGUI.EndChangeCheck()) {
+
+                        if (_sp_enableStackTrace.boolValue == false) {
+
+                            _sp_listOfLogInfo.ClearArray();
+                            _sp_listOfLogInfo.serializedObject.ApplyModifiedProperties();
+                        }
+                    }
+
+                    if (_sp_enableStackTrace.boolValue) {
+
+                        EditorGUI.indentLevel += 1;
+
+                        EditorGUILayout.BeginHorizontal();
+                        {
+                            EditorGUILayout.PropertyField(_sp_clearLogType);
+                            if (GUILayout.Button("Clear", GUILayout.Width(75))){
+                                _reference.ClearLog((LogType)_sp_clearLogType.enumValueIndex);
+                            }
+
+                            Color defaultContentColor = GUI.contentColor;
+                            GUI.contentColor = Color.yellow;
+                            EditorGUILayout.LabelField("|", EditorStyles.boldLabel, GUILayout.Width(5));
+                            GUI.contentColor = defaultContentColor;
+
+                            if (GUILayout.Button("ClearAll", GUILayout.Width(75)))
+                            {
+                                _reference.ClearAllLog();
+                            }
+                        }
+                        EditorGUILayout.EndHorizontal();
+
+                        if (!EditorApplication.isPlaying)
+                            EditorGUILayout.PropertyField(_sp_numberOfLog);
+                        else
+                            EditorGUILayout.LabelField("MaxLogSize : " + _sp_numberOfLog.intValue, EditorStyles.boldLabel);
+
+                        EditorGUI.BeginDisabledGroup(true);
+                        {
+                            EditorGUILayout.PropertyField(_sp_listOfLogInfo);
+                        }
+                        EditorGUI.EndDisabledGroup();
+
+                        EditorGUI.indentLevel -= 1;
+                    }
+                }
+
                 EditorGUI.indentLevel -= 1;
                 CoreEditorModule.DrawHorizontalLine();
 

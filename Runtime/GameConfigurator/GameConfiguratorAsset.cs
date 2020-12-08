@@ -1,6 +1,7 @@
 ﻿namespace com.faith.core
 {
     using UnityEngine;
+    using System.Collections.Generic;
 
     public class GameConfiguratorAsset : ScriptableObject
     {
@@ -9,6 +10,12 @@
 
         [SerializeField] private bool _isUsedByCentralGameConfiguretion = false;
         [SerializeField] private bool _linkWithCentralGameConfiguretion = false;
+
+        [SerializeField] private bool _enableStackTrace;
+        [SerializeField,Range(10,999)] private int _numberOfLog = 100;
+        [SerializeField] private LogType _clearLogType;
+        [SerializeField] private List<CoreDebugger.Debug.DebugInfo> _listOfLogInfo = new List<CoreDebugger.Debug.DebugInfo>();
+
         [SerializeField] private CoreEnums.GameMode _gameMode = CoreEnums.GameMode.DEBUG;
         [SerializeField] private CoreEnums.LogType _logType = CoreEnums.LogType.Verbose;
         [SerializeField] private CoreEnums.DataSavingMode _dataSavingMode = CoreEnums.DataSavingMode.PlayerPrefsData;
@@ -31,6 +38,7 @@
                 return _linkWithCentralGameConfiguretion;
             }
         }
+
 #endif
 
         public CoreEnums.GameMode gameMode { get { return _linkWithCentralGameConfiguretion ? GameConfiguratorManager.gameMode : _gameMode; } }
@@ -47,6 +55,83 @@
         public bool dataSaveWhenApplicationQuit = true;
         [Range(1,60)]
         public float snapshotFrequenceyInSec = 15;
+
+        #endregion
+
+        #region ScriptableObject
+
+        private void OnEnable()
+        {
+            if (_enableStackTrace) {
+
+                if (_listOfLogInfo == null) _listOfLogInfo = new List<CoreDebugger.Debug.DebugInfo>();
+
+                Application.logMessageReceivedThreaded += LogMessageReciever;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (_enableStackTrace)
+            {
+                Application.logMessageReceivedThreaded -= LogMessageReciever;
+            }
+        }
+
+        #endregion
+
+        #region Configuretion
+
+        private void LogMessageReciever(string condition, string stackTrace, LogType logType)
+        {
+            if (string.IsNullOrEmpty(prefix) || string.IsNullOrWhiteSpace(prefix))
+            {
+                Debug.LogWarning(string.Format("No prefix was found for [CoreDebugger]_['{0}']. Assigning it's name as new prefix = {1}", prefix, name));
+                prefix = name;
+                return;
+            }
+
+            string filter = string.Format("{0}_[{1}]", CoreDebugger.Debug._debugMessagePrefix, prefix);
+            if (condition.Contains(filter))
+            {
+
+                if (_listOfLogInfo.Count >= _numberOfLog)
+                    _listOfLogInfo.RemoveAt(0);
+
+                _listOfLogInfo.Add(new CoreDebugger.Debug.DebugInfo()
+                {
+                    condition = condition,
+                    stackTrace = stackTrace,
+                    logType = logType
+                });
+            }
+        }
+
+        #endregion
+
+        #region Public Callback
+
+        public void ClearAllLog()
+        {
+            _listOfLogInfo.Clear();
+        }
+
+        public void ClearLog(LogType logType) {
+
+            List<int> listOfRemovingIndex   = new List<int>();
+            int numberOfLog                 = _listOfLogInfo.Count;
+
+            for (int i = 0; i < numberOfLog; i++) {
+                if (_listOfLogInfo[i].logType == logType)
+                    listOfRemovingIndex.Add(i);
+            }
+
+            int leftShiftValue = 0;
+            foreach (int index in listOfRemovingIndex) {
+                _listOfLogInfo.RemoveAt(index- leftShiftValue);
+                leftShiftValue++;
+            }
+        }
 
         #endregion
 

@@ -4,9 +4,19 @@
 
     public static class CoreDebugger
     {
+        
+
         public static class Debug{
 
-            private const string _debugMessagePrefix = "[CoreDebug]";
+            public const string _debugMessagePrefix = "[CoreDebug]";
+
+            [System.Serializable]
+            public class DebugInfo
+            {
+                public string condition;
+                public string stackTrace;
+                public LogType logType;
+            }
 
             //Section   :   LogWarning  :   Verbose
             //------------------------

@@ -24,8 +24,6 @@
         private const string _defaultName               = "NewGameConfig";
         private static string _nameOfConfiguretorFile   = _defaultName;
 
-        private static GUIStyle DefaultStyle = new GUIStyle();
-        private static GUIStyle HeighlightedBackgroundStyle = new GUIStyle();
         private static GUIStyle HeighlightedBackgroundWithBoldStyle = new GUIStyle();
 
         #endregion
@@ -166,7 +164,6 @@
         {
             base.OnEnable();
 
-            HeighlightedBackgroundStyle         = new GUIStyle { normal = { background = Texture2D.whiteTexture } };
             HeighlightedBackgroundWithBoldStyle = new GUIStyle { normal = { background = Texture2D.whiteTexture }, fontStyle = FontStyle.Bold };
             _nameOfConfiguretorFile     = _defaultName;
 

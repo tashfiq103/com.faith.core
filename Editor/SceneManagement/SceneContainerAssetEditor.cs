@@ -22,10 +22,10 @@
         {
             base.OnEnable();
 
-            _reference = (SceneContainerAsset)target;
-
-            if (_reference == null)
+            if (target.GetType() != typeof(SceneContainerAsset))
                 return;
+
+            _reference = (SceneContainerAsset)target;
 
             _listOfScene = serializedObject.FindProperty("listOfScene");
 
