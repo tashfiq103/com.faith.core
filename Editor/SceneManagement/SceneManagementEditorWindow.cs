@@ -25,8 +25,8 @@
 
         private static Editor[]                     _editorForSceneContainerAsset;
 
+        private static bool _isFoldoutOtherSceneContainer;
         private static bool[] _isFoldOut;
-        private static bool _isFoldOutOtherSceneContainerAsset;
 
         private static int                          _productionSceneIndex;
         private static int                          _numberOfSceneContainerAsset = 0;
@@ -34,6 +34,10 @@
 
         private const string _defaultName = "NewSceneContainer";
         private static string _nameOfSceneContainer = _defaultName;
+
+        private GUIStyle HeighlightedBackgroundWithBoldStyle = new GUIStyle();
+
+        private static Vector2 _scrollPosition;
 
         #endregion
 
@@ -46,7 +50,7 @@
 
             _nameOfSceneContainer       = _nameOfSceneContainer.Length == 0 ? _defaultName : _nameOfSceneContainer;
             int numberOfDuplicateName   = IsThereAnySceneContainerWithTheGivenName(_nameOfSceneContainer);
-            string absoluteName         = _nameOfSceneContainer + (numberOfDuplicateName == 0 ? "" : (" " + numberOfDuplicateName));
+            string absoluteName         = _nameOfSceneContainer + " " + numberOfDuplicateName;
 
             SceneContainerAsset newSceneContainerAsset = ScriptableObject.CreateInstance<SceneContainerAsset>();
 
@@ -128,19 +132,61 @@
 
         private void DrawSceneContainerAddedInBuildSettingsGUI()
         {
-            CoreEditorModule.DrawSettingsEditor(productionSceneContainer, null, ref _isFoldOut[_productionSceneIndex], ref _editorForSceneContainerAsset[_productionSceneIndex]);
+            if (productionSceneContainer == null)
+            {
+                EditorGUILayout.HelpBox("No 'SceneContainer' has pushed to 'BuildSettings'", MessageType.Warning);
+            }
+            else {
 
+                Color defaultBackgroundColor = GUI.backgroundColor;
+                GUI.backgroundColor = Color.yellow;
+                EditorGUILayout.LabelField("  SceneContainer : Production", HeighlightedBackgroundWithBoldStyle);
+                GUI.backgroundColor = defaultBackgroundColor;
+                CoreEditorModule.DrawSettingsEditor(productionSceneContainer, null, ref _isFoldOut[_productionSceneIndex], ref _editorForSceneContainerAsset[_productionSceneIndex]);
+            }
         }
 
         private void DrawSceneContainerOtherThanBuildSettingsGUI()
         {
-            for (int i = 0; i < _numberOfSceneContainerAsset; i++)
-            {
+            if (_numberOfSceneContainerAsset > 0) {
 
-                if (_listOfSceneContainerAsset[i] != productionSceneContainer)
-                {
+                if (productionSceneContainer != null && _numberOfSceneContainerAsset == 1)
+                    return;
 
-                    CoreEditorModule.DrawSettingsEditor(_listOfSceneContainerAsset[i], null, ref _isFoldOut[i], ref _editorForSceneContainerAsset[i]);
+                EditorGUILayout.Space();
+                CoreEditorModule.DrawHorizontalLine();
+
+                Color defaultContentColor = GUI.contentColor;
+                GUI.contentColor = Color.cyan;
+                _isFoldoutOtherSceneContainer = EditorGUILayout.Foldout(
+                        _isFoldoutOtherSceneContainer,
+                        "  SceneContainer : Others",
+                        true
+                    );
+                GUI.contentColor = defaultContentColor;
+
+                if (_isFoldoutOtherSceneContainer) {
+
+                    EditorGUILayout.Space();
+                    CoreEditorModule.DrawHorizontalLine();
+
+                    EditorGUI.indentLevel += 1;
+                    for (int i = 0; i < _numberOfSceneContainerAsset; i++)
+                    {
+                        if (_listOfSceneContainerAsset[i] != productionSceneContainer)
+                        {
+                            CoreEditorModule.DrawSettingsEditor(_listOfSceneContainerAsset[i], null, ref _isFoldOut[i], ref _editorForSceneContainerAsset[i]);
+                            if (i < (_numberOfSceneContainerAsset - 1))
+                            {
+                                EditorGUILayout.Space();
+                                CoreEditorModule.DrawHorizontalLine();
+                            }
+                        }
+                        else {
+                            _productionSceneIndex = i;
+                        }
+                    }
+                    EditorGUI.indentLevel -= 1;
                 }
             }
         }
@@ -171,6 +217,8 @@
         {
             base.OnEnable();
 
+            HeighlightedBackgroundWithBoldStyle = new GUIStyle { normal = { background = Texture2D.whiteTexture }, fontStyle = FontStyle.Bold };
+
             UpdateListOfSceneContainerAsset();
         }
 
@@ -178,9 +226,13 @@
         {
             HeaderGUI();
 
-            DrawSceneContainerAddedInBuildSettingsGUI();
+            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
+            {
+                DrawSceneContainerAddedInBuildSettingsGUI();
 
-            DrawSceneContainerOtherThanBuildSettingsGUI();
+                DrawSceneContainerOtherThanBuildSettingsGUI();
+            }
+            EditorGUILayout.EndScrollView();
         }
 
         #endregion

@@ -57,7 +57,6 @@
 
             List<EditorBuildSettingsScene> editorBuildSettingsScene = new List<EditorBuildSettingsScene>();
             int arraySize = _listOfScene.arraySize;
-            CoreDebugger.Debug.Log("ArraySize : " + arraySize);
             for (int i = 0; i < arraySize; i++) {
 
                 string scenePath = _listOfScene.GetArrayElementAtIndex(i).FindPropertyRelative("scenePath").stringValue;

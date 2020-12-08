@@ -122,7 +122,7 @@
             int numberOfDuplicateName   = IsThereAnyGameConfigAssetWithTheGivenName(_nameOfConfiguretorFile);
             string absoluteName         = _nameOfConfiguretorFile + (numberOfDuplicateName == 0 ? "" : (" " + numberOfDuplicateName));
 
-            GameConfiguratorAsset newGameConfiguretionAsset = ScriptableObject.CreateInstance<GameConfiguratorAsset>();
+            GameConfiguratorAsset newGameConfiguretionAsset = CreateInstance<GameConfiguratorAsset>();
 
             AssetDatabase.CreateAsset(newGameConfiguretionAsset, CoreConstant.DirectoryForGameConfiguretionAsset + "/" + absoluteName + ".asset");
             AssetDatabase.SaveAssets();
