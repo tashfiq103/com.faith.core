@@ -133,6 +133,18 @@
             }
         }
 
+        public int GetNumberOfLog(LogType logType) {
+
+            int numberOfLog = 0;
+            foreach (CoreDebugger.Debug.DebugInfo debugInfo in _listOfLogInfo) {
+
+                if (logType == debugInfo.logType)
+                    numberOfLog++;
+            }
+
+            return numberOfLog;
+        }
+
         #endregion
 
     }
