@@ -23,12 +23,11 @@
         [SerializeField] private bool advanceOption;
         [SerializeField] private string scenePath;
 
-
-        [SerializeField] private FloatReference animationSpeedForLoadingBar;
-        [SerializeField] private LoadSceneMode loadSceneMode = LoadSceneMode.Single;
 #endif
 
         [SerializeField] private string sceneName;
+        [SerializeField] private FloatReference animationSpeedForLoadingBar;
+        [SerializeField] private LoadSceneMode loadSceneMode = LoadSceneMode.Single;
 
         #endregion
 
