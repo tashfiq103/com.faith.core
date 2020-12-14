@@ -89,6 +89,30 @@
 
         #region Configuretion
 
+        private string GetButtonLabeledForGameConfiguretorSelection()
+        {
+
+            string result = "None";
+
+            int numberOfSelectedAsset = 0;
+            int numberOfGameConfiguretorAsset = _gameConfiguretorEnableStatus.Count;
+            for (int i = 0; i < numberOfGameConfiguretorAsset; i++)
+            {
+
+                if (_gameConfiguretorEnableStatus[i])
+                {
+
+                    result = _gameConfiguretorOptionLabels[i];
+                    numberOfSelectedAsset++;
+                }
+            }
+
+            if (numberOfSelectedAsset > 1)
+                result = "Mixed";
+
+            return result;
+        }
+
         private int GetNumberOfLog(LogType logType) {
 
             int result = 0;
@@ -172,12 +196,100 @@
 
         #region CustomGUI
 
-        private void DrawGUIForToggolingLogs(LogType logType) {
+        private void HeaderGUI()
+        {
+
+            EditorGUILayout.BeginHorizontal();
+            {
+                if (GUILayout.Button("Clear", EditorStyles.toolbarButton, GUILayout.Width(50f)))
+                {
+                    ClearAllLog();
+                }
+
+                if (GUILayout.Button(_GUIContentForClearDropdownButton, EditorStyles.toolbarButton, GUILayout.Width(20))) {
+
+                    GenericMenu genericMenuForClearMode = new GenericMenu();
+
+                    int numberOfOption = _clearOptionLable.Length;
+                    for (int i = 0; i < numberOfOption; i++) {
+
+                        genericMenuForClearMode.AddItem(
+                            new GUIContent(_clearOptionLable[i]),
+                            _clearOptionStatus[i],
+                            (index) => {
+                                int selectedIndex = (int) index;   
+                                _clearOptionStatus[selectedIndex] = !_clearOptionStatus[selectedIndex];
+                            },
+                            i);
+                    }
+                    genericMenuForClearMode.ShowAsContext();
+                }
+
+
+                Color defaultBackgroundColorOfGUI  = GUI.backgroundColor;
+                Color dynamicColor          = defaultBackgroundColorOfGUI;
+
+                dynamicColor.a              = _errorPause ? 0.5f : 1f;
+                GUI.backgroundColor = dynamicColor;
+                if (GUILayout.Button("Error Pause", GUILayout.Width(80))) {
+
+                    _errorPause = !_errorPause;
+                }
+                GUI.backgroundColor = defaultBackgroundColorOfGUI;
+
+
+                EditorGUILayout.LabelField("");
+
+                //InfoLog
+                DrawToggolingLogsGUI(LogType.Log);
+
+                //WarningLog
+                DrawToggolingLogsGUI(LogType.Warning);
+
+                //ErrorLog
+                DrawToggolingLogsGUI(LogType.Error);
+
+                string selectedTitle    = GetButtonLabeledForGameConfiguretorSelection();
+                float contentWidth      = selectedTitle.Length * 8f;
+                EditorGUILayout.BeginHorizontal(GUILayout.Width(contentWidth + 20));
+                {
+                    EditorGUILayout.LabelField(selectedTitle, EditorStyles.toolbarButton, GUILayout.Width(contentWidth));
+
+                    if (GUILayout.Button(_GUIContentForClearDropdownButton, EditorStyles.toolbarButton, GUILayout.Width(20)))
+                    {
+
+                        GenericMenu genericMenuForGameConfiguretorSelection = new GenericMenu();
+                        int numberOfOption = _gameConfiguretorOptionLabels.Count;
+                        for (int i = 0; i < numberOfOption; i++)
+                        {
+
+                            genericMenuForGameConfiguretorSelection.AddItem(
+                                new GUIContent(_gameConfiguretorOptionLabels[i]),
+                                _gameConfiguretorEnableStatus[i],
+                                (index) => {
+                                    int selectedIndex = (int)index;
+                                    _gameConfiguretorEnableStatus[selectedIndex] = !_gameConfiguretorEnableStatus[selectedIndex];
+                                },
+                                i);
+                        }
+                        genericMenuForGameConfiguretorSelection.ShowAsContext();
+                    }
+                }
+                EditorGUILayout.EndHorizontal();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            CoreEditorModule.DrawHorizontalLine();
+        }
+
+        private void DrawToggolingLogsGUI(LogType logType)
+        {
 
             Color defaultBackgroundColorOfGUI = GUI.backgroundColor;
             Color dynamicColor = defaultBackgroundColorOfGUI;
             float baseWidth = 15;
-            switch (logType) {
+            switch (logType)
+            {
 
                 case LogType.Log:
 
@@ -226,113 +338,8 @@
             }
         }
 
-        private string GetButtonLabeledForGameConfiguretorSelection() {
+        private void DrawLogListGUI() {
 
-            string result = "None";
-
-            int numberOfSelectedAsset = 0;
-            int numberOfGameConfiguretorAsset = _gameConfiguretorEnableStatus.Count;
-            for (int i = 0; i < numberOfGameConfiguretorAsset; i++) {
-
-                if (_gameConfiguretorEnableStatus[i]) {
-
-                    result = _gameConfiguretorOptionLabels[i];
-                    numberOfSelectedAsset++;
-                }
-            }
-
-            if (numberOfSelectedAsset > 1)
-                result = "Mixed";
-
-            return result;
-        }
-
-        private void HeaderGUI()
-        {
-
-            EditorGUILayout.BeginHorizontal();
-            {
-                if (GUILayout.Button("Clear", EditorStyles.toolbarButton, GUILayout.Width(50f)))
-                {
-                    ClearAllLog();
-                }
-
-                if (GUILayout.Button(_GUIContentForClearDropdownButton, EditorStyles.toolbarButton, GUILayout.Width(20))) {
-
-                    GenericMenu genericMenuForClearMode = new GenericMenu();
-
-                    int numberOfOption = _clearOptionLable.Length;
-                    for (int i = 0; i < numberOfOption; i++) {
-
-                        genericMenuForClearMode.AddItem(
-                            new GUIContent(_clearOptionLable[i]),
-                            _clearOptionStatus[i],
-                            (index) => {
-                                int selectedIndex = (int) index;   
-                                _clearOptionStatus[selectedIndex] = !_clearOptionStatus[selectedIndex];
-                            },
-                            i);
-                    }
-                    genericMenuForClearMode.ShowAsContext();
-                }
-
-
-                Color defaultBackgroundColorOfGUI  = GUI.backgroundColor;
-                Color dynamicColor          = defaultBackgroundColorOfGUI;
-
-                dynamicColor.a              = _errorPause ? 0.5f : 1f;
-                GUI.backgroundColor = dynamicColor;
-                if (GUILayout.Button("Error Pause", GUILayout.Width(80))) {
-
-                    _errorPause = !_errorPause;
-                }
-                GUI.backgroundColor = defaultBackgroundColorOfGUI;
-
-
-                EditorGUILayout.LabelField("");
-
-                //InfoLog
-                DrawGUIForToggolingLogs(LogType.Log);
-
-                //WarningLog
-                DrawGUIForToggolingLogs(LogType.Warning);
-
-                //ErrorLog
-                DrawGUIForToggolingLogs(LogType.Error);
-
-                string selectedTitle    = GetButtonLabeledForGameConfiguretorSelection();
-                float contentWidth      = selectedTitle.Length * 8f;
-                EditorGUILayout.BeginHorizontal(GUILayout.Width(contentWidth + 20));
-                {
-                    EditorGUILayout.LabelField(selectedTitle, EditorStyles.toolbarButton, GUILayout.Width(contentWidth));
-
-                    if (GUILayout.Button(_GUIContentForClearDropdownButton, EditorStyles.toolbarButton, GUILayout.Width(20)))
-                    {
-
-                        GenericMenu genericMenuForGameConfiguretorSelection = new GenericMenu();
-                        int numberOfOption = _gameConfiguretorOptionLabels.Count;
-                        for (int i = 0; i < numberOfOption; i++)
-                        {
-
-                            genericMenuForGameConfiguretorSelection.AddItem(
-                                new GUIContent(_gameConfiguretorOptionLabels[i]),
-                                _gameConfiguretorEnableStatus[i],
-                                (index) => {
-                                    int selectedIndex = (int)index;
-                                    _gameConfiguretorEnableStatus[selectedIndex] = !_gameConfiguretorEnableStatus[selectedIndex];
-                                },
-                                i);
-                        }
-                        genericMenuForGameConfiguretorSelection.ShowAsContext();
-                    }
-                }
-                EditorGUILayout.EndHorizontal();
-
-                
-            }
-            EditorGUILayout.EndHorizontal();
-
-            CoreEditorModule.DrawHorizontalLine();
         }
 
         #endregion
