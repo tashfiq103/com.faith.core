@@ -35,6 +35,7 @@
         private GUIContent _GUIContentForWarningLog = new GUIContent();
         private GUIContent _GUIContentForErrorLog = new GUIContent();
 
+        private GUIContent _GUIContentForStackTrace = new GUIContent();
 
         private bool _isClearOnEnteringPlayMode { get { return _clearOptionStatus[0]; } }
         private bool _isClearnOnBuild { get { return _clearOptionStatus[1]; } }
@@ -53,7 +54,7 @@
 
         private Vector2 _selectedIndex;
         private Vector2 _scrollPositionForListOfLog;
-        private Vector2 _scrollPositionForStackTraceInfo;
+        private Vector2 _scrollPositionForLogMessage;
 
         private Color _selectedLogColor;
         private Color defaultBackgroundColor;
@@ -94,6 +95,8 @@
             HeaderGUI();
 
             DrawLogListGUI();
+
+            DrawLogMessageGUI();
         }
 
         public void OnDestroy()
@@ -211,6 +214,11 @@
                 result = "Mixed";
 
             return result;
+        }
+
+        private void ClearSelectedIndex() {
+
+            _selectedIndex = new Vector2(-1, -1);
         }
 
         private void ClearAllLog() {
@@ -559,6 +567,38 @@
                 GUI.backgroundColor = defaultBackgroundColor;
             }
             EditorGUILayout.EndHorizontal();
+        }
+
+        private void DrawLogMessageGUI()
+        {
+            
+            EditorGUILayout.BeginVertical(GUILayout.Height(192));
+            {
+                _scrollPositionForLogMessage = EditorGUILayout.BeginScrollView(_scrollPositionForLogMessage);
+                {
+                    int configIndex = (int) _selectedIndex.x;
+                    int logIndex    = (int) _selectedIndex.y;
+                    if (IsValidLogIndex(configIndex, logIndex))
+                    {
+                        CoreEditorModule.DrawHorizontalLine();
+
+                        SerializedObject gameConfiguretorAsset  = new SerializedObject(_listOfGameConfiguretorAsset[configIndex]);
+                        _GUIContentForStackTrace.text           = gameConfiguretorAsset.FindProperty("_listOfLogInfo").GetArrayElementAtIndex(logIndex).FindPropertyRelative("stackTrace").stringValue;
+
+                        Vector2 sizeOfLabel                     = GUI.skin.label.CalcSize(_GUIContentForStackTrace);
+                        EditorGUILayout.LabelField(_GUIContentForStackTrace, GUILayout.Width(sizeOfLabel.x), GUILayout.Height(sizeOfLabel.y));
+                    }
+                    else {
+
+                        CoreEditorModule.DrawHorizontalLine();
+
+                        EditorGUILayout.HelpBox("No Valid Log Selected", MessageType.Warning);
+                    }
+                }
+                EditorGUILayout.EndScrollView();
+            }
+            EditorGUILayout.EndVertical();
+            
         }
 
         #endregion
