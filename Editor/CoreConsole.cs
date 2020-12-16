@@ -39,6 +39,9 @@
         private bool[]      _clearOptionStatus= new bool[] { true, false };
         private string[]    _clearOptionLable = new string[] { "Clear on Play", "Clear on Build" };
 
+        private Vector2 _scrollPositionForListOfLog;
+        private Vector2 _scrollPositionForStackTraceInfo;
+
         private List<bool> _gameConfiguretorEnableStatus;
         private List<string> _gameConfiguretorOptionLabels;
 
@@ -72,6 +75,8 @@
         public void OnGUI()
         {
             HeaderGUI();
+
+            DrawLogListGUI();
         }
 
         public void OnDestroy()
@@ -195,6 +200,10 @@
         #endregion
 
         #region CustomGUI
+
+        private void DrawLog(CoreDebugger.Debug.DebugInfo debugInfo, GameConfiguratorAsset gameConfiguretorAsset) {
+
+        }
 
         private void HeaderGUI()
         {
@@ -340,6 +349,100 @@
 
         private void DrawLogListGUI() {
 
+            EditorGUILayout.BeginVertical();
+            {
+                _scrollPositionForListOfLog = EditorGUILayout.BeginScrollView(_scrollPositionForListOfLog);
+                {
+                    GUIStyle logGUIStyle = EditorStyles.toolbarButton;
+                    logGUIStyle.alignment = TextAnchor.MiddleLeft;
+                    logGUIStyle.fontSize = 13;
+
+                    Color defaultContentColor = GUI.contentColor;
+                    int numberOfGameConfiguretorAsset = _listOfGameConfiguretorAsset.Count;
+                    for (int i = 0; i < numberOfGameConfiguretorAsset; i++)
+                    {
+
+                        if (_gameConfiguretorEnableStatus[i])
+                        {
+
+                            SerializedObject gameConfiguretorAsset  = new SerializedObject(_listOfGameConfiguretorAsset[i]);
+                            SerializedProperty _listOfLogInfo       = gameConfiguretorAsset.FindProperty("_listOfLogInfo");
+
+                            int numberOfLog = _listOfLogInfo.arraySize;
+                            for (int j = 0; j < numberOfLog; j++)
+                            {
+
+                                LogType logType = (LogType)_listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("logType").enumValueIndex;
+                                switch (logType) {
+
+                                    case LogType.Log:
+
+                                        if (_enableInfoLog)
+                                        {
+                                            EditorGUILayout.BeginHorizontal();
+                                            {
+                                                _GUIContentForTogglingInfoLog.text = "";
+                                                EditorGUILayout.LabelField(_GUIContentForTogglingInfoLog, GUILayout.Width(20));
+
+                                                string condition = _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue;
+
+                                                Color colorOfContent = _listOfGameConfiguretorAsset[i].colorForLog;
+                                                colorOfContent = colorOfContent == new Color() ? defaultContentColor : colorOfContent;
+                                                GUI.contentColor = colorOfContent;
+                                                if (GUILayout.Button(condition, logGUIStyle)) {
+
+                                                }
+                                                GUI.contentColor = defaultContentColor;
+                                            }
+                                            EditorGUILayout.EndHorizontal();
+                                        }
+
+                                        break;
+
+                                    case LogType.Warning:
+
+                                        if (_enableLogWarning)
+                                        {
+                                            EditorGUILayout.BeginHorizontal();
+                                            {
+                                                _GUIContentForTogglingWarningLog.text = "";
+                                                EditorGUILayout.LabelField(_GUIContentForTogglingWarningLog, GUILayout.Width(20));
+
+                                                string condition = _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue;
+
+                                                GUI.contentColor = _listOfGameConfiguretorAsset[i].colorForWarning;
+                                                EditorGUILayout.LabelField(condition);
+                                                GUI.contentColor = defaultContentColor;
+                                            }
+                                            EditorGUILayout.EndHorizontal();
+                                        }
+
+                                        break;
+
+                                    case LogType.Error:
+
+                                        EditorGUILayout.BeginHorizontal();
+                                        {
+                                            _GUIContentForTogglingErrorLog.text = "";
+                                            EditorGUILayout.LabelField(_GUIContentForTogglingErrorLog, GUILayout.Width(20));
+
+                                            string condition = _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue;
+
+                                            GUI.contentColor = _listOfGameConfiguretorAsset[i].colorForLogError;
+                                            EditorGUILayout.LabelField(condition);
+                                            GUI.contentColor = defaultContentColor;
+                                        }
+                                        EditorGUILayout.EndHorizontal();
+
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+                EditorGUILayout.EndScrollView();
+            }
+            EditorGUILayout.EndVertical();
         }
 
         #endregion
