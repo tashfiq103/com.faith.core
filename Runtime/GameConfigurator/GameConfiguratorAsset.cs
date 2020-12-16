@@ -133,6 +133,8 @@
             }
         }
 
+        public int NumberOfLog { get { return _listOfLogInfo.Count; } }
+
         public int GetNumberOfLog(LogType logType) {
 
             int numberOfLog = 0;

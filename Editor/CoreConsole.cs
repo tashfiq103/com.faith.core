@@ -41,13 +41,16 @@
         private bool _enableLogWarning = true;
         private bool _enableLogError = true;
 
-        private const float _contentHeightForLogsInList = 30;
+        private float _contentHeightForLogsInList = 30;
 
         private bool[]      _clearOptionStatus= new bool[] { true, false };
         private string[]    _clearOptionLable = new string[] { "Clear on Play", "Clear on Build" };
 
+        private Vector2 _selectedIndex;
         private Vector2 _scrollPositionForListOfLog;
         private Vector2 _scrollPositionForStackTraceInfo;
+
+        private Color _selectedLogColor;
 
         private List<bool> _gameConfiguretorEnableStatus;
         private List<string> _gameConfiguretorOptionLabels;
@@ -100,6 +103,46 @@
         #endregion
 
         #region Configuretion
+
+        private bool IsValidGameConfigAssetIndex(int gameConfigIndex) {
+
+            if (gameConfigIndex >= 0 && gameConfigIndex < _listOfGameConfiguretorAsset.Count)
+                return true;
+
+            return false;
+        }
+
+        private bool IsValidLogIndex(int gameConfigIndex, int logIndex) {
+
+            if (IsValidGameConfigAssetIndex(gameConfigIndex) && (logIndex >= 0 && logIndex < _listOfGameConfiguretorAsset[gameConfigIndex].NumberOfLog))
+                return true;
+
+            return false;
+        }
+
+        private bool IsSelectedLog(int gameConfigIndex, int logIndex)
+        {
+            if (IsValidLogIndex(gameConfigIndex, logIndex) && gameConfigIndex == _selectedIndex.x && logIndex == _selectedIndex.y)
+                return true;
+
+            return false;
+        }
+
+        private string RemoveCoreDebugFromString(string context) {
+
+            string result = "";
+
+            string[] splitBy_ = context.Split('_');
+            int numberOfSplit = splitBy_.Length;
+
+            for (int i = 1; i < numberOfSplit; i++)
+            {
+                result += splitBy_[i];
+                result += (i < (numberOfSplit - 1)) ? "_" : "";
+            }
+
+            return result;
+        }
 
         private string GetButtonLabeledForGameConfiguretorSelection()
         {
@@ -159,6 +202,9 @@
         }
 
         private void UpdateGameConfiguretorAsset() {
+
+            _contentHeightForLogsInList = 30;
+            _selectedLogColor = new Color(125 / 255.0f, 195 / 255.0f, 255 / 255.0f, 1f);
 
             _GUIContentForClearDropdownButton.image = EditorGUIUtility.IconContent("Icon Dropdown").image;
 
@@ -365,12 +411,14 @@
             {
                 _scrollPositionForListOfLog = EditorGUILayout.BeginScrollView(_scrollPositionForListOfLog);
                 {
-                    GUIStyle logGUIStyle = EditorStyles.toolbarButton;
+                    GUIStyle logGUIStyle = new GUIStyle(EditorStyles.toolbarButton);
                     logGUIStyle.alignment = TextAnchor.MiddleLeft;
                     logGUIStyle.fontSize = 12;
                     logGUIStyle.fixedHeight = _contentHeightForLogsInList;
 
+                    Color defaultBackgroundColor = GUI.backgroundColor;
                     Color defaultContentColor = GUI.contentColor;
+
                     int numberOfGameConfiguretorAsset = _listOfGameConfiguretorAsset.Count;
                     for (int i = 0; i < numberOfGameConfiguretorAsset; i++)
                     {
@@ -395,15 +443,19 @@
                                             {
                                                 EditorGUILayout.LabelField(_GUIContentForInfoLog, GUILayout.Width(_contentHeightForLogsInList), GUILayout.Height(_contentHeightForLogsInList));
 
-                                                string condition = _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue;
+                                                string condition = RemoveCoreDebugFromString(_listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue);
+
+                                                GUI.backgroundColor = IsSelectedLog(i, j) ? _selectedLogColor : defaultBackgroundColor;
 
                                                 Color colorOfContent = _listOfGameConfiguretorAsset[i].colorForLog;
-                                                colorOfContent = colorOfContent == new Color() ? defaultContentColor : colorOfContent;
+                                                colorOfContent = colorOfContent == new Color() ? defaultContentColor : _listOfGameConfiguretorAsset[i].colorForLog;
                                                 GUI.contentColor = colorOfContent;
                                                 if (GUILayout.Button(condition, logGUIStyle)) {
 
+                                                    _selectedIndex = new Vector2(i, j);
                                                 }
                                                 GUI.contentColor = defaultContentColor;
+                                                GUI.backgroundColor = defaultBackgroundColor;
                                             }
                                             EditorGUILayout.EndHorizontal();
                                         }
@@ -416,14 +468,18 @@
                                         {
                                             EditorGUILayout.BeginHorizontal();
                                             {
-                                                _GUIContentForTogglingWarningLog.text = "";
-                                                EditorGUILayout.LabelField(_GUIContentForTogglingWarningLog, GUILayout.Width(20));
+                                                EditorGUILayout.LabelField(_GUIContentForWarningLog, GUILayout.Width(_contentHeightForLogsInList), GUILayout.Height(_contentHeightForLogsInList));
 
-                                                string condition = _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue;
+                                                string condition = RemoveCoreDebugFromString(_listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue);
 
+                                                GUI.backgroundColor = IsSelectedLog(i, j) ? _selectedLogColor : defaultBackgroundColor;
                                                 GUI.contentColor = _listOfGameConfiguretorAsset[i].colorForWarning;
-                                                EditorGUILayout.LabelField(condition);
+                                                if (GUILayout.Button(condition, logGUIStyle))
+                                                {
+                                                    _selectedIndex = new Vector2(i, j);
+                                                }
                                                 GUI.contentColor = defaultContentColor;
+                                                GUI.backgroundColor = defaultBackgroundColor;
                                             }
                                             EditorGUILayout.EndHorizontal();
                                         }
@@ -434,14 +490,18 @@
 
                                         EditorGUILayout.BeginHorizontal();
                                         {
-                                            _GUIContentForTogglingErrorLog.text = "";
-                                            EditorGUILayout.LabelField(_GUIContentForTogglingErrorLog, GUILayout.Width(20));
+                                            EditorGUILayout.LabelField(_GUIContentForErrorLog, GUILayout.Width(_contentHeightForLogsInList), GUILayout.Height(_contentHeightForLogsInList));
 
-                                            string condition = _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue;
+                                            string condition = RemoveCoreDebugFromString(_listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue);
 
+                                            GUI.backgroundColor = IsSelectedLog(i, j) ? _selectedLogColor : defaultBackgroundColor;
                                             GUI.contentColor = _listOfGameConfiguretorAsset[i].colorForLogError;
-                                            EditorGUILayout.LabelField(condition);
+                                            if (GUILayout.Button(condition, logGUIStyle))
+                                            {
+                                                _selectedIndex = new Vector2(i, j);
+                                            }
                                             GUI.contentColor = defaultContentColor;
+                                            GUI.backgroundColor = defaultBackgroundColor;
                                         }
                                         EditorGUILayout.EndHorizontal();
 
