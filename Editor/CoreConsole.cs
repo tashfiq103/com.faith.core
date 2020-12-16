@@ -29,6 +29,8 @@
         private GUIContent _GUIContentForTogglingWarningLog = new GUIContent();
         private GUIContent _GUIContentForTogglingErrorLog = new GUIContent();
 
+        private GUIContent _GUIContentForSelectedConfigAsset = new GUIContent();
+
         private GUIContent _GUIContentForInfoLog = new GUIContent();
         private GUIContent _GUIContentForWarningLog = new GUIContent();
         private GUIContent _GUIContentForErrorLog = new GUIContent();
@@ -284,7 +286,7 @@
             _editorWindowOfCoreConsole = GetWindow<CoreConsole>(title, typeof(CoreConsole));
 
             _editorWindowOfCoreConsole.titleContent.text = title;
-            _editorWindowOfCoreConsole.minSize = new Vector2(360f, 240f);
+            _editorWindowOfCoreConsole.minSize = new Vector2(480f, 240f);
             _editorWindowOfCoreConsole.Show();
 
         }
@@ -292,8 +294,6 @@
         #endregion
 
         #region CustomGUI
-
-        
 
         private void HeaderGUI()
         {
@@ -355,12 +355,10 @@
                 //ErrorLog
                 DrawToggolingLogsGUI(LogType.Error);
 
-                string selectedTitle    = GetButtonLabeledForGameConfiguretorSelection();
-                float contentWidth      = selectedTitle.Length * 8f;
-                EditorGUILayout.BeginHorizontal(GUILayout.Width(contentWidth + 20));
+                _GUIContentForSelectedConfigAsset.text = GetButtonLabeledForGameConfiguretorSelection();
+                Vector2 sizeOfLabeledForSelectedConfigAsset = GUI.skin.label.CalcSize(_GUIContentForSelectedConfigAsset);
+                EditorGUILayout.BeginHorizontal(GUILayout.Width(sizeOfLabeledForSelectedConfigAsset.x + 20));
                 {
-                    EditorGUILayout.LabelField(selectedTitle, EditorStyles.toolbarButton, GUILayout.Width(contentWidth));
-
                     if (GUILayout.Button(_GUIContentForClearDropdownButton, EditorStyles.toolbarButton, GUILayout.Width(20)))
                     {
 
@@ -375,23 +373,41 @@
                                 (index) => {
                                     int selectedIndex = (int)index;
 
-                                    if (!_gameConfiguretorEnableStatus[selectedIndex] == true) {
-
+                                    if (!_gameConfiguretorEnableStatus[selectedIndex] == true)
+                                    {
+                                        //if : Requested To Be True
                                         SerializedObject _soGameConfiguretorAsset = new SerializedObject(_listOfGameConfiguretorAsset[selectedIndex]);
                                         SerializedProperty _spEnableStackTrace = _soGameConfiguretorAsset.FindProperty("_enableStackTrace");
 
-                                        if (!_spEnableStackTrace.boolValue) {
+                                        if (!_spEnableStackTrace.boolValue)
+                                        {
+                                            // if : StackTrace is Disabled
+                                            bool result = EditorUtility.DisplayDialog(
+                                                "Enable StackTrace",
+                                                "In order store and display the logs in 'CoreConsole', 'StackTrace' need to be enabled from 'GameConfiguretionAsset'",
+                                                "Enable", "Cancel");
 
+                                            _spEnableStackTrace.boolValue = result;
+                                            _spEnableStackTrace.serializedObject.ApplyModifiedProperties();
 
+                                            _gameConfiguretorEnableStatus[selectedIndex] = result;
+                                        }
+                                        else {
+
+                                            _gameConfiguretorEnableStatus[selectedIndex] = !_gameConfiguretorEnableStatus[selectedIndex];
                                         }
                                     }
+                                    else {
 
-                                    _gameConfiguretorEnableStatus[selectedIndex] = !_gameConfiguretorEnableStatus[selectedIndex];
+                                        _gameConfiguretorEnableStatus[selectedIndex] = !_gameConfiguretorEnableStatus[selectedIndex];
+                                    }
                                 },
                                 i);
                         }
                         genericMenuForGameConfiguretorSelection.ShowAsContext();
                     }
+
+                    EditorGUILayout.LabelField(_GUIContentForSelectedConfigAsset, EditorStyles.toolbarButton, GUILayout.Width(sizeOfLabeledForSelectedConfigAsset.x + 10));
                 }
                 EditorGUILayout.EndHorizontal();
             }
@@ -402,7 +418,6 @@
 
         private void DrawToggolingLogsGUI(LogType logType)
         {
-
             Color defaultBackgroundColorOfGUI = GUI.backgroundColor;
             Color dynamicColor = defaultBackgroundColorOfGUI;
             float baseWidth = 15;
