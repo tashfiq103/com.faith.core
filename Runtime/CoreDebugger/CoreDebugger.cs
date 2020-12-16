@@ -12,7 +12,7 @@
             [System.Serializable]
             public class DebugInfo
             {
-                public System.DateTime timeStamp;
+                public string timeStamp;
                 public string condition;
                 public string stackTrace;
                 public LogType logType;

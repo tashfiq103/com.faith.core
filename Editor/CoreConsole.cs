@@ -19,7 +19,7 @@
         #region Private Variables
 
         private static List<CoreConsole> _listOfCoreConsole = new List<CoreConsole>();
-        private static List<GameConfiguratorAsset> _listOfGameConfiguretorAsset;
+        private static List<GameConfiguratorAsset> _listOfGameConfiguretorAsset = new List<GameConfiguratorAsset>();
 
         private CoreConsole _editorWindowOfCoreConsole;
 
@@ -32,6 +32,8 @@
         private GUIContent _GUIContentForInfoLog = new GUIContent();
         private GUIContent _GUIContentForWarningLog = new GUIContent();
         private GUIContent _GUIContentForErrorLog = new GUIContent();
+
+        private GUIStyle logGUIStyle;
 
         private bool _isClearOnEnteringPlayMode { get { return _clearOptionStatus[0]; } }
         private bool _isClearnOnBuild { get { return _clearOptionStatus[1]; } }
@@ -53,6 +55,8 @@
         private Vector2 _scrollPositionForStackTraceInfo;
 
         private Color _selectedLogColor;
+        private Color defaultBackgroundColor;
+        private Color defaultContentColor;
 
         private List<bool> _gameConfiguretorEnableStatus;
         private List<string> _gameConfiguretorOptionLabels;
@@ -130,6 +134,21 @@
             return false;
         }
 
+        private int GetNumberOfLog(LogType logType)
+        {
+
+            int result = 0;
+            int numberOfLogType = _listOfGameConfiguretorAsset.Count;
+            for (int i = 0; i < numberOfLogType; i++)
+            {
+
+                if (_gameConfiguretorEnableStatus[i])
+                    result += _listOfGameConfiguretorAsset[i].GetNumberOfLog(logType);
+            }
+
+            return result;
+        }
+
         private string RemoveCoreDebugFromString(string context, GameConfiguratorAsset gameConfigAsset, LogType logType) {
 
             string result = "";
@@ -193,19 +212,6 @@
             return result;
         }
 
-        private int GetNumberOfLog(LogType logType) {
-
-            int result = 0;
-            int numberOfLogType = _listOfGameConfiguretorAsset.Count;
-            for (int i = 0; i < numberOfLogType; i++) {
-
-                if(_gameConfiguretorEnableStatus[i])
-                    result += _listOfGameConfiguretorAsset[i].GetNumberOfLog(logType);
-            }
-
-            return result;
-        }
-
         private void ClearAllLog() {
 
             foreach (GameConfiguratorAsset gameConfiguratorAsset in _listOfGameConfiguretorAsset)
@@ -229,7 +235,10 @@
         private void UpdateGameConfiguretorAsset() {
 
             _contentHeightForLogsInList = 30;
+
             _selectedLogColor = new Color(125 / 255.0f, 195 / 255.0f, 255 / 255.0f, 1f);
+            defaultBackgroundColor = GUI.backgroundColor;
+            defaultContentColor = GUI.contentColor;
 
             _GUIContentForClearDropdownButton.image = EditorGUIUtility.IconContent("Icon Dropdown").image;
 
@@ -240,6 +249,11 @@
             _GUIContentForInfoLog.image = EditorGUIUtility.IconContent("console.infoicon.sml@2x").image;
             _GUIContentForWarningLog.image = EditorGUIUtility.IconContent("console.warnicon.sml@2x").image;
             _GUIContentForErrorLog.image = EditorGUIUtility.IconContent("console.erroricon.sml@2x").image;
+
+            logGUIStyle = new GUIStyle(EditorStyles.toolbarButton);
+            logGUIStyle.alignment = TextAnchor.MiddleLeft;
+            logGUIStyle.fontSize = 12;
+            logGUIStyle.fixedHeight = _contentHeightForLogsInList;
 
             _listOfGameConfiguretorAsset = CoreEditorModule.GetAsset<GameConfiguratorAsset>();
 
@@ -284,8 +298,35 @@
 
         #region CustomGUI
 
-        private void DrawLog(CoreDebugger.Debug.DebugInfo debugInfo, GameConfiguratorAsset gameConfiguretorAsset) {
+        private void DrawLog(int gameConfigIndex, int logIndex, GUIContent GUIContentForLogIcon, SerializedProperty logInfo) {
 
+            EditorGUILayout.BeginHorizontal();
+            {
+                EditorGUILayout.LabelField(GUIContentForLogIcon, GUILayout.Width(_contentHeightForLogsInList), GUILayout.Height(_contentHeightForLogsInList));
+
+                string condition = RemoveCoreDebugFromString(
+                    logInfo.FindPropertyRelative("condition").stringValue,
+                    _listOfGameConfiguretorAsset[gameConfigIndex],
+                    (LogType)logInfo.FindPropertyRelative("logType").enumValueIndex
+                    );
+
+                if (_showTimeStamp)
+                    condition = string.Format("[{0}]_", logInfo.FindPropertyRelative("timeStamp").stringValue) + condition;
+
+                GUI.backgroundColor = IsSelectedLog(gameConfigIndex, logIndex) ? _selectedLogColor : defaultBackgroundColor;
+
+                Color colorOfContent = _listOfGameConfiguretorAsset[gameConfigIndex].colorForLog;
+                colorOfContent = colorOfContent == new Color() ? defaultContentColor : _listOfGameConfiguretorAsset[gameConfigIndex].colorForLog;
+                GUI.contentColor = colorOfContent;
+                if (GUILayout.Button(condition, logGUIStyle))
+                {
+
+                    _selectedIndex = new Vector2(gameConfigIndex, logIndex);
+                }
+                GUI.contentColor = defaultContentColor;
+                GUI.backgroundColor = defaultBackgroundColor;
+            }
+            EditorGUILayout.EndHorizontal();
         }
 
         private void HeaderGUI()
@@ -443,14 +484,7 @@
             {
                 _scrollPositionForListOfLog = EditorGUILayout.BeginScrollView(_scrollPositionForListOfLog);
                 {
-                    GUIStyle logGUIStyle = new GUIStyle(EditorStyles.toolbarButton);
-                    logGUIStyle.alignment = TextAnchor.MiddleLeft;
-                    logGUIStyle.fontSize = 12;
-                    logGUIStyle.fixedHeight = _contentHeightForLogsInList;
-
-                    Color defaultBackgroundColor = GUI.backgroundColor;
-                    Color defaultContentColor = GUI.contentColor;
-
+                    
                     int numberOfGameConfiguretorAsset = _listOfGameConfiguretorAsset.Count;
                     for (int i = 0; i < numberOfGameConfiguretorAsset; i++)
                     {
@@ -470,84 +504,21 @@
                                     case LogType.Log:
 
                                         if (_enableInfoLog)
-                                        {
-                                            EditorGUILayout.BeginHorizontal();
-                                            {
-                                                EditorGUILayout.LabelField(_GUIContentForInfoLog, GUILayout.Width(_contentHeightForLogsInList), GUILayout.Height(_contentHeightForLogsInList));
-
-                                                string condition = RemoveCoreDebugFromString(
-                                                    _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue,
-                                                    _listOfGameConfiguretorAsset[i],
-                                                    (LogType) _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("logType").enumValueIndex
-                                                    );
-
-                                                GUI.backgroundColor = IsSelectedLog(i, j) ? _selectedLogColor : defaultBackgroundColor;
-
-                                                Color colorOfContent = _listOfGameConfiguretorAsset[i].colorForLog;
-                                                colorOfContent = colorOfContent == new Color() ? defaultContentColor : _listOfGameConfiguretorAsset[i].colorForLog;
-                                                GUI.contentColor = colorOfContent;
-                                                if (GUILayout.Button(condition, logGUIStyle)) {
-
-                                                    _selectedIndex = new Vector2(i, j);
-                                                }
-                                                GUI.contentColor = defaultContentColor;
-                                                GUI.backgroundColor = defaultBackgroundColor;
-                                            }
-                                            EditorGUILayout.EndHorizontal();
-                                        }
+                                            DrawLog(i, j, _GUIContentForInfoLog, _listOfLogInfo.GetArrayElementAtIndex(j));
 
                                         break;
 
                                     case LogType.Warning:
 
                                         if (_enableLogWarning)
-                                        {
-                                            EditorGUILayout.BeginHorizontal();
-                                            {
-                                                EditorGUILayout.LabelField(_GUIContentForWarningLog, GUILayout.Width(_contentHeightForLogsInList), GUILayout.Height(_contentHeightForLogsInList));
-
-                                                string condition = RemoveCoreDebugFromString(
-                                                    _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue,
-                                                    _listOfGameConfiguretorAsset[i],
-                                                    (LogType)_listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("logType").enumValueIndex
-                                                );
-
-                                                GUI.backgroundColor = IsSelectedLog(i, j) ? _selectedLogColor : defaultBackgroundColor;
-                                                GUI.contentColor = _listOfGameConfiguretorAsset[i].colorForWarning;
-                                                if (GUILayout.Button(condition, logGUIStyle))
-                                                {
-                                                    _selectedIndex = new Vector2(i, j);
-                                                }
-                                                GUI.contentColor = defaultContentColor;
-                                                GUI.backgroundColor = defaultBackgroundColor;
-                                            }
-                                            EditorGUILayout.EndHorizontal();
-                                        }
+                                            DrawLog(i, j, _GUIContentForWarningLog, _listOfLogInfo.GetArrayElementAtIndex(j));
 
                                         break;
 
                                     case LogType.Error:
 
-                                        EditorGUILayout.BeginHorizontal();
-                                        {
-                                            EditorGUILayout.LabelField(_GUIContentForErrorLog, GUILayout.Width(_contentHeightForLogsInList), GUILayout.Height(_contentHeightForLogsInList));
-
-                                            string condition = RemoveCoreDebugFromString(
-                                                _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue,
-                                                _listOfGameConfiguretorAsset[i],
-                                                (LogType)_listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("logType").enumValueIndex
-                                            );
-
-                                            GUI.backgroundColor = IsSelectedLog(i, j) ? _selectedLogColor : defaultBackgroundColor;
-                                            GUI.contentColor = _listOfGameConfiguretorAsset[i].colorForLogError;
-                                            if (GUILayout.Button(condition, logGUIStyle))
-                                            {
-                                                _selectedIndex = new Vector2(i, j);
-                                            }
-                                            GUI.contentColor = defaultContentColor;
-                                            GUI.backgroundColor = defaultBackgroundColor;
-                                        }
-                                        EditorGUILayout.EndHorizontal();
+                                        if(_enableLogError)
+                                            DrawLog(i, j, _GUIContentForErrorLog, _listOfLogInfo.GetArrayElementAtIndex(j));
 
                                         break;
                                 }

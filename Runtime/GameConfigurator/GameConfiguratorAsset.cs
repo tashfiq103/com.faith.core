@@ -101,7 +101,7 @@
 
                 _listOfLogInfo.Add(new CoreDebugger.Debug.DebugInfo()
                 {
-                    timeStamp = DateTime.Now,
+                    timeStamp = DateTime.Now.ToString(),
                     condition = condition,
                     stackTrace = stackTrace,
                     logType = logType
