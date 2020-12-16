@@ -24,9 +24,14 @@
         private CoreConsole _editorWindowOfCoreConsole;
 
         private GUIContent _GUIContentForClearDropdownButton= new GUIContent();
+
         private GUIContent _GUIContentForTogglingInfoLog = new GUIContent();
         private GUIContent _GUIContentForTogglingWarningLog = new GUIContent();
         private GUIContent _GUIContentForTogglingErrorLog = new GUIContent();
+
+        private GUIContent _GUIContentForInfoLog = new GUIContent();
+        private GUIContent _GUIContentForWarningLog = new GUIContent();
+        private GUIContent _GUIContentForErrorLog = new GUIContent();
 
         private bool _isClearOnEnteringPlayMode { get { return _clearOptionStatus[0]; } }
         private bool _isClearnOnBuild { get { return _clearOptionStatus[1]; } }
@@ -35,6 +40,8 @@
         private bool _enableInfoLog = true;
         private bool _enableLogWarning = true;
         private bool _enableLogError = true;
+
+        private const float _contentHeightForLogsInList = 30;
 
         private bool[]      _clearOptionStatus= new bool[] { true, false };
         private string[]    _clearOptionLable = new string[] { "Clear on Play", "Clear on Build" };
@@ -154,9 +161,14 @@
         private void UpdateGameConfiguretorAsset() {
 
             _GUIContentForClearDropdownButton.image = EditorGUIUtility.IconContent("Icon Dropdown").image;
+
             _GUIContentForTogglingInfoLog.image = EditorGUIUtility.IconContent("console.infoicon.sml").image;
             _GUIContentForTogglingWarningLog.image = EditorGUIUtility.IconContent("console.warnicon.sml").image;
             _GUIContentForTogglingErrorLog.image = EditorGUIUtility.IconContent("console.erroricon.sml").image;
+
+            _GUIContentForInfoLog.image = EditorGUIUtility.IconContent("console.infoicon.sml@2x").image;
+            _GUIContentForWarningLog.image = EditorGUIUtility.IconContent("console.warnicon.sml@2x").image;
+            _GUIContentForErrorLog.image = EditorGUIUtility.IconContent("console.erroricon.sml@2x").image;
 
             _listOfGameConfiguretorAsset = CoreEditorModule.GetAsset<GameConfiguratorAsset>();
 
@@ -355,13 +367,13 @@
                 {
                     GUIStyle logGUIStyle = EditorStyles.toolbarButton;
                     logGUIStyle.alignment = TextAnchor.MiddleLeft;
-                    logGUIStyle.fontSize = 13;
+                    logGUIStyle.fontSize = 12;
+                    logGUIStyle.fixedHeight = _contentHeightForLogsInList;
 
                     Color defaultContentColor = GUI.contentColor;
                     int numberOfGameConfiguretorAsset = _listOfGameConfiguretorAsset.Count;
                     for (int i = 0; i < numberOfGameConfiguretorAsset; i++)
                     {
-
                         if (_gameConfiguretorEnableStatus[i])
                         {
 
@@ -381,8 +393,7 @@
                                         {
                                             EditorGUILayout.BeginHorizontal();
                                             {
-                                                _GUIContentForTogglingInfoLog.text = "";
-                                                EditorGUILayout.LabelField(_GUIContentForTogglingInfoLog, GUILayout.Width(20));
+                                                EditorGUILayout.LabelField(_GUIContentForInfoLog, GUILayout.Width(_contentHeightForLogsInList), GUILayout.Height(_contentHeightForLogsInList));
 
                                                 string condition = _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue;
 
@@ -436,6 +447,7 @@
 
                                         break;
                                 }
+                                EditorGUILayout.Space(5f);
                             }
                         }
                     }
