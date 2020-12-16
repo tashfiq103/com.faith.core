@@ -35,7 +35,9 @@
 
         private bool _isClearOnEnteringPlayMode { get { return _clearOptionStatus[0]; } }
         private bool _isClearnOnBuild { get { return _clearOptionStatus[1]; } }
+
         private bool _errorPause = true;
+        private bool _showTimeStamp = false;
 
         private bool _enableInfoLog = true;
         private bool _enableLogWarning = true;
@@ -128,9 +130,32 @@
             return false;
         }
 
-        private string RemoveCoreDebugFromString(string context) {
+        private string RemoveCoreDebugFromString(string context, GameConfiguratorAsset gameConfigAsset, LogType logType) {
 
             string result = "";
+
+            if (context.Contains("color"))
+            {
+                Color color = Color.white;
+                switch (logType) {
+
+                    case LogType.Log:
+                        color = gameConfigAsset.colorForLog;
+                        break;
+
+                    case LogType.Warning:
+                        color = gameConfigAsset.colorForWarning;
+                        break;
+
+                    case LogType.Error:
+                        color = gameConfigAsset.colorForLogError;
+                        break;
+                }
+                string hexColor = StringOperation.GetHexColorFromRGBColor(color);
+
+                context = context.Replace(string.Format("<color={0}>", hexColor), "");
+                context = context.Replace("</color>", "");
+            }
 
             string[] splitBy_ = context.Split('_');
             int numberOfSplit = splitBy_.Length;
@@ -304,6 +329,13 @@
                 }
                 GUI.backgroundColor = defaultBackgroundColorOfGUI;
 
+                dynamicColor.a = _showTimeStamp ? 0.5f : 1f;
+                GUI.backgroundColor = dynamicColor;
+                if (GUILayout.Button("Time Stamp", GUILayout.Width(80)))
+                {
+                    _showTimeStamp = !_showTimeStamp;
+                }
+                GUI.backgroundColor = defaultBackgroundColorOfGUI;
 
                 EditorGUILayout.LabelField("");
 
@@ -443,7 +475,11 @@
                                             {
                                                 EditorGUILayout.LabelField(_GUIContentForInfoLog, GUILayout.Width(_contentHeightForLogsInList), GUILayout.Height(_contentHeightForLogsInList));
 
-                                                string condition = RemoveCoreDebugFromString(_listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue);
+                                                string condition = RemoveCoreDebugFromString(
+                                                    _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue,
+                                                    _listOfGameConfiguretorAsset[i],
+                                                    (LogType) _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("logType").enumValueIndex
+                                                    );
 
                                                 GUI.backgroundColor = IsSelectedLog(i, j) ? _selectedLogColor : defaultBackgroundColor;
 
@@ -470,7 +506,11 @@
                                             {
                                                 EditorGUILayout.LabelField(_GUIContentForWarningLog, GUILayout.Width(_contentHeightForLogsInList), GUILayout.Height(_contentHeightForLogsInList));
 
-                                                string condition = RemoveCoreDebugFromString(_listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue);
+                                                string condition = RemoveCoreDebugFromString(
+                                                    _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue,
+                                                    _listOfGameConfiguretorAsset[i],
+                                                    (LogType)_listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("logType").enumValueIndex
+                                                );
 
                                                 GUI.backgroundColor = IsSelectedLog(i, j) ? _selectedLogColor : defaultBackgroundColor;
                                                 GUI.contentColor = _listOfGameConfiguretorAsset[i].colorForWarning;
@@ -492,7 +532,11 @@
                                         {
                                             EditorGUILayout.LabelField(_GUIContentForErrorLog, GUILayout.Width(_contentHeightForLogsInList), GUILayout.Height(_contentHeightForLogsInList));
 
-                                            string condition = RemoveCoreDebugFromString(_listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue);
+                                            string condition = RemoveCoreDebugFromString(
+                                                _listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("condition").stringValue,
+                                                _listOfGameConfiguretorAsset[i],
+                                                (LogType)_listOfLogInfo.GetArrayElementAtIndex(j).FindPropertyRelative("logType").enumValueIndex
+                                            );
 
                                             GUI.backgroundColor = IsSelectedLog(i, j) ? _selectedLogColor : defaultBackgroundColor;
                                             GUI.contentColor = _listOfGameConfiguretorAsset[i].colorForLogError;

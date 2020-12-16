@@ -1,7 +1,6 @@
 ﻿namespace com.faith.core
 {
     using UnityEngine;
-
     public static class CoreDebugger
     {
         
@@ -13,6 +12,7 @@
             [System.Serializable]
             public class DebugInfo
             {
+                public System.DateTime timeStamp;
                 public string condition;
                 public string stackTrace;
                 public LogType logType;

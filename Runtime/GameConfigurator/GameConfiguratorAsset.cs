@@ -1,6 +1,7 @@
 ﻿namespace com.faith.core
 {
     using UnityEngine;
+    using System;
     using System.Collections.Generic;
 
     public class GameConfiguratorAsset : ScriptableObject
@@ -100,6 +101,7 @@
 
                 _listOfLogInfo.Add(new CoreDebugger.Debug.DebugInfo()
                 {
+                    timeStamp = DateTime.Now,
                     condition = condition,
                     stackTrace = stackTrace,
                     logType = logType
