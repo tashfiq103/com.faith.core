@@ -40,6 +40,8 @@
             }
         }
 
+        public List<CoreDebugger.Debug.DebugInfo> EditorListOfLogInfo { get { return _listOfLogInfo; } }
+
 #endif
 
         public CoreEnums.GameMode gameMode { get { return _linkWithCentralGameConfiguretion ? GameConfiguratorManager.gameMode : _gameMode; } }
