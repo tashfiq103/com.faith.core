@@ -409,6 +409,8 @@
 
                                         _gameConfiguretorEnableStatus[selectedIndex] = !_gameConfiguretorEnableStatus[selectedIndex];
                                     }
+
+                                    ClearSelectedIndex();
                                 },
                                 i);
                         }
@@ -442,6 +444,7 @@
                     if (GUILayout.Button(_GUIContentForTogglingInfoLog, GUILayout.Width(baseWidth + sizeForInfoLogs.x)))
                     {
                         _enableInfoLog = !_enableInfoLog;
+                        ClearSelectedIndex();
                     }
                     GUI.backgroundColor = defaultBackgroundColorOfGUI;
 
@@ -457,6 +460,7 @@
                     if (GUILayout.Button(_GUIContentForTogglingWarningLog, GUILayout.Width(baseWidth + sizeForWarningLog.x)))
                     {
                         _enableLogWarning = !_enableLogWarning;
+                        ClearSelectedIndex();
                     }
                     GUI.backgroundColor = defaultBackgroundColorOfGUI;
 
@@ -472,6 +476,7 @@
                     if (GUILayout.Button(_GUIContentForTogglingErrorLog, GUILayout.Width(baseWidth + sizeForErrorLog.x)))
                     {
                         _enableLogError = !_enableLogError;
+                        ClearSelectedIndex();
                     }
                     GUI.backgroundColor = defaultBackgroundColorOfGUI;
 
