@@ -58,8 +58,8 @@
 
         private float _contentHeightForLogsInList = 30;
 
-        private bool[]      _clearOptionStatus= new bool[] { true, false };
-        private string[]    _clearOptionLable = new string[] { "Clear on Play", "Clear on Build" };
+        private bool[]      _clearOptionStatus  = new bool[] { false, false };
+        private string[]    _clearOptionLable   = new string[] { "Clear on Play", "Clear on Build" };
 
         private int _selectedLogIndex;
         private string _selectedLogCondition;
@@ -236,8 +236,10 @@
                 case PlayModeStateChange.EnteredPlayMode:
 
                     if (_isClearOnEnteringPlayMode)
+                    {
+                        Debug.Log("ashchi");
                         ClearAllLog();
-
+                    }
                     break;
             }
         }
