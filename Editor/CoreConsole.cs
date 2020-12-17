@@ -62,6 +62,7 @@
         private string[]    _clearOptionLable = new string[] { "Clear on Play", "Clear on Build" };
 
         private int _selectedLogIndex;
+        private string _selectedLogCondition;
         private string _selectedLogStackTrace;
         private Vector2 _scrollPositionForListOfLog;
         private Vector2 _scrollPositionForLogMessage;
@@ -587,6 +588,7 @@
                 if (GUILayout.Button(condition, GUIStyleForLog))
                 {
                     _selectedLogIndex = logIndex;
+                    _selectedLogCondition = debugInfo.condition;
                     _selectedLogStackTrace = debugInfo.stackTrace;
                 }
                 GUI.contentColor = defaultContentColor;
@@ -606,7 +608,7 @@
                     {
                         CoreEditorModule.DrawHorizontalLine();
 
-                        _GUIContentForStackTrace.text = _selectedLogStackTrace;
+                        _GUIContentForStackTrace.text = string.Format("{0}\n{1}", _selectedLogCondition, _selectedLogStackTrace);
 
                         Vector2 sizeOfLabel = GUI.skin.label.CalcSize(_GUIContentForStackTrace);
                         EditorGUILayout.LabelField(_GUIContentForStackTrace, GUILayout.Width(sizeOfLabel.x), GUILayout.Height(sizeOfLabel.y));
