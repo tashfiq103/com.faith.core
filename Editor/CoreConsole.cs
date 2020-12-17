@@ -98,6 +98,8 @@
         {
             base.OnEnable();
 
+            EditorApplication.playModeStateChanged += LogPlayModeState;
+
             UpdateGameConfiguretorAsset();
         }
 
@@ -108,6 +110,11 @@
             DrawLogListGUI();
 
             DrawLogMessageGUI();
+        }
+
+        public void OnDisable()
+        {
+            EditorApplication.playModeStateChanged -= LogPlayModeState;
         }
 
         public void OnDestroy()
@@ -124,8 +131,6 @@
         #endregion
 
         #region Configuretion
-
-        
 
         private bool IsSelectedLog(int logIndex) {
 
@@ -226,7 +231,6 @@
 
         private void LogPlayModeState(PlayModeStateChange state)
         {
-
             switch (state)
             {
                 case PlayModeStateChange.EnteredPlayMode:
@@ -280,8 +284,6 @@
         }
 
         private void CreateCoreConsole() {
-
-            EditorApplication.playModeStateChanged += LogPlayModeState;
 
 
             UpdateGameConfiguretorAsset();
