@@ -6,7 +6,6 @@
     using UnityEditor.Build.Reporting;
     using System.Collections.Generic;
     
-
     public class CoreConsole : BaseEditorWindowClass, IPreprocessBuildWithReport
     {
         #region Custom Variables
@@ -105,12 +104,18 @@
 
         public void OnGUI()
         {
+
             HeaderGUI();
 
             DrawLogListGUI();
 
             DrawLogMessageGUI();
 
+        }
+
+        public void OnInspectorUpdate()
+        {
+            Repaint();
         }
 
         public void OnDisable()
@@ -517,11 +522,12 @@
                     }
 
                     //Sorting
-                    int totalNumberOfLog = _listOfDebugInfo.Count;
-                    for (int i = 0; i < totalNumberOfLog - 1; i++) {
+                    int numberOfLog = _listOfDebugInfo.Count;
+
+                    for (int i = 0; i < numberOfLog - 1; i++) {
 
                         System.DateTime _DataTimeWithWhomeToCompare = System.Convert.ToDateTime(_listOfDebugInfo[i].debugInfo.timeStamp);
-                        for (int j = i + 1; j < totalNumberOfLog; j++) {
+                        for (int j = i + 1; j < numberOfLog; j++) {
 
                             System.DateTime _DataTimeToCompare = System.Convert.ToDateTime(_listOfDebugInfo[j].debugInfo.timeStamp);
 
@@ -535,7 +541,7 @@
                         }
                     }
 
-                    for (int i = 0; i < totalNumberOfLog; i++) {
+                    for (int i = 0; i < numberOfLog; i++) {
 
                         DrawLog(_listOfDebugInfo[i].gameConfig, GUIStyleForLogDetail, _listOfDebugInfo[i].debugInfo, i);
 
