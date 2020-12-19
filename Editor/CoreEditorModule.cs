@@ -299,6 +299,26 @@ public class CoreEditorModule    :   Editor
 
     #endregion
 
+    #region Editor Module   :   UnityTechnology
+
+    public static bool DropDownToggle(ref bool toggled, GUIContent content, GUIStyle toggleButtonStyle)
+    {
+        Rect toggleRect = GUILayoutUtility.GetRect(content, toggleButtonStyle);
+        Rect arrowRightRect = new Rect(toggleRect.xMax - toggleButtonStyle.padding.right, toggleRect.y, toggleButtonStyle.padding.right, toggleRect.height);
+        bool clicked = EditorGUI.DropdownButton(arrowRightRect, GUIContent.none, FocusType.Passive, GUIStyle.none);
+
+        if (!clicked)
+        {
+            toggled = GUI.Toggle(toggleRect, toggled, content, toggleButtonStyle);
+        }
+
+        return clicked;
+    }
+
+    //Extended  :   Tashfiq
+    
+
+    #endregion
 }
 
 #endif

@@ -2,6 +2,7 @@
 {
     using UnityEngine;
     using UnityEditor;
+    using UnityEditor.Scripting;
     using UnityEditor.Build;
     using UnityEditor.Build.Reporting;
     using System.Collections.Generic;
@@ -122,7 +123,7 @@
 
         public void OnGUI()
         {
-
+            
             HeaderGUI();
 
             DrawLogListGUI();
@@ -385,26 +386,24 @@
 
         private void HeaderGUI()
         {
-
-            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginHorizontal(EditorStyles.centeredGreyMiniLabel);
             {
-                if (GUILayout.Button("Clear", EditorStyles.toolbarButton, GUILayout.Width(50f)))
-                {
-                    ClearAllLog();
-                }
 
-                if (GUILayout.Button(_GUIContentForClearDropdownButton, EditorStyles.toolbarButton, GUILayout.Width(20))) {
+                bool clearClicked = false;
+                if (CoreEditorModule.DropDownToggle(ref clearClicked, new GUIContent() { text = "Clear" }, EditorStyles.toolbarDropDown))
+                {
 
                     GenericMenu genericMenuForClearMode = new GenericMenu();
 
                     int numberOfOption = _clearOptionLable.Length;
-                    for (int i = 0; i < numberOfOption; i++) {
+                    for (int i = 0; i < numberOfOption; i++)
+                    {
 
                         genericMenuForClearMode.AddItem(
                             new GUIContent(_clearOptionLable[i]),
                             _clearOptionStatus[i],
                             (index) => {
-                                int selectedIndex = (int) index;   
+                                int selectedIndex = (int)index;
                                 _clearOptionStatus[selectedIndex] = !_clearOptionStatus[selectedIndex];
                             },
                             i);
@@ -412,13 +411,20 @@
                     genericMenuForClearMode.ShowAsContext();
                 }
 
+                if (clearClicked)
+                {
+
+                    ClearAllLog();
+                }
+
+
 
                 Color defaultBackgroundColorOfGUI  = GUI.backgroundColor;
                 Color dynamicColor          = defaultBackgroundColorOfGUI;
 
                 dynamicColor.a              = _errorPause ? 1f : 0.5f;
                 GUI.backgroundColor = dynamicColor;
-                if (GUILayout.Button("Error Pause", GUILayout.Width(80))) {
+                if (GUILayout.Button(EditorGUIUtility.TrTextContent("Error Pause", "Pause Play Mode on error"), GUILayout.Width(80))) {
 
                     _errorPause = !_errorPause;
                 }
@@ -426,7 +432,7 @@
 
                 dynamicColor.a = _showTimeStamp ? 1f : 0.5f;
                 GUI.backgroundColor = dynamicColor;
-                if (GUILayout.Button("Time Stamp", GUILayout.Width(80)))
+                if (GUILayout.Button(EditorGUIUtility.TrTextContent("Time Stamp", "Show 'Time Stamp' for logs"), GUILayout.Width(80)))
                 {
                     _showTimeStamp = !_showTimeStamp;
                 }
@@ -444,62 +450,58 @@
                 DrawToggolingLogsGUI(LogType.Error);
 
                 _GUIContentForSelectedConfigAsset.text = GetButtonLabeledForGameConfiguretorSelection();
-                Vector2 sizeOfLabeledForSelectedConfigAsset = GUI.skin.label.CalcSize(_GUIContentForSelectedConfigAsset);
-                EditorGUILayout.BeginHorizontal(GUILayout.Width(sizeOfLabeledForSelectedConfigAsset.x + 20));
-                {
-                    if (GUILayout.Button(_GUIContentForClearDropdownButton, EditorStyles.toolbarButton, GUILayout.Width(20)))
+
+                if (EditorGUILayout.DropdownButton(_GUIContentForSelectedConfigAsset, FocusType.Passive, EditorStyles.toolbarDropDown)) {
+
+                    GenericMenu genericMenuForGameConfiguretorSelection = new GenericMenu();
+                    int numberOfOption = _gameConfiguretorOptionLabels.Length;
+                    for (int i = 0; i < numberOfOption; i++)
                     {
 
-                        GenericMenu genericMenuForGameConfiguretorSelection = new GenericMenu();
-                        int numberOfOption = _gameConfiguretorOptionLabels.Length;
-                        for (int i = 0; i < numberOfOption; i++)
-                        {
+                        genericMenuForGameConfiguretorSelection.AddItem(
+                            new GUIContent(_gameConfiguretorOptionLabels[i]),
+                            _gameConfiguretorEnableStatus[i],
+                            (index) => {
+                                int selectedIndex = (int)index;
 
-                            genericMenuForGameConfiguretorSelection.AddItem(
-                                new GUIContent(_gameConfiguretorOptionLabels[i]),
-                                _gameConfiguretorEnableStatus[i],
-                                (index) => {
-                                    int selectedIndex = (int)index;
-
-                                    if (!_gameConfiguretorEnableStatus[selectedIndex] == true)
-                                    {
+                                if (!_gameConfiguretorEnableStatus[selectedIndex] == true)
+                                {
                                         //if : Requested To Be True
-                                        SerializedObject _soGameConfiguretorAsset = new SerializedObject(_listOfGameConfiguretorAsset[selectedIndex]);
-                                        SerializedProperty _spEnableStackTrace = _soGameConfiguretorAsset.FindProperty("_enableStackTrace");
+                                    SerializedObject _soGameConfiguretorAsset = new SerializedObject(_listOfGameConfiguretorAsset[selectedIndex]);
+                                    SerializedProperty _spEnableStackTrace = _soGameConfiguretorAsset.FindProperty("_enableStackTrace");
 
-                                        if (!_spEnableStackTrace.boolValue)
-                                        {
+                                    if (!_spEnableStackTrace.boolValue)
+                                    {
                                             // if : StackTrace is Disabled
                                             bool result = EditorUtility.DisplayDialog(
-                                                "Enable StackTrace",
-                                                "In order store and display the logs in 'CoreConsole', 'StackTrace' need to be enabled from 'GameConfiguretionAsset'",
-                                                "Enable", "Cancel");
+                                            "Enable StackTrace",
+                                            "In order store and display the logs in 'CoreConsole', 'StackTrace' need to be enabled from 'GameConfiguretionAsset'",
+                                            "Enable", "Cancel");
 
-                                            _spEnableStackTrace.boolValue = result;
-                                            _spEnableStackTrace.serializedObject.ApplyModifiedProperties();
+                                        _spEnableStackTrace.boolValue = result;
+                                        _spEnableStackTrace.serializedObject.ApplyModifiedProperties();
 
-                                            _gameConfiguretorEnableStatus[selectedIndex] = result;
-                                        }
-                                        else {
-
-                                            _gameConfiguretorEnableStatus[selectedIndex] = !_gameConfiguretorEnableStatus[selectedIndex];
-                                        }
+                                        _gameConfiguretorEnableStatus[selectedIndex] = result;
                                     }
-                                    else {
+                                    else
+                                    {
 
                                         _gameConfiguretorEnableStatus[selectedIndex] = !_gameConfiguretorEnableStatus[selectedIndex];
                                     }
+                                }
+                                else
+                                {
 
-                                    ClearSelectedIndex();
-                                },
-                                i);
-                        }
-                        genericMenuForGameConfiguretorSelection.ShowAsContext();
+                                    _gameConfiguretorEnableStatus[selectedIndex] = !_gameConfiguretorEnableStatus[selectedIndex];
+                                }
+
+                                ClearSelectedIndex();
+                            },
+                            i);
                     }
-
-                    EditorGUILayout.LabelField(_GUIContentForSelectedConfigAsset, EditorStyles.toolbarButton, GUILayout.Width(sizeOfLabeledForSelectedConfigAsset.x + 10));
+                    genericMenuForGameConfiguretorSelection.ShowAsContext();
                 }
-                EditorGUILayout.EndHorizontal();
+
             }
             EditorGUILayout.EndHorizontal();
 
