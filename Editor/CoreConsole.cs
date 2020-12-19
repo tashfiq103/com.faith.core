@@ -386,7 +386,7 @@
 
         private void HeaderGUI()
         {
-            EditorGUILayout.BeginHorizontal(EditorStyles.centeredGreyMiniLabel);
+            EditorGUILayout.BeginHorizontal(GUI.skin.box);
             {
 
                 bool clearClicked = false;
@@ -505,7 +505,6 @@
             }
             EditorGUILayout.EndHorizontal();
 
-            CoreEditorModule.DrawHorizontalLine();
         }
 
         private void DrawToggolingLogsGUI(LogType logType)
@@ -695,13 +694,12 @@
 
         private void DrawLogMessageGUI()
         {
-            EditorGUILayout.BeginVertical(GUILayout.Height(128));
+            EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Height(128));
             {
                 _scrollPositionForLogMessage = EditorGUILayout.BeginScrollView(_scrollPositionForLogMessage);
                 {
                     if (IsSelectedLog(_selectedLogIndex))
                     {
-                        CoreEditorModule.DrawHorizontalLine();
 
                         _GUIContentForLogMessage.text   = StringOperation.StacktraceWithHyperlinks(string.Format("{0}\n{1}", _selectedLogCondition, _selectedLogStackTrace));
 
@@ -715,8 +713,6 @@
                         EditorGUILayout.SelectableLabel(_GUIContentForLogMessage.text, _consoleMessageStyle, GUILayout.Height(height));
                     }
                     else {
-
-                        CoreEditorModule.DrawHorizontalLine();
 
                         EditorGUILayout.HelpBox("No Valid Log Selected", MessageType.Warning);
                     }
