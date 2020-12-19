@@ -26,10 +26,9 @@
 
         #region Private Variables
 
-        private static List<EditorWindow> _listOfEditorWindowOfCoreConsole      = new List<EditorWindow>();
+        private static List<CoreConsole> _listOfEditorWindowOfCoreConsole      = new List<CoreConsole>();
         private static List<GameConfiguratorAsset> _listOfGameConfiguretorAsset = new List<GameConfiguratorAsset>();
 
-        private EditorWindow _editorWindowOfCoreConsole;
 
         private GUIContent _GUIContentForClearDropdownButton= new GUIContent();
 
@@ -48,8 +47,8 @@
         private bool _isClearOnEnteringPlayMode { get { return _clearOptionStatus[0]; } }
         private bool _isClearOnBuild { get { return _clearOptionStatus[1]; } }
 
-        private bool _errorPause = true;
-        private bool _showTimeStamp = false;
+        private bool _errorPause;
+        private bool _showTimeStamp;
 
         private bool _enableInfoLog = true;
         private bool _enableLogWarning = true;
@@ -70,8 +69,8 @@
         private Color defaultBackgroundColor;
         private Color defaultContentColor;
 
-        private List<bool> _gameConfiguretorEnableStatus;
-        private List<string> _gameConfiguretorOptionLabels;
+        private bool[] _gameConfiguretorEnableStatus;
+        private string[] _gameConfiguretorOptionLabels;
 
         #endregion
 
@@ -81,10 +80,10 @@
         public static void ShowWindow() {
 
             if (_listOfEditorWindowOfCoreConsole == null)
-                _listOfEditorWindowOfCoreConsole = new List<EditorWindow>();
+                _listOfEditorWindowOfCoreConsole = new List<CoreConsole>();
 
-            CoreConsole newCoreConsole = CreateInstance<CoreConsole>();
-            newCoreConsole.CreateCoreConsole();
+            CreateInstance<CoreConsole>().CreateCoreConsole();
+            
         }
 
         
@@ -97,6 +96,8 @@
         {
             base.OnEnable();
 
+
+            Application.logMessageReceivedThreaded += LogMessageReciever;
             EditorApplication.playModeStateChanged += LogPlayModeState;
 
             UpdateGameConfiguretorAsset();
@@ -121,17 +122,47 @@
         public void OnDisable()
         {
             EditorApplication.playModeStateChanged -= LogPlayModeState;
+            Application.logMessageReceivedThreaded -= LogMessageReciever;
         }
 
         public void OnDestroy()
         {
-            _listOfEditorWindowOfCoreConsole.Remove(_editorWindowOfCoreConsole);
+            _listOfEditorWindowOfCoreConsole.Remove(this);
         }
 
         public void OnPreprocessBuild(BuildReport report)
         {
             if(_isClearOnBuild)
                 ClearAllLog();
+        }
+
+        private void LogMessageReciever(string condition, string stackTrace, LogType logType) {
+
+            if (_errorPause && logType == LogType.Error && !EditorApplication.isPaused) {
+
+                bool hasFoundErrorForSelectedLabel = false;
+                int numberOfGameConfigAsset = _gameConfiguretorEnableStatus.Length;
+                for (int i = 0; i < numberOfGameConfigAsset; i++) {
+
+                    if (_gameConfiguretorEnableStatus[i]) {
+
+                        if (condition.Contains(_gameConfiguretorOptionLabels[i])) {
+
+                            hasFoundErrorForSelectedLabel = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (hasFoundErrorForSelectedLabel) {
+
+                    EditorApplication.isPaused = true;
+                }
+
+
+            }
+                
+                
         }
 
         #endregion
@@ -206,7 +237,7 @@
             string result = "None";
 
             int numberOfSelectedAsset = 0;
-            int numberOfGameConfiguretorAsset = _gameConfiguretorEnableStatus.Count;
+            int numberOfGameConfiguretorAsset = _gameConfiguretorEnableStatus.Length;
             for (int i = 0; i < numberOfGameConfiguretorAsset; i++)
             {
 
@@ -273,22 +304,45 @@
 
             int numberOfConfiguretorAsset = _listOfGameConfiguretorAsset.Count;
 
-            _gameConfiguretorEnableStatus = new List<bool>();
-            _gameConfiguretorOptionLabels = new List<string>();
+            if (_gameConfiguretorEnableStatus == null)
+                _gameConfiguretorEnableStatus = new bool[0];
 
-            for (int i = 0; i < numberOfConfiguretorAsset; i++) {
+            if (_gameConfiguretorOptionLabels == null)
+                _gameConfiguretorOptionLabels = new string[0];
 
-                string prefix = _listOfGameConfiguretorAsset[i].prefix;
-                if (string.IsNullOrEmpty(prefix) || string.IsNullOrWhiteSpace(prefix))
-                {
-                    prefix = _listOfGameConfiguretorAsset[i].name;
-                    CoreDebugger.Debug.LogWarning("ScriptableObject name is assiged as prefix name as the 'prefix' field was empty : " + prefix);
+            int numberOfGameConfigLabled = _gameConfiguretorEnableStatus.Length;
+
+            if (numberOfConfiguretorAsset != numberOfGameConfigLabled) {
+
+                string[] newLabel       = new string[numberOfConfiguretorAsset];
+                bool[] newEnableStatus  = new bool[numberOfConfiguretorAsset];
+                for (int i = 0; i < numberOfConfiguretorAsset; i++) {
+
+                    string prefix = _listOfGameConfiguretorAsset[i].prefix;
+                    if (string.IsNullOrEmpty(prefix) || string.IsNullOrWhiteSpace(prefix))
+                    {
+                        prefix = _listOfGameConfiguretorAsset[i].name;
+                        CoreDebugger.Debug.LogWarning("ScriptableObject name is assiged as prefix name as the 'prefix' field was empty : " + prefix);
+                    }
+                    newLabel[i] = prefix;
                 }
 
-                _gameConfiguretorEnableStatus.Add(_listOfGameConfiguretorAsset[i].EditorAccessIfUsedByCentralGameConfiguretion);
-                _gameConfiguretorOptionLabels.Add(prefix);
+                for (int i = 0; i < numberOfConfiguretorAsset; i++) {
 
+                    for (int j = 0; j < numberOfGameConfigLabled; j++) {
+
+                        if (StringOperation.IsSameString(newLabel[i], _gameConfiguretorOptionLabels[j])) {
+
+                            newEnableStatus[i] = _gameConfiguretorEnableStatus[j];
+                            break;
+                        }
+                    }
+                }
+
+                _gameConfiguretorOptionLabels = newLabel;
+                _gameConfiguretorEnableStatus = newEnableStatus;
             }
+
         }
 
         private void CreateCoreConsole() {
@@ -298,13 +352,13 @@
 
             string title = "Core Console";
 
-            _editorWindowOfCoreConsole = GetWindow<CoreConsole>(title, typeof(CoreConsole));
+            CoreConsole editorWindowOfCoreConsole = GetWindow<CoreConsole>(title, typeof(CoreConsole));
 
-            _editorWindowOfCoreConsole.titleContent.text = title;
-            _editorWindowOfCoreConsole.minSize = new Vector2(480f, 240f);
-            _editorWindowOfCoreConsole.Show();
+            editorWindowOfCoreConsole.titleContent.text = title;
+            editorWindowOfCoreConsole.minSize = new Vector2(480f, 240f);
+            editorWindowOfCoreConsole.Show();
 
-            _listOfEditorWindowOfCoreConsole.Add(_editorWindowOfCoreConsole);
+            _listOfEditorWindowOfCoreConsole.Add(this);
 
         }
 
@@ -380,7 +434,7 @@
                     {
 
                         GenericMenu genericMenuForGameConfiguretorSelection = new GenericMenu();
-                        int numberOfOption = _gameConfiguretorOptionLabels.Count;
+                        int numberOfOption = _gameConfiguretorOptionLabels.Length;
                         for (int i = 0; i < numberOfOption; i++)
                         {
 
@@ -614,6 +668,7 @@
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.Space(5f);
+
             }
 
             
@@ -636,7 +691,7 @@
                         _consoleMessageStyle.wordWrap    = true;
                         _consoleMessageStyle.richText    = true;
 
-                        float height = _consoleMessageStyle.CalcHeight(_GUIContentForLogMessage, _editorWindowOfCoreConsole.position.width);
+                        float height = _consoleMessageStyle.CalcHeight(_GUIContentForLogMessage, this.position.width);
 
                         EditorGUILayout.SelectableLabel(_GUIContentForLogMessage.text, _consoleMessageStyle, GUILayout.Height(height));
                     }
