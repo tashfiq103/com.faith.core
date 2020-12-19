@@ -26,7 +26,7 @@
 
         #region Private Variables
 
-        private static List<CoreConsole> _listOfEditorWindowOfCoreConsole      = new List<CoreConsole>();
+        private static List<CoreConsole> _listOfEditorWindowOfCoreConsole;
         private static List<GameConfiguratorAsset> _listOfGameConfiguretorAsset = new List<GameConfiguratorAsset>();
 
 
@@ -47,16 +47,16 @@
         private bool _isClearOnEnteringPlayMode { get { return _clearOptionStatus[0]; } }
         private bool _isClearOnBuild { get { return _clearOptionStatus[1]; } }
 
-        private bool _errorPause;
-        private bool _showTimeStamp;
+        [SerializeField] private bool _errorPause;
+        [SerializeField] private bool _showTimeStamp;
 
-        private bool _enableInfoLog = true;
-        private bool _enableLogWarning = true;
-        private bool _enableLogError = true;
+        [SerializeField] private bool _enableInfoLog = true;
+        [SerializeField] private bool _enableLogWarning = true;
+        [SerializeField] private bool _enableLogError = true;
 
         private float _contentHeightForLogsInList = 30;
 
-        private bool[]      _clearOptionStatus  = new bool[] { false, false };
+        [SerializeField] private bool[]      _clearOptionStatus  = new bool[] { false, false };
         private string[]    _clearOptionLable   = new string[] { "Clear on Play", "Clear on Build" };
 
         private int _selectedLogIndex;
@@ -69,14 +69,14 @@
         private Color defaultBackgroundColor;
         private Color defaultContentColor;
 
-        private bool[] _gameConfiguretorEnableStatus;
-        private string[] _gameConfiguretorOptionLabels;
+        [SerializeField] private bool[]     _gameConfiguretorEnableStatus;
+        [SerializeField] private string[]   _gameConfiguretorOptionLabels;
 
         #endregion
 
         #region Editor  :   Static
 
-        [MenuItem("FAITH/Core/Core Console", priority = 3)]
+        [MenuItem("FAITH/Core/CoreConsole/New CoreConsole", priority = 0)]
         public static void ShowWindow() {
 
             if (_listOfEditorWindowOfCoreConsole == null)
@@ -86,7 +86,19 @@
             
         }
 
-        
+        [MenuItem("FAITH/Core/CoreConsole/Close all CoreConsole", priority = 1)]
+        public static void CloseAllWindow() {
+
+            if (_listOfEditorWindowOfCoreConsole != null) {
+
+                int numberOfCoreConsole = _listOfEditorWindowOfCoreConsole.Count;
+                for (int i = 0; i < numberOfCoreConsole; i++) {
+
+                    _listOfEditorWindowOfCoreConsole[i].Close();
+                }
+                _listOfEditorWindowOfCoreConsole.Clear();
+            }
+        }
 
         #endregion
 
@@ -96,6 +108,11 @@
         {
             base.OnEnable();
 
+            if (_listOfEditorWindowOfCoreConsole == null)
+                _listOfEditorWindowOfCoreConsole = new List<CoreConsole>();
+
+            if (!_listOfEditorWindowOfCoreConsole.Contains(this))
+                _listOfEditorWindowOfCoreConsole.Add(this);
 
             Application.logMessageReceivedThreaded += LogMessageReciever;
             EditorApplication.playModeStateChanged += LogPlayModeState;
@@ -127,7 +144,7 @@
 
         public void OnDestroy()
         {
-            _listOfEditorWindowOfCoreConsole.Remove(this);
+            
         }
 
         public void OnPreprocessBuild(BuildReport report)
@@ -350,7 +367,7 @@
 
             UpdateGameConfiguretorAsset();
 
-            string title = "Core Console";
+            string title = "CoreConsole";
 
             CoreConsole editorWindowOfCoreConsole = GetWindow<CoreConsole>(title, typeof(CoreConsole));
 
@@ -358,7 +375,7 @@
             editorWindowOfCoreConsole.minSize = new Vector2(480f, 240f);
             editorWindowOfCoreConsole.Show();
 
-            _listOfEditorWindowOfCoreConsole.Add(this);
+            _listOfEditorWindowOfCoreConsole.Add(editorWindowOfCoreConsole);
 
         }
 
