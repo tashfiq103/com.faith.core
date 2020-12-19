@@ -27,10 +27,10 @@
 
         #region Private Variables
 
-        private static List<CoreConsole> _listOfCoreConsole = new List<CoreConsole>();
+        private static List<EditorWindow> _listOfEditorWindowOfCoreConsole      = new List<EditorWindow>();
         private static List<GameConfiguratorAsset> _listOfGameConfiguretorAsset = new List<GameConfiguratorAsset>();
 
-        private CoreConsole _editorWindowOfCoreConsole;
+        private EditorWindow _editorWindowOfCoreConsole;
 
         private GUIContent _GUIContentForClearDropdownButton= new GUIContent();
 
@@ -47,7 +47,7 @@
         private GUIContent _GUIContentForStackTrace = new GUIContent();
 
         private bool _isClearOnEnteringPlayMode { get { return _clearOptionStatus[0]; } }
-        private bool _isClearnOnBuild { get { return _clearOptionStatus[1]; } }
+        private bool _isClearOnBuild { get { return _clearOptionStatus[1]; } }
 
         private bool _errorPause = true;
         private bool _showTimeStamp = false;
@@ -81,8 +81,8 @@
         [MenuItem("FAITH/Core/Core Console", priority = 3)]
         public static void ShowWindow() {
 
-            if (_listOfCoreConsole == null)
-                _listOfCoreConsole = new List<CoreConsole>();
+            if (_listOfEditorWindowOfCoreConsole == null)
+                _listOfEditorWindowOfCoreConsole = new List<EditorWindow>();
 
             CoreConsole newCoreConsole = CreateInstance<CoreConsole>();
             newCoreConsole.CreateCoreConsole();
@@ -119,12 +119,12 @@
 
         public void OnDestroy()
         {
-            _listOfCoreConsole.Remove(this);
+            _listOfEditorWindowOfCoreConsole.Remove(_editorWindowOfCoreConsole);
         }
 
         public void OnPreprocessBuild(BuildReport report)
         {
-            if(_isClearnOnBuild)
+            if(_isClearOnBuild)
                 ClearAllLog();
         }
 
@@ -297,6 +297,8 @@
             _editorWindowOfCoreConsole.titleContent.text = title;
             _editorWindowOfCoreConsole.minSize = new Vector2(480f, 240f);
             _editorWindowOfCoreConsole.Show();
+
+            _listOfEditorWindowOfCoreConsole.Add(_editorWindowOfCoreConsole);
 
         }
 
@@ -603,10 +605,9 @@
 
         private void DrawLogMessageGUI()
         {
-            
             EditorGUILayout.BeginVertical(GUILayout.Height(128));
             {
-                _scrollPositionForLogMessage = EditorGUILayout.BeginScrollView(_scrollPositionForLogMessage);
+                _scrollPositionForLogMessage = EditorGUILayout.BeginScrollView(_scrollPositionForLogMessage, alwaysShowHorizontal : false, alwaysShowVertical : false);
                 {
                     if (IsSelectedLog(_selectedLogIndex))
                     {
@@ -614,8 +615,11 @@
 
                         _GUIContentForStackTrace.text = string.Format("{0}\n{1}", _selectedLogCondition, _selectedLogStackTrace);
 
-                        Vector2 sizeOfLabel = GUI.skin.label.CalcSize(_GUIContentForStackTrace);
-                        EditorGUILayout.LabelField(_GUIContentForStackTrace, GUILayout.Width(sizeOfLabel.x), GUILayout.Height(sizeOfLabel.y));
+                        GUIStyle _consoleMessageStyle    = new GUIStyle(GUI.skin.label);
+                        _consoleMessageStyle.alignment   = TextAnchor.UpperLeft;
+                        _consoleMessageStyle.wordWrap    = true;
+
+                        EditorGUILayout.LabelField(_GUIContentForStackTrace, _consoleMessageStyle);
                     }
                     else {
 
