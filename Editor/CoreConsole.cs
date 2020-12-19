@@ -44,7 +44,7 @@
         private GUIContent _GUIContentForWarningLog = new GUIContent();
         private GUIContent _GUIContentForErrorLog = new GUIContent();
 
-        private GUIContent _GUIContentForStackTrace = new GUIContent();
+        private GUIContent _GUIContentForLogMessage = new GUIContent();
 
         private bool _isClearOnEnteringPlayMode { get { return _clearOptionStatus[0]; } }
         private bool _isClearOnBuild { get { return _clearOptionStatus[1]; } }
@@ -355,7 +355,7 @@
                 }
                 GUI.backgroundColor = defaultBackgroundColorOfGUI;
 
-                EditorGUILayout.LabelField("");
+                GUILayout.FlexibleSpace();
 
                 //InfoLog
                 DrawToggolingLogsGUI(LogType.Log);
@@ -607,19 +607,22 @@
         {
             EditorGUILayout.BeginVertical(GUILayout.Height(128));
             {
-                _scrollPositionForLogMessage = EditorGUILayout.BeginScrollView(_scrollPositionForLogMessage, alwaysShowHorizontal : false, alwaysShowVertical : false);
+                _scrollPositionForLogMessage = EditorGUILayout.BeginScrollView(_scrollPositionForLogMessage);
                 {
                     if (IsSelectedLog(_selectedLogIndex))
                     {
                         CoreEditorModule.DrawHorizontalLine();
 
-                        _GUIContentForStackTrace.text = string.Format("{0}\n{1}", _selectedLogCondition, _selectedLogStackTrace);
+                        _GUIContentForLogMessage.text   = StringOperation.StacktraceWithHyperlinks(string.Format("{0}\n{1}", _selectedLogCondition, _selectedLogStackTrace));
 
                         GUIStyle _consoleMessageStyle    = new GUIStyle(GUI.skin.label);
                         _consoleMessageStyle.alignment   = TextAnchor.UpperLeft;
                         _consoleMessageStyle.wordWrap    = true;
+                        _consoleMessageStyle.richText    = true;
 
-                        EditorGUILayout.LabelField(_GUIContentForStackTrace, _consoleMessageStyle);
+                        float height = _consoleMessageStyle.CalcHeight(_GUIContentForLogMessage, _editorWindowOfCoreConsole.position.width);
+
+                        EditorGUILayout.SelectableLabel(_GUIContentForLogMessage.text, _consoleMessageStyle, GUILayout.Height(height));
                     }
                     else {
 
