@@ -147,7 +147,7 @@
             {
 
                 if (GameConfiguratorManager.logType == CoreEnums.LogType.Verbose || GameConfiguratorManager.logType == CoreEnums.LogType.Info || GameConfiguratorManager.logType == CoreEnums.LogType.Error)
-                    UnityEngine.Debug.LogError(string.Format("{0}{1}{2}{3}",
+                    UnityEngine.Debug.LogError(string.Format("{0}{1}{2}{3}{4}",
                         color == new Color() ? "" : ("<color=" + StringOperation.GetHexColorFromRGBColor(color) + ">"),
                         _debugMessagePrefix,
                         prefix == "" ? ": " : "_[" + prefix + "]: ",
@@ -159,7 +159,7 @@
             {
 
                 if (configuratorAsset.logType == CoreEnums.LogType.Verbose || configuratorAsset.logType == CoreEnums.LogType.Info || configuratorAsset.logType == CoreEnums.LogType.Error)
-                    UnityEngine.Debug.LogError(string.Format("{0}{1}{2}{3}",
+                    UnityEngine.Debug.LogError(string.Format("{0}{1}{2}{3}{4}",
                         configuratorAsset.colorForLogError == new Color() ? "" : ("<color=" + StringOperation.GetHexColorFromRGBColor(configuratorAsset.colorForLogError) + ">"),
                         _debugMessagePrefix,
                         configuratorAsset.prefix == "" ? ": " : "_[" + configuratorAsset.prefix + "]: ",
@@ -170,7 +170,7 @@
             public static void LogError(object message, Object context, Color color = new Color(), string prefix = "")
             {
                 if (GameConfiguratorManager.logType == CoreEnums.LogType.Verbose || GameConfiguratorManager.logType == CoreEnums.LogType.Info || GameConfiguratorManager.logType == CoreEnums.LogType.Error)
-                    UnityEngine.Debug.LogError(string.Format("{0}{1}{2}{3}",
+                    UnityEngine.Debug.LogError(string.Format("{0}{1}{2}{3}{4}",
                         color == new Color() ? "" : ("<color=" + StringOperation.GetHexColorFromRGBColor(color) + ">"),
                         _debugMessagePrefix,
                         prefix == "" ? ": " : "_[" + prefix + "]: ",
@@ -183,7 +183,7 @@
             {
 
                 if (configuratorAsset.logType == CoreEnums.LogType.Verbose || configuratorAsset.logType == CoreEnums.LogType.Info || configuratorAsset.logType == CoreEnums.LogType.Error)
-                    UnityEngine.Debug.LogError(string.Format("{0}{1}{2}{3}",
+                    UnityEngine.Debug.LogError(string.Format("{0}{1}{2}{3}{4}",
                         configuratorAsset.colorForLogError == new Color() ? "" : ("<color=" + StringOperation.GetHexColorFromRGBColor(configuratorAsset.colorForLogError) + ">"),
                         _debugMessagePrefix,
                         configuratorAsset.prefix == "" ? ": " : "_[" + configuratorAsset.prefix + "]: ",

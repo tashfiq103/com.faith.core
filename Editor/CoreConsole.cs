@@ -464,7 +464,7 @@
                     _GUIContentForTogglingWarningLog.text = GetNumberOfLog(LogType.Warning).ToString();
                     Vector2 sizeForWarningLog = GUI.skin.label.CalcSize(_GUIContentForTogglingWarningLog);
 
-                    dynamicColor.a = _enableLogWarning ? 0.5f : 1f;
+                    dynamicColor.a = _enableLogWarning ? 1f : 0.5f;
                     GUI.backgroundColor = dynamicColor;
                     if (GUILayout.Button(_GUIContentForTogglingWarningLog, GUILayout.Width(baseWidth + sizeForWarningLog.x)))
                     {
@@ -480,7 +480,7 @@
                     _GUIContentForTogglingErrorLog.text = GetNumberOfLog(LogType.Error).ToString();
                     Vector2 sizeForErrorLog = GUI.skin.label.CalcSize(_GUIContentForTogglingErrorLog);
 
-                    dynamicColor.a = _enableLogError ? 0.5f : 1f;
+                    dynamicColor.a = _enableLogError ? 1f : 0.5f;
                     GUI.backgroundColor = dynamicColor;
                     if (GUILayout.Button(_GUIContentForTogglingErrorLog, GUILayout.Width(baseWidth + sizeForErrorLog.x)))
                     {
@@ -544,8 +544,6 @@
                     for (int i = 0; i < numberOfLog; i++) {
 
                         DrawLog(_listOfDebugInfo[i].gameConfig, GUIStyleForLogDetail, _listOfDebugInfo[i].debugInfo, i);
-
-                        EditorGUILayout.Space(5f);
                     }
 
                 }
@@ -560,54 +558,65 @@
             CoreDebugger.Debug.DebugInfo debugInfo,
             int logIndex) {
 
+            bool show = false;
             Color colorOfContent = defaultContentColor;
             GUIContent GUIContentForLabel = new GUIContent();
             switch (debugInfo.logType)
             {
 
                 case LogType.Log:
+                    show = _enableInfoLog;
                     colorOfContent = gameConfigAsset.colorForLog;
                     GUIContentForLabel = _GUIContentForInfoLog;
                     break;
 
                 case LogType.Warning:
+                    show = _enableLogWarning;
                     colorOfContent = gameConfigAsset.colorForWarning;
                     GUIContentForLabel = _GUIContentForWarningLog;
                     break;
 
                 case LogType.Error:
+                    show = _enableLogError;
                     colorOfContent = gameConfigAsset.colorForLogError;
                     GUIContentForLabel = _GUIContentForErrorLog;
                     break;
             }
 
-            EditorGUILayout.BeginHorizontal();
-            {
-                EditorGUILayout.LabelField(GUIContentForLabel, GUILayout.Width(_contentHeightForLogsInList), GUILayout.Height(_contentHeightForLogsInList));
+            if (show) {
 
-                string condition = RemoveCoreDebugFromString(
-                    debugInfo.condition,
-                    gameConfigAsset,
-                    debugInfo.logType
-                    );
-
-                if (_showTimeStamp)
-                    condition = string.Format("[{0}]_", debugInfo.timeStamp) + condition;
-
-                GUI.backgroundColor = IsSelectedLog(logIndex) ? _selectedLogColor : defaultBackgroundColor;
-
-                colorOfContent = colorOfContent == new Color() ? defaultContentColor : colorOfContent;
-                GUI.contentColor = colorOfContent;
-                if (GUILayout.Button(condition, GUIStyleForLog))
+                EditorGUILayout.BeginHorizontal();
                 {
-                    _selectedLogIndex = logIndex;
-                    _selectedLogCondition = debugInfo.condition;
-                    _selectedLogStackTrace = debugInfo.stackTrace;
+                    EditorGUILayout.LabelField(GUIContentForLabel, GUILayout.Width(_contentHeightForLogsInList), GUILayout.Height(_contentHeightForLogsInList));
+
+                    string condition = RemoveCoreDebugFromString(
+                        debugInfo.condition,
+                        gameConfigAsset,
+                        debugInfo.logType
+                        );
+
+                    if (_showTimeStamp)
+                        condition = string.Format("[{0}]_", debugInfo.timeStamp) + condition;
+
+                    GUI.backgroundColor = IsSelectedLog(logIndex) ? _selectedLogColor : defaultBackgroundColor;
+
+                    colorOfContent = colorOfContent == new Color() ? defaultContentColor : colorOfContent;
+                    GUI.contentColor = colorOfContent;
+                    if (GUILayout.Button(condition, GUIStyleForLog))
+                    {
+                        _selectedLogIndex = logIndex;
+                        _selectedLogCondition = debugInfo.condition;
+                        _selectedLogStackTrace = debugInfo.stackTrace;
+                    }
+                    GUI.contentColor = defaultContentColor;
+                    GUI.backgroundColor = defaultBackgroundColor;
                 }
-                GUI.contentColor = defaultContentColor;
-                GUI.backgroundColor = defaultBackgroundColor;
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.Space(5f);
             }
-            EditorGUILayout.EndHorizontal();
+
+            
         }
 
         private void DrawLogMessageGUI()
