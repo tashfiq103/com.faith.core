@@ -4,6 +4,10 @@
     using System;
     using System.Collections.Generic;
 
+#if UNITY_EDITOR
+    using System.Threading.Tasks;
+#endif
+
     public class GameConfiguratorAsset : ScriptableObject
     {
 
@@ -63,6 +67,42 @@
 
         #region ScriptableObject
 
+#if UNITY_EDITOR
+
+        private async void CheckDuplicateProductionAssetWithDelay() {
+
+            await Task.Delay(100);
+
+            if (_isUsedByCentralGameConfiguretion)
+            {
+
+                List<GameConfiguratorAsset> listOfAsset = new List<GameConfiguratorAsset>();
+                string[] GUIDs = UnityEditor.AssetDatabase.FindAssets("t:" + typeof(GameConfiguratorAsset).ToString().Replace("UnityEngine.", ""));
+
+                foreach (string GUID in GUIDs)
+                {
+                    string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(GUID);
+                    listOfAsset.Add((GameConfiguratorAsset)Convert.ChangeType(UnityEditor.AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameConfiguratorAsset)), typeof(GameConfiguratorAsset)));
+                }
+
+                foreach (GameConfiguratorAsset gameConfigAsset in listOfAsset)
+                {
+                    if (gameConfigAsset != this && gameConfigAsset.EditorAccessIfUsedByCentralGameConfiguretion)
+                    {
+                        _isUsedByCentralGameConfiguretion = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void Awake()
+        {
+            CheckDuplicateProductionAssetWithDelay();
+        }
+
+#endif
+
         private void OnEnable()
         {
             if (_enableStackTrace) {
@@ -72,6 +112,8 @@
                 Application.logMessageReceivedThreaded += LogMessageReciever;
             }
         }
+
+        
 
         private void OnDisable()
         {
@@ -87,6 +129,7 @@
 
         private void LogMessageReciever(string condition, string stackTrace, LogType logType)
         {
+
             if (string.IsNullOrEmpty(prefix) || string.IsNullOrWhiteSpace(prefix))
             {
                 Debug.LogWarning(string.Format("No prefix was found for [CoreDebugger]_['{0}']. Assigning it's name as new prefix = {1}", prefix, name));

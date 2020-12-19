@@ -110,6 +110,7 @@
             DrawLogListGUI();
 
             DrawLogMessageGUI();
+
         }
 
         public void OnDisable()
