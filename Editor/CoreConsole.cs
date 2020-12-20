@@ -638,19 +638,28 @@
 
                 case LogType.Log:
                     show = _enableInfoLog;
+
                     colorOfContent = gameConfigAsset.colorForLog;
+                    colorOfContent.a = 1;
+
                     GUIContentForLabel = _GUIContentForInfoLog;
                     break;
 
                 case LogType.Warning:
                     show = _enableLogWarning;
+
                     colorOfContent = gameConfigAsset.colorForWarning;
+                    colorOfContent.a = 1;
+
                     GUIContentForLabel = _GUIContentForWarningLog;
                     break;
 
                 case LogType.Error:
                     show = _enableLogError;
+
                     colorOfContent = gameConfigAsset.colorForLogError;
+                    colorOfContent.a = 1;
+
                     GUIContentForLabel = _GUIContentForErrorLog;
                     break;
             }
@@ -672,7 +681,6 @@
 
                     GUI.backgroundColor = IsSelectedLog(logIndex) ? _selectedLogColor : defaultBackgroundColor;
 
-                    colorOfContent = colorOfContent == new Color() ? defaultContentColor : colorOfContent;
                     GUI.contentColor = colorOfContent;
                     if (GUILayout.Button(condition, GUIStyleForLog))
                     {
