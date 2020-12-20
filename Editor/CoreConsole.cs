@@ -115,6 +115,7 @@
             if (!_listOfEditorWindowOfCoreConsole.Contains(this))
                 _listOfEditorWindowOfCoreConsole.Add(this);
 
+
             Application.logMessageReceivedThreaded += LogMessageReciever;
             EditorApplication.playModeStateChanged += LogPlayModeState;
 
@@ -451,7 +452,10 @@
 
                 _GUIContentForSelectedConfigAsset.text = GetButtonLabeledForGameConfiguretorSelection();
 
+
                 if (EditorGUILayout.DropdownButton(_GUIContentForSelectedConfigAsset, FocusType.Passive, EditorStyles.toolbarDropDown)) {
+
+                    UpdateGameConfiguretorAsset();
 
                     GenericMenu genericMenuForGameConfiguretorSelection = new GenericMenu();
                     int numberOfOption = _gameConfiguretorOptionLabels.Length;
