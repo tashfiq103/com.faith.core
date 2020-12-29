@@ -45,8 +45,7 @@
 
         private GUIContent _GUIContentForLogMessage = new GUIContent();
 
-        private bool _isClearOnEnteringPlayMode { get { return _clearOptionStatus[0]; } }
-        private bool _isClearOnBuild { get { return _clearOptionStatus[1]; } }
+        
 
         [SerializeField] private bool _errorPause;
         [SerializeField] private bool _showTimeStamp;
@@ -57,7 +56,8 @@
 
         private float _contentHeightForLogsInList = 30;
 
-        [SerializeField] private bool[]      _clearOptionStatus  = new bool[] { false, false };
+        [SerializeField] private bool _isClearOnEnteringPlayMode;
+        [SerializeField] private bool _isClearOnBuild;
         private string[]    _clearOptionLable   = new string[] { "Clear on Play", "Clear on Build" };
 
         private int _selectedLogIndex;
@@ -151,6 +151,8 @@
 
         public void OnPreprocessBuild(BuildReport report)
         {
+            Debug.Log(_isClearOnBuild);
+
             if(_isClearOnBuild)
                 ClearAllLog();
         }
@@ -396,19 +398,20 @@
 
                     GenericMenu genericMenuForClearMode = new GenericMenu();
 
-                    int numberOfOption = _clearOptionLable.Length;
-                    for (int i = 0; i < numberOfOption; i++)
-                    {
+                    genericMenuForClearMode.AddItem(
+                            new GUIContent(_clearOptionLable[0]),
+                            _isClearOnEnteringPlayMode,
+                            () => {
+                                _isClearOnEnteringPlayMode = !_isClearOnEnteringPlayMode;
+                            });
 
-                        genericMenuForClearMode.AddItem(
-                            new GUIContent(_clearOptionLable[i]),
-                            _clearOptionStatus[i],
-                            (index) => {
-                                int selectedIndex = (int)index;
-                                _clearOptionStatus[selectedIndex] = !_clearOptionStatus[selectedIndex];
-                            },
-                            i);
-                    }
+                    genericMenuForClearMode.AddItem(
+                            new GUIContent(_clearOptionLable[1]),
+                            _isClearOnBuild,
+                            () => {
+                                _isClearOnBuild = !_isClearOnBuild;
+                            });
+
                     genericMenuForClearMode.ShowAsContext();
                 }
 
