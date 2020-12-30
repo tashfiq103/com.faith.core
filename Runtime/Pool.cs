@@ -1,6 +1,7 @@
 ﻿namespace com.faith.core
 {
     using UnityEngine;
+    using UnityEngine.SceneManagement;
     using System.Collections.Generic;
 
     public class Pool
@@ -68,7 +69,7 @@
                     if (!gameObjectReference.activeSelf) {
 
                         Transform transformReferenceOfPoolItem = gameObjectReference.transform;
-                        transformReferenceOfPoolItem.localPosition = position;
+                        transformReferenceOfPoolItem.position = position;
                         transformReferenceOfPoolItem.rotation = rotation;
 
                         gameObjectReference.SetActive(true);
@@ -81,7 +82,7 @@
                 GameObject newPoolItem = MonoBehaviour.Instantiate(prefabOrigin, parent == null ? _parentForUnamagedPoolType : parent);
 
                 Transform transformReferenceOfNewPoolItem       = newPoolItem.transform;
-                transformReferenceOfNewPoolItem.localPosition   = position;
+                transformReferenceOfNewPoolItem.position   = position;
                 transformReferenceOfNewPoolItem.rotation        = rotation;
 
                 _listOfPoolItems.Add(newPoolItem);
@@ -134,6 +135,13 @@
 
             _rootParentForUnmanagedPoolItem = new GameObject("PoolManager - " + prefix).GetComponent<Transform>();
             _listForPoolTypes               = new List<PoolType>();
+
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
+        }
+
+        private void OnSceneUnloaded(Scene scene) {
+
+            ClearAll();
         }
 
         #endregion
