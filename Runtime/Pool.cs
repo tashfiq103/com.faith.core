@@ -136,12 +136,17 @@
             _rootParentForUnmanagedPoolItem = new GameObject("PoolManager - " + prefix).GetComponent<Transform>();
             _listForPoolTypes               = new List<PoolType>();
 
-            SceneManager.sceneUnloaded += OnSceneUnloaded;
+            SceneManager.sceneLoaded    += OnSceneLoaded;
+            SceneManager.sceneUnloaded  += OnSceneUnloaded;
         }
 
-        private void OnSceneUnloaded(Scene scene) {
+        private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode) {
 
             ClearAll();
+        }
+        private void OnSceneUnloaded(Scene scene) {
+
+            
         }
 
         #endregion
