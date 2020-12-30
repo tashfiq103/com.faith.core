@@ -54,11 +54,13 @@
 
                 foreach (GameObject gameObjectReference in _listOfPoolItems)
                 {
-                    MonoBehaviour.Destroy(gameObjectReference);
+                    if (gameObjectReference != null)
+                        MonoBehaviour.Destroy(gameObjectReference);
                 }
                 _listOfPoolItems = null;
 
-                MonoBehaviour.Destroy(_parentForUnamagedPoolType.gameObject);
+                if(_parentForUnamagedPoolType != null)
+                    MonoBehaviour.Destroy(_parentForUnamagedPoolType.gameObject);
                 
             }
 
