@@ -71,6 +71,7 @@
                     if (!gameObjectReference.activeSelf) {
 
                         Transform transformReferenceOfPoolItem = gameObjectReference.transform;
+                        transformReferenceOfPoolItem.SetParent(parent == null ? _parentForUnamagedPoolType : parent);
                         transformReferenceOfPoolItem.position = position;
                         transformReferenceOfPoolItem.rotation = rotation;
 
@@ -83,9 +84,9 @@
 
                 GameObject newPoolItem = MonoBehaviour.Instantiate(prefabOrigin, parent == null ? _parentForUnamagedPoolType : parent);
 
-                Transform transformReferenceOfNewPoolItem       = newPoolItem.transform;
+                Transform transformReferenceOfNewPoolItem  = newPoolItem.transform;
                 transformReferenceOfNewPoolItem.position   = position;
-                transformReferenceOfNewPoolItem.rotation        = rotation;
+                transformReferenceOfNewPoolItem.rotation   = rotation;
 
                 _listOfPoolItems.Add(newPoolItem);
 
