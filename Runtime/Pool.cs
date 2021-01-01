@@ -71,9 +71,19 @@
                     if (!gameObjectReference.activeSelf) {
 
                         Transform transformReferenceOfPoolItem = gameObjectReference.transform;
-                        transformReferenceOfPoolItem.SetParent(parent == null ? _parentForUnamagedPoolType : parent);
-                        transformReferenceOfPoolItem.position = position;
-                        transformReferenceOfPoolItem.rotation = rotation;
+
+                        if (parent == null)
+                        {
+                            transformReferenceOfPoolItem.SetParent(_parentForUnamagedPoolType);
+                            transformReferenceOfPoolItem.position = position;
+                            transformReferenceOfPoolItem.rotation = rotation;
+                        }
+                        else {
+
+                            transformReferenceOfPoolItem.SetParent(parent);
+                            transformReferenceOfPoolItem.localPosition = position;
+                            transformReferenceOfPoolItem.localRotation = rotation;
+                        }
 
                         gameObjectReference.SetActive(true);
 
@@ -82,15 +92,24 @@
                         
                 }
 
-                GameObject newPoolItem = MonoBehaviour.Instantiate(prefabOrigin, parent == null ? _parentForUnamagedPoolType : parent);
+                //if : No Object Available
+                Transform transformReferenceOfNewPoolItem;
+                if (parent == null)
+                {
+                    transformReferenceOfNewPoolItem = MonoBehaviour.Instantiate(_parentForUnamagedPoolType).transform;
+                    transformReferenceOfNewPoolItem.position = position;
+                    transformReferenceOfNewPoolItem.rotation = rotation;
+                }
+                else {
 
-                Transform transformReferenceOfNewPoolItem  = newPoolItem.transform;
-                transformReferenceOfNewPoolItem.position   = position;
-                transformReferenceOfNewPoolItem.rotation   = rotation;
+                    transformReferenceOfNewPoolItem = MonoBehaviour.Instantiate(parent).transform;
+                    transformReferenceOfNewPoolItem.position = position;
+                    transformReferenceOfNewPoolItem.rotation = rotation;
+                }
 
-                _listOfPoolItems.Add(newPoolItem);
+                _listOfPoolItems.Add(transformReferenceOfNewPoolItem.gameObject);
 
-                return newPoolItem;
+                return transformReferenceOfNewPoolItem.gameObject;
             }
 
             public bool PushPoolItem(GameObject gameObjectReference) {
@@ -155,13 +174,26 @@
         #endregion
 
         #region Public Callback
-
+        /// <summary>
+        /// if parent == null, it will instanciate under the unmanaged pool heirarchy and the position & rotation would be set to world point\n
+        /// else, it will be spawn under the assigned parent and the position & rotation will be local.
+        /// </summary>
+        /// <param name="prefab"></param>
+        /// <param name="parent"></param>
+        /// <returns></returns>
         public  GameObject Instantiate(GameObject prefab, Transform parent = null)
         {
             return Instantiate(prefab, Vector3.zero, Quaternion.identity, parent);
         }
 
-        public  GameObject Instantiate(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
+        /// <summary>
+        /// if parent == null, it will instanciate under the unmanaged pool heirarchy and the position & rotation would be set to world point\n
+        /// else, it will be spawn under the assigned parent and the position & rotation will be local.
+        /// </summary>
+        /// <param name="prefab"></param>
+        /// <param name="parent"></param>
+        /// <returns></returns>
+        public GameObject Instantiate(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
         {
             bool createPoolType = true;
             PoolType poolType   = null;
