@@ -96,15 +96,15 @@
                 Transform transformReferenceOfNewPoolItem;
                 if (parent == null)
                 {
-                    transformReferenceOfNewPoolItem = MonoBehaviour.Instantiate(_parentForUnamagedPoolType).transform;
+                    transformReferenceOfNewPoolItem = MonoBehaviour.Instantiate(prefabOrigin, _parentForUnamagedPoolType).transform;
                     transformReferenceOfNewPoolItem.position = position;
                     transformReferenceOfNewPoolItem.rotation = rotation;
                 }
-                else {
-
-                    transformReferenceOfNewPoolItem = MonoBehaviour.Instantiate(parent).transform;
-                    transformReferenceOfNewPoolItem.position = position;
-                    transformReferenceOfNewPoolItem.rotation = rotation;
+                else
+                {
+                    transformReferenceOfNewPoolItem = MonoBehaviour.Instantiate(prefabOrigin, parent).transform;
+                    transformReferenceOfNewPoolItem.localPosition = position;
+                    transformReferenceOfNewPoolItem.localRotation = rotation;
                 }
 
                 _listOfPoolItems.Add(transformReferenceOfNewPoolItem.gameObject);
