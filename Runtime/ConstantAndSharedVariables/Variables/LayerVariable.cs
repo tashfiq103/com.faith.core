@@ -15,6 +15,14 @@
         public string DeveloperDescription = "";
 #endif
 
+        public string NameOfLayer {
+
+            get
+            {
+                return _layerName;
+            }
+        }
+
         public int Value {
             get
             {

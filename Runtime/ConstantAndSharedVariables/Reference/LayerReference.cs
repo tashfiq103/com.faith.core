@@ -31,6 +31,25 @@
             ConstantValue = value;
         }
 
+        public string NameOfLayer
+        {
+            get
+            {
+                if (UseConstant)
+                    return ConstantValue;
+                else {
+
+                    if (Variable != null)
+                        return Variable.NameOfLayer;
+                    else
+                    {
+                        CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
+                        return ConstantValue;
+                    }
+                }
+            }
+        }
+
         public int Value
         {
             get
