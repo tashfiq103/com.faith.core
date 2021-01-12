@@ -2,7 +2,6 @@
 {
     using UnityEngine;
     using UnityEditor;
-    using UnityEditor.Scripting;
     using UnityEditor.Build;
     using UnityEditor.Build.Reporting;
     using System.Collections.Generic;
