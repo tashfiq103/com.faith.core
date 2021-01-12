@@ -1,5 +1,6 @@
 ﻿namespace com.faith.core
 {
+    using UnityEngine;
 
     [System.Serializable]
     public class FloatReference
@@ -27,7 +28,7 @@
                     if (Variable != null)
                         return Variable.Value;
                     else {
-                        CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
+                        Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
                         return ConstantValue;
                     }
                 }

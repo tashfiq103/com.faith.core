@@ -113,7 +113,7 @@
             }
             else {
 
-                CoreDebugger.Debug.LogWarning("MinMaxSlider only support Vector2 & Vector2Int. the following type '" + propertyType + "' is not supported");
+                Debug.LogWarning("MinMaxSlider only support Vector2 & Vector2Int. the following type '" + propertyType + "' is not supported");
             }
         }
     }

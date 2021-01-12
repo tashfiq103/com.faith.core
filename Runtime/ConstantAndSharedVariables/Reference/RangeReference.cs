@@ -41,7 +41,7 @@
                         return Random.Range(Variable.Value.x, Variable.Value.y);
                     else
                     {
-                        CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
+                        Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
                         return Random.Range(ConstantValue.x, ConstantValue.y);
                     }
                 }
@@ -60,7 +60,7 @@
                     return Mathf.Lerp(Variable.Value.x, Variable.Value.y, interpolationPoint);
                 else
                 {
-                    CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
+                    Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
                     return Mathf.Lerp(ConstantValue.x, ConstantValue.y, interpolationPoint);
                 }
             }

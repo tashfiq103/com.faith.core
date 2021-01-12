@@ -18,7 +18,7 @@
         {
 
             string t_AbsoluteURL = t_URL;
-            CoreDebugger.Debug.Log("URL" + t_AbsoluteURL);
+            Debug.Log("URL" + t_AbsoluteURL);
 
             //Method (1)
             //List<IMultipartFormSection> t_DataFormat = new List<IMultipartFormSection>();
@@ -38,7 +38,7 @@
 
                 if (t_NewWebRequest.isHttpError || t_NewWebRequest.isNetworkError)
                 {
-                    CoreDebugger.Debug.Log("UploadFailed : " + t_NewWebRequest.error);
+                    Debug.Log("UploadFailed : " + t_NewWebRequest.error);
                     OnUploadFailed?.Invoke(t_NewWebRequest.error);
                 }
                 else

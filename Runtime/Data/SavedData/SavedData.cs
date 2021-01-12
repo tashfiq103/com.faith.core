@@ -30,7 +30,7 @@
                 _listOfKeys.Add(key);
             }
 
-            switch (GameConfiguratorManager.dataSavingMode) {
+            switch (CoreEnums.DataSavingMode.PlayerPrefsData) {
 
                 case CoreEnums.DataSavingMode.PlayerPrefsData:
                     _playerPrefData = new PlayerPrefData<T>(key, value, OnValueChanged);
@@ -43,7 +43,7 @@
 
         public void SetData(T value) {
 
-            switch (GameConfiguratorManager.dataSavingMode)
+            switch (CoreEnums.DataSavingMode.PlayerPrefsData)
             {
 
                 case CoreEnums.DataSavingMode.PlayerPrefsData:
@@ -61,7 +61,7 @@
 
         public T GetData() {
 
-            switch (GameConfiguratorManager.dataSavingMode)
+            switch (CoreEnums.DataSavingMode.PlayerPrefsData)
             {
 
                 case CoreEnums.DataSavingMode.PlayerPrefsData:

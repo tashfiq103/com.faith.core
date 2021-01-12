@@ -192,7 +192,7 @@
                 return;
             }
 
-            CoreDebugger.Debug.LogError("The following currency name is already in used : " + newCurrencyName);
+            Debug.LogError("The following currency name is already in used : " + newCurrencyName);
         }
 
         private void GenerateEnum() {

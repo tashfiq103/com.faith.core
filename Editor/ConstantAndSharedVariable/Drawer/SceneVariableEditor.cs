@@ -158,7 +158,7 @@
                 {
                     float willBeChangedValue = clampedValue;
                     clampedValue = Mathf.Clamp(willBeChangedValue, 0.1f, 1);
-                    CoreDebugger.Debug.LogError(string.Format("animationValue need to be within the range of [0.1 , 1]. Changed '{0}' -> '{1}'", willBeChangedValue, clampedValue));
+                    Debug.LogError(string.Format("animationValue need to be within the range of [0.1 , 1]. Changed '{0}' -> '{1}'", willBeChangedValue, clampedValue));
 
                 }
 
@@ -182,7 +182,7 @@
                     {
                         float willBeChangedValue = clampedValue;
                         clampedValue = Mathf.Clamp(willBeChangedValue, 0.1f, 1);
-                        CoreDebugger.Debug.LogError(string.Format("animationValue need to be within the range of [0.1 , 1]. Changed '{0}' -> '{1}'", willBeChangedValue, clampedValue));
+                        Debug.LogError(string.Format("animationValue need to be within the range of [0.1 , 1]. Changed '{0}' -> '{1}'", willBeChangedValue, clampedValue));
 
                     }
 
@@ -197,7 +197,7 @@
                 else
                 {
 
-                    CoreDebugger.Debug.LogError("Please add 'SceneVariable' before modifying animationSpeed");
+                    Debug.LogError("Please add 'SceneVariable' before modifying animationSpeed");
                 }
             }
 

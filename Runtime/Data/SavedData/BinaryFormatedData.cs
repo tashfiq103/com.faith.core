@@ -51,13 +51,13 @@
 
         private static void OnDataSavedSucced()
         {
-            CoreDebugger.Debug.Log("Data saved successfully");
+            Debug.Log("Data saved successfully");
             
         }
 
         private static void OnDataLoadFailed() {
 
-            CoreDebugger.Debug.LogError("Failed to retrive the binaryData");
+            Debug.LogError("Failed to retrive the binaryData");
             SaveLoadOperation.SaveData(
                 new BinaryDataWrapper(),
                 delegate {

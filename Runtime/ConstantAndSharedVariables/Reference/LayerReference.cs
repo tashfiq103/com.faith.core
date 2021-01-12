@@ -43,7 +43,7 @@
                         return Variable.NameOfLayer;
                     else
                     {
-                        CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
+                        Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
                         return ConstantValue;
                     }
                 }
@@ -62,7 +62,7 @@
                         return Variable.Value;
                     else
                     {
-                        CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
+                        Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
                         return LayerMask.NameToLayer(ConstantValue);
                     }
                 }

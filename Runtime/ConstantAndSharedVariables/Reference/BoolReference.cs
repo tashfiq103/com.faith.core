@@ -1,5 +1,7 @@
 ﻿namespace com.faith.core
 {
+    using UnityEngine;
+
     [System.Serializable]
     public class BoolReference
     {
@@ -33,7 +35,7 @@
                         return Variable.Value;
                     else
                     {
-                        CoreDebugger.Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
+                        Debug.LogWarning("Variable (ScriptableObject) not assigned, returning 'ConstantValue'.");
                         return ConstantValue;
                     }
                 }

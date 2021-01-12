@@ -80,7 +80,7 @@
             }
             else {
 
-                CoreDebugger.Debug.LogError("Scene transition already running. Failed to take the request on new loaded scene : " + sceneName);
+                Debug.LogError("Scene transition already running. Failed to take the request on new loaded scene : " + sceneName);
             }
         }
 

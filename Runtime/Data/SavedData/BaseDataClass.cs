@@ -1,5 +1,6 @@
 ﻿namespace com.faith.core
 {
+    using UnityEngine;
     using System;
 
     public abstract class BaseDataClass<T>
@@ -50,7 +51,7 @@
                 return true;
             }
 
-            CoreDebugger.Debug.LogError("Invalid DataType for Value : " + t_Value);
+            Debug.LogError("Invalid DataType for Value : " + t_Value);
             _dataType = CoreEnums.DataTypeForSavingData.UNDEFINED;
             return false;
         }
