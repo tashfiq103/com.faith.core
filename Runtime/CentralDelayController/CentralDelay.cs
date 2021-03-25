@@ -3,13 +3,13 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
-[DefaultExecutionOrder(BatchUpdateConstant.EXECUTION_ORDER_FOR_BATCHUPDATE)]
+[DefaultExecutionOrder(BatchedUpdateConstant.EXECUTION_ORDER_FOR_BATCHUPDATE)]
 public class CentralDelay : MonoBehaviour
 {
 
     #region Custom Variables
 
-    public class DelayInstance : IBatchUpdateHandler
+    public class DelayInstance : IBatchedUpdateHandler
     {
         #region Public Variables
 
@@ -37,7 +37,7 @@ public class CentralDelay : MonoBehaviour
             _OnProgression = OnProgression;
             _OnDelayEnd = OnDelayEnd;
 
-            BatchedUpdate.Instance.RegisterToBatchedUpdate(this, BatchInterval.PerFrame);
+            BatchedUpdate.Instance.RegisterToBatchedUpdate(this, 1);
         }
 
         #endregion

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[DefaultExecutionOrder(BatchUpdateConstant.EXECUTION_ORDER_FOR_BATCHUPDATE)]
+[DefaultExecutionOrder(BatchedUpdateConstant.EXECUTION_ORDER_FOR_BATCHUPDATE)]
 public class BatchedUpdate : MonoBehaviour
 {
-
     #region Custom Variables
-
-    
 
     private class UpdateInfo
     {
@@ -17,7 +13,7 @@ public class BatchedUpdate : MonoBehaviour
         public int bucketIndex;
     }
 
-    private class BatchUpdateInstance
+    public class BatchUpdateInstance
     {
         #region Custom Variables
 
@@ -28,54 +24,61 @@ public class BatchedUpdate : MonoBehaviour
             private int _remainingIntervalToUpdate;
             private int _interval;
 
-            private HashSet<IBatchUpdateHandler> _hashSetForIBatchHandler;
-            private Queue<IBatchUpdateHandler> _queueToRemoveFromHashSet = new Queue<IBatchUpdateHandler>();
+            private HashSet<IBatchedUpdateHandler> _hashSetForIBatchHandler;
+            private Queue<IBatchedUpdateHandler> _queueToRemoveFromHashSet = new Queue<IBatchedUpdateHandler>();
 
             #endregion
 
             #region Public Callback
 
-            public BatchUpdateBucket(int currentInterval, int interval) {
+            public BatchUpdateBucket(int currentInterval, int interval)
+            {
 
 
-                _remainingIntervalToUpdate  = currentInterval;
-                _interval                   = interval;
+                _remainingIntervalToUpdate = currentInterval;
+                _interval = interval;
 
-                _hashSetForIBatchHandler = new HashSet<IBatchUpdateHandler>();
+                _hashSetForIBatchHandler = new HashSet<IBatchedUpdateHandler>();
             }
 
-            public void AddToBucket(IBatchUpdateHandler batchUpdateHandler) {
-
+            public void AddToBucket(IBatchedUpdateHandler batchUpdateHandler)
+            {
                 _hashSetForIBatchHandler.Add(batchUpdateHandler);
+                Debug.Log("Added");
             }
 
-            public void RemoveFromBucket(IBatchUpdateHandler batchUpdateHandler)
+            public void RemoveFromBucket(IBatchedUpdateHandler batchUpdateHandler)
             {
                 _queueToRemoveFromHashSet.Enqueue(batchUpdateHandler);
             }
 
-            public void RequestToUpdateBatchBucket() {
+            public void RequestToUpdateBatchBucket()
+            {
 
                 _remainingIntervalToUpdate--;
 
-                if (_remainingIntervalToUpdate <= 0) {
+                if (_remainingIntervalToUpdate <= 0)
+                {
 
-                    foreach (IBatchUpdateHandler batchUpdateHandler in _hashSetForIBatchHandler)
+                    foreach (IBatchedUpdateHandler batchUpdateHandler in _hashSetForIBatchHandler)
                         batchUpdateHandler.OnBatchedUpdate();
-               
+
                     _remainingIntervalToUpdate = _interval;
                 }
 
-                if (_queueToRemoveFromHashSet.Count > 0) {
+                if (_queueToRemoveFromHashSet.Count > 0)
+                {
 
-                    while (_queueToRemoveFromHashSet.Count > 0) {
+                    while (_queueToRemoveFromHashSet.Count > 0)
+                    {
 
                         _hashSetForIBatchHandler.Remove(_queueToRemoveFromHashSet.Dequeue());
                     }
                 }
             }
 
-            public void Clear() {
+            public void Clear()
+            {
 
                 _hashSetForIBatchHandler.Clear();
                 _queueToRemoveFromHashSet.Clear();
@@ -86,13 +89,17 @@ public class BatchedUpdate : MonoBehaviour
 
         #endregion
 
+        #region Public Variables
+
+        public int Interval { get; private set; }
+
+        #endregion
+
         #region Private Variables
 
-        private int _numberOfBucket;
-
         private int _currentBucketIndex;
-
-        private BatchUpdateBucket[] _batchUpdateBuckets;
+        private int _currentNumberOfBucket;
+        private List<BatchUpdateBucket> _batchUpdateBuckets;
 
         #endregion
 
@@ -100,46 +107,50 @@ public class BatchedUpdate : MonoBehaviour
 
         public BatchUpdateInstance(int interval)
         {
-            _currentBucketIndex = 0;
+            Interval = interval;
 
-            _numberOfBucket = interval;
+            _currentBucketIndex     = 0;
+            _currentNumberOfBucket  = 0;
+            _batchUpdateBuckets     = new List<BatchUpdateBucket>();
 
-            _batchUpdateBuckets = new BatchUpdateBucket[interval];
-            for (int i = 0; i < interval; i++) {
-
-                _batchUpdateBuckets[i] = new BatchUpdateBucket(
-                    currentInterval : i + 1,
-                    interval : interval);
-
-            }
         }
 
-        public int AddToBucket(IBatchUpdateHandler batchUpdateHandler) {
+        public int AddToBucket(IBatchedUpdateHandler batchUpdateHandler)
+        {
+            int currentBucketIndex = _currentBucketIndex;
+            if (currentBucketIndex >= _currentNumberOfBucket && _currentNumberOfBucket < Interval)
+            {
+                _batchUpdateBuckets.Add(new BatchUpdateBucket(currentBucketIndex, Interval));
+                _currentNumberOfBucket++;
+            }
 
-            int bucketIndex = _currentBucketIndex;
-            _batchUpdateBuckets[bucketIndex].AddToBucket(batchUpdateHandler);
+            
+            _batchUpdateBuckets[currentBucketIndex].AddToBucket(batchUpdateHandler);
 
             _currentBucketIndex++;
-            if (_currentBucketIndex >= _numberOfBucket) _currentBucketIndex = 0;
+            if (_currentBucketIndex >= Interval) 
+                _currentBucketIndex = 0;
 
-            return bucketIndex;
+            return currentBucketIndex;
 
         }
 
-        public void RemoveFromBucket(IBatchUpdateHandler batchUpdateHandler, int bucketIndex) {
-
+        public void RemoveFromBucket(IBatchedUpdateHandler batchUpdateHandler, int bucketIndex)
+        {
             _batchUpdateBuckets[bucketIndex].RemoveFromBucket(batchUpdateHandler);
         }
 
-        public void RequestToUpdateBatchInstance() {
+        public void RequestToUpdateBatchInstance()
+        {
 
-            for (int i = 0; i < _numberOfBucket; i++)
+            for (int i = 0; i < _currentNumberOfBucket; i++)
                 _batchUpdateBuckets[i].RequestToUpdateBatchBucket();
         }
 
-        public void Clear() {
+        public void Clear()
+        {
 
-            for (int i = 0; i < _numberOfBucket; i++)
+            for (int i = 0; i < _currentNumberOfBucket; i++)
                 _batchUpdateBuckets[i].Clear();
         }
 
@@ -151,14 +162,14 @@ public class BatchedUpdate : MonoBehaviour
     #region Public Variables
 
     public static BatchedUpdate Instance;
+    public List<BatchUpdateInstance> BatchUpdateInstances { get; private set; } = new List<BatchUpdateInstance>();
 
     #endregion
 
     #region Private Variables
 
     private int _numberOfInstances;
-    private Dictionary<IBatchUpdateHandler, UpdateInfo> batchUpdateHandlerTracker = new Dictionary<IBatchUpdateHandler, UpdateInfo>();
-    private BatchUpdateInstance[] _batchUpdateInstances;
+    private Dictionary<IBatchedUpdateHandler, UpdateInfo> batchUpdateHandlerTracker   = new Dictionary<IBatchedUpdateHandler, UpdateInfo>();
 
     #endregion
 
@@ -167,38 +178,51 @@ public class BatchedUpdate : MonoBehaviour
     private void Awake()
     {
 
-        List<int> listOfIntervals = new List<int>();
-        foreach (int value in Enum.GetValues(typeof(BatchInterval)))
-            listOfIntervals.Add(value);
-
-        _numberOfInstances = listOfIntervals.Count;
-        _batchUpdateInstances = new BatchUpdateInstance[_numberOfInstances];
-        for (int i = 0; i < _numberOfInstances; i++)
-            _batchUpdateInstances[i] = new BatchUpdateInstance(listOfIntervals[i]);
-
         SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
     private void Update()
     {
         for (int i = 0; i < _numberOfInstances; i++)
-            _batchUpdateInstances[i].RequestToUpdateBatchInstance();
+            BatchUpdateInstances[i].RequestToUpdateBatchInstance();
     }
-
-
 
     #endregion
 
     #region Configuretion
 
-    private void OnSceneUnloaded(Scene scene) {
+    private int HasThisInstance(int interval) {
 
-        Debug.Log("SceneUnloaded");
+        int numberOfInstances = BatchUpdateInstances.Count;
+        for (int i = 0; i < numberOfInstances; i++) {
 
+            if (BatchUpdateInstances[i].Interval == interval)
+                return i;
+        }
+
+        return -1;
+    }
+
+    private void OnSceneUnloaded(Scene scene)
+    {
+        int numberOfInstances = BatchUpdateInstances.Count;
         batchUpdateHandlerTracker.Clear();
-        for (int i = 0; i < _numberOfInstances; i++) {
+        for (int i = 0; i < numberOfInstances; i++)
+            BatchUpdateInstances[i].Clear();
 
-            _batchUpdateInstances[i].Clear();
+    }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void CreateSingletonReference()
+    {
+        if (Instance == null)
+        {
+
+            GameObject batchUpdateObject    = new GameObject("BatchUpdate");
+            BatchedUpdate batchedUpdate       = batchUpdateObject.AddComponent<BatchedUpdate>();
+
+            Instance = batchedUpdate;
+            DontDestroyOnLoad(batchUpdateObject);
         }
     }
 
@@ -206,54 +230,44 @@ public class BatchedUpdate : MonoBehaviour
 
     #region Public Callback
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    private static void CreateSingletonReference() {
+    public void RegisterToBatchedUpdate(IBatchedUpdateHandler batchUpdateHandler, int batchInterval) {
 
-        if (Instance == null) {
+        // if : It doesn't have this Interface
+        if (!batchUpdateHandlerTracker.ContainsKey(batchUpdateHandler)) {
 
-            GameObject batchUpdateObject = new GameObject("BatchUpdate");
-            BatchedUpdate batchedUpdate = batchUpdateObject.AddComponent<BatchedUpdate>();
+            int instanceIndex = HasThisInstance(batchInterval);
+            
+            if (instanceIndex == -1) {
 
-            Instance = batchedUpdate;
-            DontDestroyOnLoad(batchUpdateObject);
-        }
-    }
-
-    public void RegisterToBatchedUpdate(IBatchUpdateHandler batchUpdateHandler, BatchInterval batchInterval) {
-
-        if (!batchUpdateHandlerTracker.ContainsKey(batchUpdateHandler))
-        {
-            int indexOfBatchUpdateInstance = 0;
-            foreach (int value in Enum.GetValues(typeof(BatchInterval)))
-            {
-
-                if (value == (int)batchInterval)
-                    break;
-
-                indexOfBatchUpdateInstance++;
+                BatchUpdateInstances.Add(new BatchUpdateInstance(batchInterval));
+                instanceIndex = BatchUpdateInstances.Count - 1;
+                _numberOfInstances++;
             }
 
-            int indexOfBatchBucketOnInstance = _batchUpdateInstances[indexOfBatchUpdateInstance].AddToBucket(batchUpdateHandler);
-
+            int bucketIndex = BatchUpdateInstances[instanceIndex].AddToBucket(batchUpdateHandler);
             batchUpdateHandlerTracker.Add(
                     batchUpdateHandler,
                     new UpdateInfo()
                     {
-                        instanceIndex = indexOfBatchUpdateInstance,
-                        bucketIndex = indexOfBatchBucketOnInstance
+                        instanceIndex = instanceIndex,
+                        bucketIndex = bucketIndex
                     }
                 );
+
+            return;
         }
+
+        Debug.LogError(string.Format("{0} is already in registered in BatchUpdate", batchUpdateHandler));
     }
 
-    public void UnregisterFromBatchedUpdate(IBatchUpdateHandler batchUpdateHandler) {
+    public void UnregisterFromBatchedUpdate(IBatchedUpdateHandler batchUpdateHandler) {
 
         UpdateInfo updateInfo = null;
         batchUpdateHandlerTracker.TryGetValue(batchUpdateHandler, out updateInfo);
 
-        if (updateInfo != null) {
-
-            _batchUpdateInstances[updateInfo.instanceIndex].RemoveFromBucket(batchUpdateHandler, updateInfo.bucketIndex);
+        if (updateInfo != null)
+        {
+            BatchUpdateInstances[updateInfo.instanceIndex].RemoveFromBucket(batchUpdateHandler, updateInfo.bucketIndex);
             batchUpdateHandlerTracker.Remove(batchUpdateHandler);
         }
     }
