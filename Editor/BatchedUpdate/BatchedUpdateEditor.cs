@@ -39,7 +39,7 @@ public class BatchedUpdateEditor : BaseEditorClass
 
         EditorGUILayout.BeginHorizontal();
         {
-            EditorGUILayout.LabelField(string.Format("Bucket({0})", bucketIndex));
+            EditorGUILayout.LabelField(string.Format("Bucket({0}) : Update({1})", bucketIndex, _reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].NumberOfBatchedUpdateHandlerInBucket));
         }
         EditorGUILayout.EndHorizontal();
     }
