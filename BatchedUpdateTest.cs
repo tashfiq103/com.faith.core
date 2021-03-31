@@ -7,11 +7,12 @@ public class BatchedUpdateTest : MonoBehaviour
 {
     #region CustomVariables
 
-    public class BatchedUpdateTestClass : IBatchedUpdateHandler
+    public class BatchedUpdateTestClass :  MonoBehaviour, IBatchedUpdateHandler
     {
         public float TimeFrame { get; private set; }
 
-        public BatchedUpdateTestClass(float timeFrame, int interval) {
+
+        public void Initialize(float timeFrame, int interval) {
 
             TimeFrame = timeFrame;
             BatchedUpdate.Instance.RegisterToBatchedUpdate(this, interval);
@@ -45,9 +46,15 @@ public class BatchedUpdateTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GameObject blueprint = new GameObject();
         for(int i = 0; i < numberOfTestClass; i++)
         {
-            BatchedUpdateTestClass newTestClass = new BatchedUpdateTestClass(timeFrames.Value, (int)framesVariation);
+            GameObject newTestInstance = Instantiate(blueprint, transform);
+            newTestInstance.name = string.Format("BatchUpdateTestInstance({0})", i);
+
+
+            BatchedUpdateTestClass reference = newTestInstance.AddComponent<BatchedUpdateTestClass>();
+            reference.Initialize(timeFrames.Value, (int)framesVariation);
         }
     }
 

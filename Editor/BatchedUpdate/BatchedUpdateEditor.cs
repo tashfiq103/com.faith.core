@@ -20,7 +20,7 @@ public class BatchedUpdateEditor : BaseEditorClass
 
             EditorGUILayout.BeginVertical(GUI.skin.box);
             {
-                EditorGUILayout.LabelField(string.Format("BatchedUpdateInstance({0})", i));
+                EditorGUILayout.LabelField(string.Format("BatchedUpdateInstance({0}) : Interval({1})", i, _reference.BatchUpdateInstances[i].Interval));
 
                 EditorGUI.indentLevel += 1;
                 {
