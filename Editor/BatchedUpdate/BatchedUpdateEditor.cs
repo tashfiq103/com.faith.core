@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using com.faith.core;
+using System.Collections;
 
 [CustomEditor(typeof(BatchedUpdate))]
 public class BatchedUpdateEditor : BaseEditorClass
@@ -10,9 +11,57 @@ public class BatchedUpdateEditor : BaseEditorClass
 
     private BatchedUpdate _reference;
 
+    private SerializedProperty showTracker;
+
     #endregion
 
     #region Custom GUI
+
+    private void TrackerView() {
+
+        showTracker.boolValue = EditorGUILayout.Foldout(
+                showTracker.boolValue,
+                showTracker.name
+            );
+
+        if (showTracker.boolValue) {
+
+            int numberOfItem = _reference.BatchUpdateHandlerTracker.Count;
+
+            IBatchedUpdateHandler[] batchedUpdateHandlers = new IBatchedUpdateHandler[numberOfItem];
+            ICollection keys = _reference.BatchUpdateHandlerTracker.Keys;
+            keys.CopyTo(batchedUpdateHandlers, 0);
+
+            BatchedUpdate.UpdateInfo[] updateInfos = new BatchedUpdate.UpdateInfo[numberOfItem];
+            ICollection values = _reference.BatchUpdateHandlerTracker.Values;
+            values.CopyTo(updateInfos, 0);
+
+            EditorGUI.indentLevel += 1;
+
+            for (int i = 0; i < numberOfItem; i++) {
+
+                EditorGUILayout.BeginVertical(GUI.skin.box);
+                {
+                    EditorGUILayout.LabelField(string.Format("Element({0})", i), EditorStyles.boldLabel);
+
+                    EditorGUI.indentLevel += 1;
+
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        EditorGUILayout.LabelField(string.Format("Key : {0}", batchedUpdateHandlers[i]));
+                        EditorGUILayout.LabelField(string.Format("Value : {0}", batchedUpdateHandlers[i]));
+                    }
+                    EditorGUILayout.EndHorizontal();
+
+                    EditorGUI.indentLevel -= 1;
+                }
+                EditorGUILayout.EndVertical();
+            }
+
+            EditorGUI.indentLevel -= 1;
+        }
+
+    }
 
     private void InstanceViwerGUI() {
 
@@ -44,6 +93,8 @@ public class BatchedUpdateEditor : BaseEditorClass
         EditorGUILayout.EndHorizontal();
     }
 
+
+
     #endregion
 
     #region Editor
@@ -56,6 +107,8 @@ public class BatchedUpdateEditor : BaseEditorClass
 
         if (_reference == null)
             return;
+
+        showTracker = serializedObject.FindProperty("showTracker");
     }
 
     public override void OnInspectorGUI()
