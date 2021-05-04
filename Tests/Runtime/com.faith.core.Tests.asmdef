@@ -1,0 +1,16 @@
+{
+    "name": "com.faith.core.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:040ab2f6270c94377b661782c4ab4dfb"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

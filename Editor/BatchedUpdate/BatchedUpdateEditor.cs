@@ -1,149 +1,160 @@
-﻿using UnityEngine;
-using UnityEditor;
-using com.faith.core;
-using System.Collections;
-using System.Collections.Generic;
-
-[CustomEditor(typeof(BatchedUpdate))]
-public class BatchedUpdateEditor : BaseEditorClass
+﻿namespace com.faith.core
 {
+    using UnityEngine;
+    using UnityEditor;
+    using com.faith.core;
+    using System.Collections;
+    using System.Collections.Generic;
 
-    #region Private Variables
+    [CustomEditor(typeof(BatchedUpdate))]
+    public class BatchedUpdateEditor : BaseEditorClass
+    {
 
-    private BatchedUpdate _reference;
+        #region Private Variables
 
-    private SerializedProperty showTracker;
+        private BatchedUpdate _reference;
 
-    #endregion
+        private SerializedProperty showTracker;
 
-    #region Custom GUI
+        #endregion
 
-    private void TrackerView() {
+        #region Custom GUI
 
-        showTracker.boolValue = EditorGUILayout.Foldout(
-                showTracker.boolValue,
-                showTracker.name
-            );
+        private void TrackerView()
+        {
 
-        if (showTracker.boolValue) {
+            showTracker.boolValue = EditorGUILayout.Foldout(
+                    showTracker.boolValue,
+                    showTracker.name
+                );
 
-            int numberOfItem = _reference.BatchUpdateHandlerTracker.Count;
+            if (showTracker.boolValue)
+            {
 
-            IBatchedUpdateHandler[] batchedUpdateHandlers = new IBatchedUpdateHandler[numberOfItem];
-            ICollection keys = _reference.BatchUpdateHandlerTracker.Keys;
-            keys.CopyTo(batchedUpdateHandlers, 0);
+                int numberOfItem = _reference.BatchUpdateHandlerTracker.Count;
 
-            BatchedUpdate.UpdateInfo[] updateInfos = new BatchedUpdate.UpdateInfo[numberOfItem];
-            ICollection values = _reference.BatchUpdateHandlerTracker.Values;
-            values.CopyTo(updateInfos, 0);
+                IBatchedUpdateHandler[] batchedUpdateHandlers = new IBatchedUpdateHandler[numberOfItem];
+                ICollection keys = _reference.BatchUpdateHandlerTracker.Keys;
+                keys.CopyTo(batchedUpdateHandlers, 0);
 
-            EditorGUI.indentLevel += 1;
+                BatchedUpdate.UpdateInfo[] updateInfos = new BatchedUpdate.UpdateInfo[numberOfItem];
+                ICollection values = _reference.BatchUpdateHandlerTracker.Values;
+                values.CopyTo(updateInfos, 0);
 
-            for (int i = 0; i < numberOfItem; i++) {
+                EditorGUI.indentLevel += 1;
+
+                for (int i = 0; i < numberOfItem; i++)
+                {
+
+                    EditorGUILayout.BeginVertical(GUI.skin.box);
+                    {
+                        EditorGUILayout.LabelField(string.Format("Element({0})", i), EditorStyles.boldLabel);
+
+                        EditorGUI.indentLevel += 1;
+
+                        EditorGUILayout.BeginHorizontal();
+                        {
+                            EditorGUILayout.LabelField(string.Format("Key : {0}", batchedUpdateHandlers[i]));
+                            EditorGUILayout.LabelField(string.Format("Value : {0}", batchedUpdateHandlers[i]));
+                        }
+                        EditorGUILayout.EndHorizontal();
+
+                        EditorGUI.indentLevel -= 1;
+                    }
+                    EditorGUILayout.EndVertical();
+                }
+
+                EditorGUI.indentLevel -= 1;
+            }
+
+        }
+
+        private void InstanceViwerGUI()
+        {
+
+            for (int i = 0; i < _reference.NumberOfInstances; i++)
+            {
 
                 EditorGUILayout.BeginVertical(GUI.skin.box);
                 {
-                    EditorGUILayout.LabelField(string.Format("Element({0})", i), EditorStyles.boldLabel);
+                    EditorGUILayout.LabelField(string.Format("BatchedUpdateInstance({0}) : Interval({1})", i, _reference.BatchUpdateInstances[i].Interval));
 
                     EditorGUI.indentLevel += 1;
-
-                    EditorGUILayout.BeginHorizontal();
                     {
-                        EditorGUILayout.LabelField(string.Format("Key : {0}", batchedUpdateHandlers[i]));
-                        EditorGUILayout.LabelField(string.Format("Value : {0}", batchedUpdateHandlers[i]));
-                    }
-                    EditorGUILayout.EndHorizontal();
+                        for (int j = 0; j < _reference.BatchUpdateInstances[i].NumberOfActiveBucket; j++)
+                            BucketViwerGUI(i, j);
 
+                    }
                     EditorGUI.indentLevel -= 1;
+
                 }
                 EditorGUILayout.EndVertical();
             }
+        }
 
+        private void BucketViwerGUI(int instanceIndex, int bucketIndex)
+        {
+
+
+            _reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].EDITOR_ShowBathedUpdateHandlers = EditorGUILayout.Foldout(
+                    _reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].EDITOR_ShowBathedUpdateHandlers,
+                    string.Format("Bucket({0}) : Update({1})", bucketIndex, _reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].NumberOfBatchedUpdateHandlerInBucket),
+                    true
+                );
+
+            EditorGUI.indentLevel += 1;
+            if (_reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].EDITOR_ShowBathedUpdateHandlers)
+            {
+
+                IEnumerator<IBatchedUpdateHandler> em = _reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].HashSetForIBatchHandler.GetEnumerator();
+
+                EditorGUILayout.BeginVertical();
+                {
+                    while (em.MoveNext())
+                    {
+                        EditorGUILayout.LabelField(em.Current.ToString());
+                    }
+                }
+                EditorGUILayout.EndVertical();
+            }
             EditorGUI.indentLevel -= 1;
         }
 
-    }
 
-    private void InstanceViwerGUI() {
 
-        for (int i = 0; i < _reference.NumberOfInstances; i++) {
+        #endregion
 
-            EditorGUILayout.BeginVertical(GUI.skin.box);
-            {
-                EditorGUILayout.LabelField(string.Format("BatchedUpdateInstance({0}) : Interval({1})", i, _reference.BatchUpdateInstances[i].Interval));
+        #region Editor
 
-                EditorGUI.indentLevel += 1;
-                {
-                    for (int j = 0; j < _reference.BatchUpdateInstances[i].NumberOfActiveBucket; j++)
-                        BucketViwerGUI(i, j);
+        public override void OnEnable()
+        {
+            base.OnEnable();
 
-                }
-                EditorGUI.indentLevel -= 1;
-                
-            }
-            EditorGUILayout.EndVertical();
+            _reference = (BatchedUpdate)target;
+
+            if (_reference == null)
+                return;
+
+            showTracker = serializedObject.FindProperty("showTracker");
         }
-    }
 
-    private void BucketViwerGUI(int instanceIndex, int bucketIndex) {
+        public override void OnInspectorGUI()
+        {
 
+            base.OnInspectorGUI();
 
-        _reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].EDITOR_ShowBathedUpdateHandlers = EditorGUILayout.Foldout(
-                _reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].EDITOR_ShowBathedUpdateHandlers,
-                string.Format("Bucket({0}) : Update({1})", bucketIndex, _reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].NumberOfBatchedUpdateHandlerInBucket),
-                true
-            );
+            serializedObject.Update();
 
-        EditorGUI.indentLevel += 1;
-        if (_reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].EDITOR_ShowBathedUpdateHandlers) {
+            CoreEditorModule.DrawHorizontalLine();
 
-            IEnumerator<IBatchedUpdateHandler> em = _reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].HashSetForIBatchHandler.GetEnumerator();
-            
-            EditorGUILayout.BeginVertical();
-            {
-                while (em.MoveNext())
-                {
-                    EditorGUILayout.LabelField(em.Current.ToString());
-                }
-            }
-            EditorGUILayout.EndVertical();
+            InstanceViwerGUI();
+
+            serializedObject.ApplyModifiedProperties();
+
         }
-        EditorGUI.indentLevel -= 1;
-    }
 
-
-
-    #endregion
-
-    #region Editor
-
-    public override void OnEnable()
-    {
-        base.OnEnable();
-
-        _reference = (BatchedUpdate)target;
-
-        if (_reference == null)
-            return;
-
-        showTracker = serializedObject.FindProperty("showTracker");
-    }
-
-    public override void OnInspectorGUI()
-    {
-        
-        base.OnInspectorGUI();
-
-        serializedObject.Update();
-
-        CoreEditorModule.DrawHorizontalLine();
-
-        InstanceViwerGUI();
-
-        serializedObject.ApplyModifiedProperties();
+        #endregion
 
     }
-
-    #endregion
 
 }
