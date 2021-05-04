@@ -2,6 +2,7 @@
 using UnityEditor;
 using com.faith.core;
 using System.Collections;
+using System.Collections.Generic;
 
 [CustomEditor(typeof(BatchedUpdate))]
 public class BatchedUpdateEditor : BaseEditorClass
@@ -86,11 +87,28 @@ public class BatchedUpdateEditor : BaseEditorClass
 
     private void BucketViwerGUI(int instanceIndex, int bucketIndex) {
 
-        EditorGUILayout.BeginHorizontal();
-        {
-            EditorGUILayout.LabelField(string.Format("Bucket({0}) : Update({1})", bucketIndex, _reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].NumberOfBatchedUpdateHandlerInBucket));
+
+        _reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].EDITOR_ShowBathedUpdateHandlers = EditorGUILayout.Foldout(
+                _reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].EDITOR_ShowBathedUpdateHandlers,
+                string.Format("Bucket({0}) : Update({1})", bucketIndex, _reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].NumberOfBatchedUpdateHandlerInBucket),
+                true
+            );
+
+        EditorGUI.indentLevel += 1;
+        if (_reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].EDITOR_ShowBathedUpdateHandlers) {
+
+            IEnumerator<IBatchedUpdateHandler> em = _reference.BatchUpdateInstances[instanceIndex].BatchUpdateBuckets[bucketIndex].HashSetForIBatchHandler.GetEnumerator();
+            
+            EditorGUILayout.BeginVertical();
+            {
+                while (em.MoveNext())
+                {
+                    EditorGUILayout.LabelField(em.Current.ToString());
+                }
+            }
+            EditorGUILayout.EndVertical();
         }
-        EditorGUILayout.EndHorizontal();
+        EditorGUI.indentLevel -= 1;
     }
 
 

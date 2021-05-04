@@ -29,7 +29,14 @@ public class BatchedUpdate : MonoBehaviour
         {
             #region Public Variables
 
+#if UNITY_EDITOR
+
+            public bool EDITOR_ShowBathedUpdateHandlers;
+
+#endif
+
             public int NumberOfBatchedUpdateHandlerInBucket { get; private set; } = 0;
+            public HashSet<IBatchedUpdateHandler> HashSetForIBatchHandler { get; private set; }
 
             #endregion
 
@@ -37,9 +44,6 @@ public class BatchedUpdate : MonoBehaviour
 
             private int _remainingIntervalToUpdate;
             private int _interval;
-
-            private HashSet<IBatchedUpdateHandler> _hashSetForIBatchHandler;
-            private Queue<IBatchedUpdateHandler> _queueToRemoveFromHashSet = new Queue<IBatchedUpdateHandler>();
 
             #endregion
 
@@ -50,12 +54,12 @@ public class BatchedUpdate : MonoBehaviour
                 _remainingIntervalToUpdate = currentInterval;
                 _interval = interval;
 
-                _hashSetForIBatchHandler = new HashSet<IBatchedUpdateHandler>();
+                HashSetForIBatchHandler = new HashSet<IBatchedUpdateHandler>();
             }
 
             public bool AddToBucket(IBatchedUpdateHandler batchUpdateHandler)
             {
-                if (_hashSetForIBatchHandler.Add(batchUpdateHandler)) {
+                if (HashSetForIBatchHandler.Add(batchUpdateHandler)) {
 
                     NumberOfBatchedUpdateHandlerInBucket++;
                     return true;
@@ -66,30 +70,19 @@ public class BatchedUpdate : MonoBehaviour
 
             public bool Remove(IBatchedUpdateHandler batchUpdateHandler) {
 
-                if (_hashSetForIBatchHandler.Contains(batchUpdateHandler)) {
+                if (HashSetForIBatchHandler.Contains(batchUpdateHandler)) {
 
-                    _hashSetForIBatchHandler.Remove(batchUpdateHandler);
+                    HashSetForIBatchHandler.Remove(batchUpdateHandler);
                     NumberOfBatchedUpdateHandlerInBucket--;
 
                     return true;
                 }
 
+                Debug.LogError(string.Format("BatchUpdteHander = {0}, could not be found on the following bucket", batchUpdateHandler));
+
                 return false;
             }
 
-            public bool RemoveFromBucket(IBatchedUpdateHandler batchUpdateHandler)
-            {
-                bool hasContain = _hashSetForIBatchHandler.Contains(batchUpdateHandler);
-
-                //Debug.Log(string.Format("RequestToEnqued : {0} : {1}", batchUpdateHandler, hasContain));
-
-                if (hasContain)
-                {
-                    _queueToRemoveFromHashSet.Enqueue(batchUpdateHandler);
-                    //Debug.Log(string.Format("Enqued : {0}", batchUpdateHandler));
-                }
-                return hasContain;
-            }
 
             public void RequestToUpdateBatchBucket()
             {
@@ -97,13 +90,8 @@ public class BatchedUpdate : MonoBehaviour
 
                 if (_remainingIntervalToUpdate <= 0)
                 {
-                    //while (_queueToRemoveFromHashSet.Count > 0)
-                    //{
-                    //    _hashSetForIBatchHandler.Remove(_queueToRemoveFromHashSet.Dequeue());
-                    //    NumberOfBatchedUpdateHandlerInBucket--;
-                    //}
 
-                    foreach (IBatchedUpdateHandler batchUpdateHandler in _hashSetForIBatchHandler)
+                    foreach (IBatchedUpdateHandler batchUpdateHandler in HashSetForIBatchHandler)
                         batchUpdateHandler.OnBatchedUpdate();
 
                     _remainingIntervalToUpdate = _interval;
@@ -114,8 +102,7 @@ public class BatchedUpdate : MonoBehaviour
             public void Clear()
             {
 
-                _hashSetForIBatchHandler.Clear();
-                _queueToRemoveFromHashSet.Clear();
+                HashSetForIBatchHandler.Clear();
             }
 
             #endregion
@@ -178,6 +165,7 @@ public class BatchedUpdate : MonoBehaviour
         public bool RemovedFromBucket(IBatchedUpdateHandler batchUpdateHandler, int bucketIndex)
         {
             if (bucketIndex >= NumberOfActiveBucket) {
+                Debug.LogError(string.Format("bucketIndex({0}) >= NumberOfActiveBucket({1}) : Failed To Remove", bucketIndex, NumberOfActiveBucket));
                 return false;
             }
 
@@ -319,27 +307,25 @@ public class BatchedUpdate : MonoBehaviour
 
     private void InstancesClearerController() {
 
-        Queue<BatchUpdateInstance> removingInstances = new Queue<BatchUpdateInstance>();
+        Queue<int> removingInstanceIndexes = new Queue<int>();
 
-        foreach (BatchUpdateInstance batchUpdateInstance in BatchUpdateInstances)
-        {
-            if (batchUpdateInstance.NumberOfActiveBucket == 0)
-                removingInstances.Enqueue(batchUpdateInstance);
+        NumberOfInstances = BatchUpdateInstances.Count;
+        for (int i = 0; i < NumberOfInstances; i++) {
 
+            if (BatchUpdateInstances[i].NumberOfActiveBucket == 0)
+                removingInstanceIndexes.Enqueue(i);
         }
 
-        while (removingInstances.Count > 0) {
+        while (removingInstanceIndexes.Count > 0) {
 
-            Debug.LogWarning(string.Format("Removing : {0}", removingInstances.Peek()));
+            int removeIndex = removingInstanceIndexes.Dequeue();
 
-            if (BatchUpdateInstances.Remove(removingInstances.Dequeue())) {
+            BatchUpdateInstances.RemoveAt(removeIndex);
+            BatchUpdateInstances.TrimExcess();
 
+            NumberOfInstances--;
 
-                BatchUpdateInstances.TrimExcess();
-                NumberOfInstances--;
-
-                ShiftInstanceIndexForRemoving();
-            }
+            ShiftInstanceIndexForRemoving(removeIndex);
         }
 
         
@@ -366,7 +352,8 @@ public class BatchedUpdate : MonoBehaviour
             {
 
                 Debug.Log(string.Format(
-                    "BucketRemoved : Interval({0}) : BucketIndex_PREV ({1}) : BucketIndex_NEW ({2})",
+                    "BucketRemoved : InstanceIndex({0}) : Interval({1}) : BucketIndex_PREV ({2}) : BucketIndex_NEW ({3})",
+                    instanceIndex,
                     BatchUpdateInstances[updateInfos[i].instanceIndex].Interval,
                     updateInfos[i].bucketIndex,
                     updateInfos[i].bucketIndex - 1));
@@ -377,7 +364,7 @@ public class BatchedUpdate : MonoBehaviour
         }
     }
 
-    private void ShiftInstanceIndexForRemoving()
+    private void ShiftInstanceIndexForRemoving(int removingIndex)
     {
         int numberOfItem = BatchUpdateHandlerTracker.Count;
 
@@ -392,7 +379,7 @@ public class BatchedUpdate : MonoBehaviour
         for (int i = 0; i < numberOfItem; i++)
         {
 
-            if (updateInfos[i].instanceIndex > 0)
+            if (updateInfos[i].instanceIndex > 0 && updateInfos[i].instanceIndex > removingIndex)
             {
 
                 //Debug.Log(string.Format(
@@ -515,28 +502,9 @@ public class BatchedUpdate : MonoBehaviour
         UpdateInfo updateInfo = GetUpdateInfoInBatchedUpdateTracker(HasTheKeyInBatchUpdateTracker(batchUpdateHandler));
 
         if (updateInfo != null)
+        {
             _queueToRemove.Enqueue(new RemoveInfo() { batchedUpdateHandler = batchUpdateHandler, updateInfo = updateInfo });
-
-        //Current
-        //if (updateInfo != null)
-        //{
-
-
-            //    if (BatchUpdateInstances[updateInfo.instanceIndex].RemovedFromBucket(batchUpdateHandler, updateInfo.bucketIndex)) {
-
-            //        BatchUpdateHandlerTracker.Remove(batchUpdateHandler);
-
-            //        _tryClear = true;
-
-            //        Debug.Log(string.Format(
-            //            "Acomplished :  UpdateInfo [instance = {0}, bucketIndex = {1}, Interval = {2}]",
-            //            updateInfo.instanceIndex,
-            //            updateInfo.bucketIndex,
-            //            BatchUpdateInstances[updateInfo.instanceIndex].Interval));
-
-            //    }
-
-            //}
+        }
     }
 
     #endregion
