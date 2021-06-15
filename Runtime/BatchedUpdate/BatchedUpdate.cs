@@ -274,6 +274,7 @@
 
                     BucketClearerController();
                     InstancesClearerController();
+                    BatchUpdateHandlerTracker.Remove(_removeInfo.batchedUpdateHandler);
                 }
                 else
                 {
@@ -502,7 +503,7 @@
                     instanceIndex = BatchUpdateInstances.Count - 1;
                     NumberOfInstances++;
                 }
-
+                
                 int bucketIndex = BatchUpdateInstances[instanceIndex].AddToBucket(batchUpdateHandler);
                 BatchUpdateHandlerTracker.Add(
                         batchUpdateHandler,
