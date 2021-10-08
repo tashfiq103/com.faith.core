@@ -26,10 +26,31 @@ public class BatchedUpdateTest : MonoBehaviour
         }
     }
 
+    public class BatchUpdateThreadTestClass
+    {
+        public float TimeFrame { get; private set; }
+        private BatchedUpdateThread batchUpdateThread;
+
+        public BatchUpdateThreadTestClass(float timeFrame, int interval)
+        {
+            TimeFrame = timeFrame;
+            batchUpdateThread = new BatchedUpdateThread(Update);
+            batchUpdateThread.StartUpdate(interval);
+        }
+
+        private void Update() {
+
+            TimeFrame -= Time.deltaTime;
+            if (TimeFrame <= 0)
+                batchUpdateThread.StopUpdate();
+        }
+    }
+
     #endregion
 
     #region Public Variables
 
+    public bool useBatchUpdateThread;
     public int numberOfTestClass = 1;
     public RangeReference timeFrames;
     public RangeReference framesVariation;
@@ -39,7 +60,7 @@ public class BatchedUpdateTest : MonoBehaviour
 
     #region Private Variables
 
-    private List<BatchedUpdateTestClass> _listOfTestClass;
+    private List<BatchUpdateThreadTestClass> _listOfBatchedUpdateThread = new List<BatchUpdateThreadTestClass>();
 
     #endregion
 
@@ -49,12 +70,20 @@ public class BatchedUpdateTest : MonoBehaviour
         GameObject blueprint = new GameObject();
         for(int i = 0; i < numberOfTestClass; i++)
         {
-            GameObject newTestInstance = Instantiate(blueprint, transform);
-            newTestInstance.name = string.Format("BatchUpdateTestInstance({0})", i);
+            if (useBatchUpdateThread)
+            {
+                _listOfBatchedUpdateThread.Add(new BatchUpdateThreadTestClass(timeFrames.Value, (int)framesVariation));
+            }
+            else {
+                GameObject newTestInstance = Instantiate(blueprint, transform);
+                newTestInstance.name = string.Format("BatchUpdateTestInstance({0})", i);
 
 
-            BatchedUpdateTestClass reference = newTestInstance.AddComponent<BatchedUpdateTestClass>();
-            reference.Initialize(timeFrames.Value, (int)framesVariation);
+                BatchedUpdateTestClass reference = newTestInstance.AddComponent<BatchedUpdateTestClass>();
+                reference.Initialize(timeFrames.Value, (int)framesVariation);
+            }
+
+            
         }
     }
 
