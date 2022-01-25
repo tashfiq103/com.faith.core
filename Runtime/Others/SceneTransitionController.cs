@@ -11,7 +11,7 @@
 
         private const float LOAD_READY_PERCENTAGE = 0.9f;
 
-        private static bool _isSceneLoadOperationRunning = false;
+        public static bool IsSceneLoadOperationRunning {get; private set;} = false;
 
         #endregion
 
@@ -57,7 +57,7 @@
 
             OnSceneLoaded?.Invoke();
 
-            _isSceneLoadOperationRunning = false;
+            IsSceneLoadOperationRunning = false;
 
         }
 
@@ -73,9 +73,9 @@
             float initalDelayToInvokeOnSceneLoaded = 0,
             LoadSceneMode loadSceneMode = LoadSceneMode.Single)
         {
-            if (!_isSceneLoadOperationRunning)
+            if (!IsSceneLoadOperationRunning)
             {
-                _isSceneLoadOperationRunning = true;
+                IsSceneLoadOperationRunning = true;
                 ControllerForLoadingScene(sceneName, OnUpdatingProgression, OnSceneLoaded, animationSpeedForLoadingBar, initalDelayToInvokeOnSceneLoaded, loadSceneMode);
             }
             else {
